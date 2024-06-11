@@ -7,11 +7,16 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "outputs": ["node_modules/.cache/.eslintcache"]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
     }
   }
 }

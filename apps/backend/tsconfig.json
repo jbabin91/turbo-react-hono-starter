@@ -1,9 +1,8 @@
 {
-  "extends": "@repo/typescript-config/internal-package.json",
+  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "jsx": "preserve",
-    "outDir": "dist",
+    "types": ["node"],
+    "resolveJsonModule": true,
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
   "include": ["src"],

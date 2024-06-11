@@ -1,24 +1,23 @@
 {
-  "name": "@repo/ui",
+  "name": "backend",
   "version": "0.0.1",
   "private": true,
-  "exports": {
-    "./button": "./src/button.tsx",
-    "./card": "./src/card.tsx",
-    "./code": "./src/code.tsx"
-  },
+  "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmit && tsup",
     "clean": "rm -rf .turbo dist node_modules",
-    "dev": "tsc --watch",
+    "dev": "tsx watch src/index.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.11.2",
+    "hono": "^4.4.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "react": "^18.3.1"
+    "tsup": "^8.1.0",
+    "tsx": "^4.15.2"
   }
 }

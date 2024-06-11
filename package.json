@@ -6,11 +6,22 @@
     "dev": "turbo dev",
     "format": "prettier -uw --cache .",
     "format:check": "prettier -uc --cache .",
-    "lint": "turbo lint"
+    "postinstall": "pnpm lint:ws",
+    "lint": "turbo lint --continue -- --max-warnings 0 --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:fix": "turbo lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:ws": "sherif",
+    "prepare": "husky",
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^20.14.2",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.6",
     "prettier": "^3.3.2",
     "prettier-plugin-packagejson": "^2.5.0",
+    "sherif": "^0.8.4",
     "turbo": "latest",
     "typescript": "^5.4.5"
   },
