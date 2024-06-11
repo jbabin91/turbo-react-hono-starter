@@ -9,5 +9,5 @@
     },
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
   },
-  "include": ["src"]
+  "include": ["src", "tailwind.config.ts", "postcss.config.mjs"]
 }

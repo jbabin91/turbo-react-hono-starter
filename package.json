@@ -2,9 +2,9 @@
   "name": "turbo-react-hono-starter",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build": "pnpm with-env turbo build",
     "clean": "turbo clean",
-    "dev": "turbo dev",
+    "dev": "pnpm with-env turbo dev",
     "format": "prettier -uw --cache .",
     "format:check": "prettier -uc --cache .",
     "postinstall": "pnpm lint:ws",
@@ -12,13 +12,15 @@
     "lint:fix": "turbo lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
     "lint:ws": "sherif",
     "prepare": "husky",
-    "preview": "turbo preview",
-    "typecheck": "turbo typecheck"
+    "preview": "pnpm with-env turbo preview",
+    "typecheck": "turbo typecheck",
+    "with-env": "dotenv -e .env --"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^20.14.2",
+    "dotenv-cli": "^7.4.2",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.6",
     "prettier": "^3.3.2",
