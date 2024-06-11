@@ -7,7 +7,13 @@ module.exports = {
     'plugin:unicorn/recommended',
     'prettier',
   ],
-  ignorePatterns: ['node_modules', 'dist', '.turbo', '*.gen.ts'],
+  ignorePatterns: [
+    'node_modules',
+    'dist',
+    '.turbo',
+    '.eslintrc.cjs',
+    '*.gen.ts',
+  ],
   overrides: [
     {
       extends: [
