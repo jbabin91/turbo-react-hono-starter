@@ -1,27 +1,29 @@
 {
-  "name": "backend",
+  "name": "@repo/api",
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
-    "build": "tsc --noEmit && tsup",
+    "build": "tsc",
     "clean": "rm -rf .turbo dist node_modules",
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsc --watch",
     "lint": "eslint .",
-    "preview": "pnpm build && node dist/index.cjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^1.11.2",
     "@hono/zod-openapi": "^0.14.2",
-    "@repo/api": "workspace:*",
     "@repo/configs": "workspace:*",
-    "hono": "^4.4.5"
+    "hono": "^4.4.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "tsup": "^8.1.0",
-    "tsx": "^4.15.2"
+    "@repo/typescript-config": "workspace:*"
   }
 }
