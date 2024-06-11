@@ -7,10 +7,12 @@ app.get('/', (c) => {
   return c.text('Hello Hono!');
 });
 
-const port = 3000;
-console.log(`Server is running on port ${port}`);
-
-serve({
-  fetch: app.fetch,
-  port,
-});
+serve(
+  {
+    fetch: app.fetch,
+    port: 3000,
+  },
+  (info) => {
+    console.log(`Sever is running on http://${info.address}:${info.port}`);
+  },
+);

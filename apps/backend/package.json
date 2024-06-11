@@ -8,6 +8,7 @@
     "clean": "rm -rf .turbo dist node_modules",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint .",
+    "preview": "pnpm build && node dist/index.cjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

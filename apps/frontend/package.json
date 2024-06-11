@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
+    "clean": "rm -rf .turbo dist node_modules",
     "dev": "vite",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "pnpm build && vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
