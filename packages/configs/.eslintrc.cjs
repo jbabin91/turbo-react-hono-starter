@@ -9,4 +9,12 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname,
   },
+  overrides: [
+    {
+      files: ['**/libs/**/*.ts'],
+      rules: {
+        'sort-keys-fix/sort-keys-fix': 'off',
+      },
+    },
+  ],
 };

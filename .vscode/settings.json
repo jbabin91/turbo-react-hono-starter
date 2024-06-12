@@ -32,5 +32,16 @@
     "@radix-ui/react-toggle-group",
     "@radix-ui/react-tooltip",
     "lucide-react"
-  ]
+  ],
+  "i18n-ally.localesPaths": ["packages/locales"],
+  "i18n-ally.annotationDelimiter": ".",
+  "i18n-ally.keystyle": "flat",
+  "i18n-ally.dirStructure": "dir",
+  "i18n-ally.displayLanguage": "en",
+  "i18n-ally.extract.keygenStrategy": "slug",
+  "i18n-ally.extract.keygenStyle": "snake_case",
+  "i18n-ally.enabledFrameworks": ["react-i18next"],
+  "i18n-ally.extract.autoDetect": true,
+  "i18n-ally.namespace": true,
+  "i18n-ally.pathMatcher": "{locale}/{namespace}.json"
 }
