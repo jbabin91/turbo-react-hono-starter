@@ -14,8 +14,8 @@ apiRoutes
   .get('/', (c) => {
     return c.text('Hello Hono!');
   })
-  .get('/ping', (c) => {
-    return c.text('pong');
+  .get('/healthcheck', (c) => {
+    return c.text('OK');
   })
   .get('/app-url', (c) => {
     return c.json({
