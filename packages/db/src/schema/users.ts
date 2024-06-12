@@ -1,4 +1,6 @@
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { type z } from 'zod';
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -14,3 +16,11 @@ export const users = pgTable('users', {
     .notNull()
     .defaultNow(),
 });
+
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users).omit({
+  hashedPassword: true,
+});
+
+export type UserInputs = z.infer<typeof insertUserSchema>;
+export type UserModel = z.infer<typeof selectUserSchema>;
