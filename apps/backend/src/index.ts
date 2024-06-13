@@ -2,11 +2,8 @@ import { serve } from '@hono/node-server';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { apiRoutes } from '@repo/api';
 import { env } from '@repo/configs';
-import { logger } from 'hono/logger';
 
 const app = new OpenAPIHono();
-
-app.use(logger());
 
 app.route('/', apiRoutes);
 
