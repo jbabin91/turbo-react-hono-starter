@@ -22,6 +22,6 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "tsup": "^8.1.0",
-    "tsx": "^4.15.2"
+    "tsx": "^4.15.4"
   }
 }
