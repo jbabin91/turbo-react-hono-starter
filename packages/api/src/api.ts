@@ -1,26 +1,50 @@
-import { OpenAPIHono } from '@hono/zod-openapi';
-import { env } from '@repo/configs';
+import { config } from '@repo/configs';
+import { cors } from 'hono/cors';
+import { csrf } from 'hono/csrf';
+import { secureHeaders } from 'hono/secure-headers';
 
-import { type Env } from './types';
+import { CustomHono } from './libs/custom-hono';
+import { logEvent, logger } from './middleware';
+import { modulesRoutes } from './modules';
 
-const apiRoutes = new OpenAPIHono<Env>();
+const apiRoutes = new CustomHono();
 
-apiRoutes.use(async (c, next) => {
-  c.set('APP_URL', env.APP_URL);
-  return await next();
+// Secure headers
+apiRoutes.use('*', secureHeaders());
+
+// Logger
+apiRoutes.use('*', logger(logEvent as unknown as Parameters<typeof logger>[0]));
+
+// CORS
+apiRoutes.use(
+  '*',
+  cors({
+    allowHeaders: [],
+    allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
+    credentials: true,
+    origin: config.frontendUrl,
+  }),
+);
+
+// CSRF
+apiRoutes.use(
+  '*',
+  csrf({
+    origin: config.frontendUrl,
+  }),
+);
+
+// Generic route
+apiRoutes.get('/', (c) => {
+  return c.text('Hello Hono!');
 });
 
-apiRoutes
-  .get('/', (c) => {
-    return c.text('Hello Hono!');
-  })
-  .get('/healthcheck', (c) => {
-    return c.text('OK');
-  })
-  .get('/app-url', (c) => {
-    return c.json({
-      appUrl: `APP_URL: ${c.get('APP_URL')}`,
-    });
-  });
+// Healthcheck
+apiRoutes.get('/healthcheck', (c) => {
+  return c.text('OK');
+});
+
+// API routes
+apiRoutes.route('/', modulesRoutes);
 
 export { apiRoutes };

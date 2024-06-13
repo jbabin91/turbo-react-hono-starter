@@ -194,6 +194,9 @@ importers:
       '@lucia-auth/adapter-drizzle':
         specifier: ^1.0.7
         version: 1.0.7(lucia@3.2.0)
+      '@repo/configs':
+        specifier: workspace:*
+        version: link:../configs
       '@repo/db':
         specifier: workspace:*
         version: link:../db

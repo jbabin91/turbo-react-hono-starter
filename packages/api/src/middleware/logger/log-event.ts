@@ -1,0 +1,13 @@
+import { type EventData, type Severity } from '../../types';
+
+export function logEvent(
+  message: string,
+  eventData?: EventData,
+  severity: Severity = 'info',
+) {
+  if (eventData) {
+    console[severity](message, eventData);
+  } else {
+    console[severity](message);
+  }
+}
