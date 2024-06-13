@@ -6,7 +6,7 @@ const allRoles = ['USER', 'MEMBER', 'ADMIN'] as const;
 
 export const configSchema = z
   .object({
-    mode: z.enum(['development', 'production']).default('development'),
+    mode: z.string(),
     name: z.string(),
     frontendUrl: z.string(),
     backendUrl: z.string(),
