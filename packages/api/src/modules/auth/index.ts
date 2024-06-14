@@ -1,6 +1,8 @@
-import { LegacyScrypt, lucia } from '@repo/auth';
+import { lucia } from '@repo/auth';
 import { config } from '@repo/configs';
-import { db, eq, users } from '@repo/db';
+import { db, users } from '@repo/db';
+import { eq } from 'drizzle-orm';
+import { LegacyScrypt } from 'lucia';
 
 import { removeSessionCookie, setSessionCookie } from '../../libs/cookies';
 import { CustomHono } from '../../libs/custom-hono';
@@ -40,7 +42,7 @@ const authRoutes = app
       name: `${data.firstName} ${data.lastName}`,
     });
 
-    return c.json({ success: true }, 201);
+    return c.json({ success: true }, 200);
   })
   /**
    * Sign in with email and password

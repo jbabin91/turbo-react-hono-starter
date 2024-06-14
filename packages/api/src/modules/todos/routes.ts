@@ -49,7 +49,7 @@ export const createTodoRouteConfig = createRouteConfig({
     },
   },
   responses: {
-    201: {
+    200: {
       content: {
         'application/json': {
           schema: successResponseWithoutDataSchema,

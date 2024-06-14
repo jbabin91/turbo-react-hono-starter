@@ -26,7 +26,7 @@ export const signUpRouteConfig = createRouteConfig({
     },
   },
   responses: {
-    201: {
+    200: {
       content: {
         'application/json': {
           schema: successResponseWithoutDataSchema,
@@ -80,7 +80,7 @@ export const signInRouteConfig = createRouteConfig({
 export const signOutRouteConfig = createRouteConfig({
   description: 'Sign out and clear session',
   guard: isPublicAccess,
-  method: 'get',
+  method: 'post',
   path: '/sign-out',
   responses: {
     200: {

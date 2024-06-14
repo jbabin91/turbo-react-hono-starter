@@ -19,7 +19,7 @@ export async function createUser(c: Context, data: UserInputs) {
 
     if (user) await setSessionCookie(c, user.id, 'password');
 
-    // return c.json({ success: true }, 201);
+    // return c.json({ success: true }, 200);
   } catch (error) {
     // If the email already exists, return on error
     if (error instanceof Error && error.message.startsWith('duplicate key')) {

@@ -1,4 +1,5 @@
-import { and, count, db, eq, ilike, todos as todosTable } from '@repo/db';
+import { db, todos as todosTable } from '@repo/db';
+import { and, count, eq, ilike } from 'drizzle-orm';
 
 import { CustomHono } from '../../libs/custom-hono';
 import { errorResponse } from '../../libs/errors';
@@ -80,7 +81,7 @@ const todosRoutes = app
       id: todoId,
     });
 
-    return c.json({ success: true }, 201);
+    return c.json({ success: true }, 200);
   })
   /**
    * Delete todo by id

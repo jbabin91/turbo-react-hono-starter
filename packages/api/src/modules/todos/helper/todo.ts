@@ -1,11 +1,11 @@
 import {
   db,
-  eq,
   type TodoInputs,
   type TodoModel,
   todos,
   type TodoUpdateInputs,
 } from '@repo/db';
+import { eq } from 'drizzle-orm';
 
 import { logEvent } from '../../../middleware';
 

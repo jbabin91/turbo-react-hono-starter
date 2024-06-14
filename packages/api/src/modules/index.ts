@@ -1,10 +1,12 @@
 import { CustomHono } from '../libs/custom-hono';
 import authRoutes from './auth';
+import meRoutes from './me';
 import todosRoutes from './todos';
 import usersRoutes from './users';
 
 const modulesRoutes = new CustomHono()
   .route('/auth', authRoutes)
+  .route('/me', meRoutes)
   .route('/users', usersRoutes)
   .route('/todos', todosRoutes);
 

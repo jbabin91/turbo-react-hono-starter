@@ -1,3 +1,6 @@
+// Set i18n instance before starting server
+import './libs/i18n';
+
 import { CustomHono } from './libs/custom-hono';
 import { defaultHook } from './libs/default-hook';
 import { docs } from './libs/docs';

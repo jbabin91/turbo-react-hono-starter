@@ -1,5 +1,6 @@
 import { lucia } from '@repo/auth';
-import { db, eq, users } from '@repo/db';
+import { db, users } from '@repo/db';
+import { eq } from 'drizzle-orm';
 
 import { removeSessionCookie } from '../../libs/cookies';
 import { CustomHono } from '../../libs/custom-hono';

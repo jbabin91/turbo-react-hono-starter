@@ -1,5 +1,7 @@
-import { lucia, type User } from '@repo/auth';
-import { and, count, db, eq, ilike, inArray, or, users } from '@repo/db';
+import { lucia } from '@repo/auth';
+import { db, users } from '@repo/db';
+import { and, count, eq, ilike, inArray, or } from 'drizzle-orm';
+import { type User } from 'lucia';
 
 import { removeSessionCookie } from '../../libs/cookies';
 import { CustomHono } from '../../libs/custom-hono';

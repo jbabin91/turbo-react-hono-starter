@@ -1,7 +1,8 @@
-import { lucia, type User } from '@repo/auth';
+import { lucia } from '@repo/auth';
 import { config } from '@repo/configs';
 import { type Context } from 'hono';
 import { setCookie as baseSetCookie } from 'hono/cookie';
+import { type User } from 'lucia';
 
 import { logEvent } from '../middleware';
 
