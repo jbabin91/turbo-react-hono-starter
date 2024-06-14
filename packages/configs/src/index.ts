@@ -1,18 +1,12 @@
-import _default, { type Config } from './default';
+import _default, { type DeepPartial } from './default';
 import development from './development';
 import production from './production';
-
-export type DeepPartial<T> = T extends object
-  ? {
-      [P in keyof T]?: DeepPartial<T[P]>;
-    }
-  : T;
 
 function isObject(item: object) {
   return item && typeof item === 'object' && !Array.isArray(item);
 }
 
-function deepMerge<T extends NonNullable<unknown>, U extends Config>(
+function deepMerge<T extends NonNullable<unknown>, U extends DeepPartial<T>>(
   target: T,
   ...sources: U[]
 ): T {

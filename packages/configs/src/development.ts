@@ -7,4 +7,5 @@ export default {
 
   frontendUrl: 'http://localhost:5173',
   backendUrl: 'http://localhost:3000',
+  backendAuthUrl: 'http://localhost:3000/auth',
 } satisfies Config;
