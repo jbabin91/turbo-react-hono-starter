@@ -20,6 +20,11 @@ export const todos = pgTable('todos', {
 });
 
 export const insertTodoSchema = createInsertSchema(todos);
+export const createTodoSchema = createInsertSchema(todos).omit({
+  id: true,
+  authorId: true,
+  createdAt: true,
+});
 export const selectTodoSchema = createSelectSchema(todos);
 export const updateTodoSchema = createInsertSchema(todos)
   .pick({
@@ -29,4 +34,5 @@ export const updateTodoSchema = createInsertSchema(todos)
   .partial();
 
 export type TodoInputs = z.infer<typeof insertTodoSchema>;
+export type TodoUpdateInputs = z.infer<typeof updateTodoSchema>;
 export type TodoModel = z.infer<typeof selectTodoSchema>;
