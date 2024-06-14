@@ -6,12 +6,12 @@ const packages = fs.readdirSync(path.resolve(__dirname, 'packages'));
 const tooling = fs.readdirSync(path.resolve(__dirname, 'tooling'));
 
 /** @type {import("cz-git").UserConfig} */
-export default {
+module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'subject-min-length': [2, 'always', 2],
     'subject-empty': [2, 'never'],
-    'scope-enum': [2, 'always', ['root', ...apps, ...packages, ...tooling]],
+    'scope-enum': [2, 'always', ['repo', ...apps, ...packages, ...tooling]],
   },
   prompt: {
     alias: {
@@ -20,7 +20,7 @@ export default {
     maxSubjectLength: 100,
     allowCustomIssuePrefix: false,
     allowEmptyIssuePrefix: false,
-    skipQuestions: ['footer'],
+    skipQuestions: ['footer', 'issues'],
     useEmoji: true,
     enableMultipleScopes: true,
     scopeEnumSeparator: ',',
