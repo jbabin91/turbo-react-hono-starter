@@ -8,6 +8,7 @@ export const configSchema = z
   .object({
     mode: z.string(),
     name: z.string(),
+    domain: z.string(),
     frontendUrl: z.string(),
     backendUrl: z.string(),
     debug: z.boolean().default(false),
@@ -33,8 +34,9 @@ const config = {
   mode: 'development',
   name: 'Turbo React Hono Starter',
 
-  frontendUrl: 'http://localhost:5173',
-  backendUrl: 'http://localhost:3000',
+  domain: 'jacebabin.com',
+  frontendUrl: 'http://starter.jacebabin.com',
+  backendUrl: 'http://starter-backend.jacebabin.com',
 
   debug: false,
   maintenance: false,
