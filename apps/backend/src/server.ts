@@ -1,12 +1,12 @@
-// Set i18n instance before starting server
-import './libs/i18n';
-
 import { CustomHono } from './libs/custom-hono';
 import { defaultHook } from './libs/default-hook';
 import { docs } from './libs/docs';
 import { errorResponse } from './libs/errors';
 import { middlewares } from './middleware';
-import { modulesRoutes } from './modules';
+import authRoutes from './modules/auth';
+import meRoutes from './modules/me';
+import todosRoutes from './modules/todos';
+import usersRoutes from './modules/users';
 
 const app = new CustomHono({
   defaultHook,
@@ -33,9 +33,13 @@ app.onError((err, c) => {
   return errorResponse(c, 500, 'server_error', 'error', {}, err);
 });
 
-const apiRoutes = app;
-
 // API routes
-apiRoutes.route('/', modulesRoutes);
+const routes = app
+  .route('/auth', authRoutes)
+  .route('/me', meRoutes)
+  .route('/users', usersRoutes)
+  .route('/todos', todosRoutes);
 
-export { apiRoutes };
+export type AppTypes = typeof routes;
+
+export default app;

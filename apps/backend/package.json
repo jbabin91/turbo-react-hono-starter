@@ -3,21 +3,33 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
   "scripts": {
     "build": "tsc --noEmit && tsup",
     "clean": "rm -rf .turbo dist node_modules",
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsup --watch --onSuccess \"tsx dist/index.cjs\"",
     "lint": "eslint .",
-    "preview": "pnpm build && node dist/index.cjs",
+    "preview": "tsx dist/index.cjs",
+    "start": "tsx dist/index.cjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.3",
     "@hono/zod-openapi": "^0.14.4",
-    "@repo/api": "workspace:*",
+    "@repo/auth": "workspace:*",
     "@repo/configs": "workspace:*",
-    "@repo/env": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/locales": "workspace:*",
+    "@scalar/hono-api-reference": "^0.5.64",
+    "@t3-oss/env-core": "^0.10.1",
+    "drizzle-orm": "^0.31.2",
     "hono": "^4.4.6",
+    "i18next": "^23.11.5",
+    "lucia": "^3.2.0",
+    "nanoid": "^5.0.7",
+    "react-i18next": "^14.1.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

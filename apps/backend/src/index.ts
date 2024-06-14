@@ -1,18 +1,22 @@
+// Set i18n instance before starting server
+import './libs/i18n';
+
 import { serve } from '@hono/node-server';
-import { OpenAPIHono } from '@hono/zod-openapi';
-import { apiRoutes } from '@repo/api/api';
-import { env } from '@repo/env';
 
-const app = new OpenAPIHono();
+import { env } from './configs';
+import app from './server';
 
-app.route('/', apiRoutes);
+const main = () => {
+  serve(
+    {
+      fetch: app.fetch,
+      hostname: '0.0.0.0',
+      port: Number(env.PORT),
+    },
+    (info) => {
+      console.log(`Sever is running on http://${info.address}:${info.port}`);
+    },
+  );
+};
 
-serve(
-  {
-    fetch: app.fetch,
-    port: Number(env.PORT),
-  },
-  (info) => {
-    console.log(`Sever is running on http://${info.address}:${info.port}`);
-  },
-);
+main();
