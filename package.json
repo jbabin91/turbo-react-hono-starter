@@ -19,10 +19,18 @@
     "typecheck": "turbo typecheck",
     "with-env": "dotenv -e .env --"
   },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
+  },
   "devDependencies": {
+    "@commitlint/config-conventional": "^19.2.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^20.14.2",
+    "commitlint": "^19.3.0",
+    "cz-git": "^1.9.3",
     "dotenv-cli": "^7.4.2",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
