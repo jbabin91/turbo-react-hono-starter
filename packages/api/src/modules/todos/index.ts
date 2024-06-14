@@ -2,9 +2,12 @@ import { and, count, db, eq, ilike, todos as todosTable } from '@repo/db';
 
 import { CustomHono } from '../../libs/custom-hono';
 import { errorResponse } from '../../libs/errors';
+import { nanoid } from '../../libs/nanoid';
 import { getOrderColumn } from '../../libs/order-column';
 import { logEvent } from '../../middleware';
+import { createTodo } from './helper/todo';
 import {
+  createTodoRouteConfig,
   deleteTodoRouteConfig,
   getTodosRouteConfig,
   updateTodoRouteConfig,
@@ -61,6 +64,23 @@ const todosRoutes = app
       },
       200,
     );
+  })
+  /**
+   * Create a new todo
+   */
+  .openapi(createTodoRouteConfig, async (c) => {
+    const data = c.req.valid('json');
+    const user = c.get('user');
+
+    const todoId = nanoid();
+
+    await createTodo({
+      ...data,
+      authorId: user.id,
+      id: todoId,
+    });
+
+    return c.json({ success: true }, 201);
   })
   /**
    * Delete todo by id

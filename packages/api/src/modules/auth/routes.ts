@@ -1,4 +1,3 @@
-import { createRoute } from '@hono/zod-openapi';
 import { userModelSchema } from '@repo/db';
 import { z } from 'zod';
 
@@ -8,14 +7,15 @@ import {
   successResponseWithoutDataSchema,
 } from '../../libs/common-responses';
 import { cookieSchema } from '../../libs/common-schemas';
+import { createRouteConfig } from '../../libs/route-config';
 import { isPublicAccess } from '../../middleware';
 import { signInSchema, signUpSchema } from './schema';
 
-export const signUpRouteConfig = createRoute({
+export const signUpRouteConfig = createRouteConfig({
   description: 'Sign up with email and password',
   guard: isPublicAccess,
   method: 'post',
-  path: '/auth/sign-up',
+  path: '/sign-up',
   request: {
     body: {
       content: {
@@ -40,14 +40,15 @@ export const signUpRouteConfig = createRoute({
     ...errorResponses,
   },
   security: [],
+  summary: 'Sign up',
   tags: ['auth'],
 });
 
-export const signInRouteConfig = createRoute({
+export const signInRouteConfig = createRouteConfig({
   description: 'Sign in with email and password',
   guard: isPublicAccess,
   method: 'post',
-  path: '/auth/sign-in',
+  path: '/sign-in',
   request: {
     body: {
       content: {
@@ -76,11 +77,11 @@ export const signInRouteConfig = createRoute({
   tags: ['auth'],
 });
 
-export const signOutRouteConfig = createRoute({
+export const signOutRouteConfig = createRouteConfig({
   description: 'Sign out and clear session',
   guard: isPublicAccess,
   method: 'get',
-  path: '/auth/sign-out',
+  path: '/sign-out',
   responses: {
     200: {
       content: {

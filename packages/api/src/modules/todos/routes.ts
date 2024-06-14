@@ -1,5 +1,4 @@
-import { createRoute } from '@hono/zod-openapi';
-import { selectTodoSchema, updateTodoSchema } from '@repo/db';
+import { createTodoSchema, selectTodoSchema, updateTodoSchema } from '@repo/db';
 
 import {
   errorResponses,
@@ -8,14 +7,15 @@ import {
   successResponseWithPaginationSchema,
 } from '../../libs/common-responses';
 import { entityParamSchema } from '../../libs/common-schemas';
+import { createRouteConfig } from '../../libs/route-config';
 import { isAuthenticated } from '../../middleware';
 import { getTodosQuerySchema } from './schema';
 
-export const getTodosRouteConfig = createRoute({
+export const getTodosRouteConfig = createRouteConfig({
   description: 'Get a list of todos',
   guard: isAuthenticated,
   method: 'get',
-  path: '/todos',
+  path: '/',
   request: {
     query: getTodosQuerySchema,
   },
@@ -34,11 +34,40 @@ export const getTodosRouteConfig = createRoute({
   tags: ['todos'],
 });
 
-export const deleteTodoRouteConfig = createRoute({
+export const createTodoRouteConfig = createRouteConfig({
+  description: 'Create a new todo',
+  guard: isAuthenticated,
+  method: 'post',
+  path: '/',
+  request: {
+    body: {
+      content: {
+        'application/json': {
+          schema: createTodoSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      content: {
+        'application/json': {
+          schema: successResponseWithoutDataSchema,
+        },
+      },
+      description: 'Successfully create a new todo',
+    },
+    ...errorResponses,
+  },
+  summary: 'Create a new todo',
+  tags: ['todos'],
+});
+
+export const deleteTodoRouteConfig = createRouteConfig({
   description: 'Delete todo by id',
   guard: isAuthenticated,
   method: 'delete',
-  path: '/todos/{id}',
+  path: '/{id}',
   request: {
     params: entityParamSchema,
   },
@@ -57,11 +86,11 @@ export const deleteTodoRouteConfig = createRoute({
   tags: ['todos'],
 });
 
-export const updateTodoRouteConfig = createRoute({
+export const updateTodoRouteConfig = createRouteConfig({
   description: 'Update a todo by id',
   guard: isAuthenticated,
   method: 'put',
-  path: '/todos/{id}',
+  path: '/{id}',
   request: {
     body: {
       content: {

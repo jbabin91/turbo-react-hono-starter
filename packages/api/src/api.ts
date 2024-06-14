@@ -1,48 +1,36 @@
-import { config } from '@repo/configs';
-import { cors } from 'hono/cors';
-import { csrf } from 'hono/csrf';
-import { secureHeaders } from 'hono/secure-headers';
-
 import { CustomHono } from './libs/custom-hono';
-import { logEvent, logger } from './middleware';
+import { defaultHook } from './libs/default-hook';
+import { docs } from './libs/docs';
+import { errorResponse } from './libs/errors';
+import { middlewares } from './middleware';
 import { modulesRoutes } from './modules';
 
-const apiRoutes = new CustomHono();
+const app = new CustomHono({
+  defaultHook,
+});
 
-// Secure headers
-apiRoutes.use('*', secureHeaders());
+// Add global middlewares
+app.route('', middlewares);
 
-// Logger
-apiRoutes.use('*', logger(logEvent as unknown as Parameters<typeof logger>[0]));
-
-// CORS
-apiRoutes.use(
-  '*',
-  cors({
-    allowHeaders: [],
-    allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
-    credentials: true,
-    origin: config.frontendUrl,
-  }),
-);
-
-// CSRF
-apiRoutes.use(
-  '*',
-  csrf({
-    origin: config.frontendUrl,
-  }),
-);
+// Init OpenAPI docs
+docs(app);
 
 // Generic route
-apiRoutes.get('/', (c) => {
+app.get('/', (c) => {
   return c.text('Hello Hono!');
 });
 
-// Healthcheck
-apiRoutes.get('/healthcheck', (c) => {
-  return c.text('OK');
+// Not found handler
+app.notFound((c) => {
+  return errorResponse(c, 404, 'route_not_found', 'warn', { path: c.req.path });
 });
+
+// Error handler
+app.onError((err, c) => {
+  return errorResponse(c, 500, 'server_error', 'error', {}, err);
+});
+
+const apiRoutes = app;
 
 // API routes
 apiRoutes.route('/', modulesRoutes);

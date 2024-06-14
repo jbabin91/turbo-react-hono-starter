@@ -4,9 +4,9 @@ import todosRoutes from './todos';
 import usersRoutes from './users';
 
 const modulesRoutes = new CustomHono()
-  .route('/', authRoutes)
-  .route('/', usersRoutes)
-  .route('/', todosRoutes);
+  .route('/auth', authRoutes)
+  .route('/users', usersRoutes)
+  .route('/todos', todosRoutes);
 
 export type AppTypes = typeof modulesRoutes;
 

@@ -1,4 +1,3 @@
-import { createRoute } from '@hono/zod-openapi';
 import { updateUserSchema, userModelSchema } from '@repo/db';
 
 import {
@@ -11,14 +10,15 @@ import {
   deleteByIdsQuerySchema,
   entityParamSchema,
 } from '../../libs/common-schemas';
+import { createRouteConfig } from '../../libs/route-config';
 import { isAuthenticated, isSystemAdmin } from '../../middleware';
 import { getUsersQuerySchema } from './schema';
 
-export const getUsersRouteConfig = createRoute({
-  description: 'Get a list of users on system level',
+export const getUsersRouteConfig = createRouteConfig({
+  description: 'Get a list of users on system level.',
   guard: [isAuthenticated, isSystemAdmin],
   method: 'get',
-  path: '/users',
+  path: '/',
   request: {
     query: getUsersQuerySchema,
   },
@@ -29,7 +29,7 @@ export const getUsersRouteConfig = createRoute({
           schema: successResponseWithPaginationSchema(userModelSchema),
         },
       },
-      description: 'List of Users',
+      description: 'Users',
     },
     ...errorResponses,
   },
@@ -37,11 +37,11 @@ export const getUsersRouteConfig = createRoute({
   tags: ['users'],
 });
 
-export const deleteUsersRouteConfig = createRoute({
-  description: 'Delete users from system by list of ids',
+export const deleteUsersRouteConfig = createRouteConfig({
+  description: 'Delete users from system by list of ids.',
   guard: [isAuthenticated, isSystemAdmin],
   method: 'delete',
-  path: '/users',
+  path: '/',
   request: {
     query: deleteByIdsQuerySchema,
   },
@@ -52,19 +52,19 @@ export const deleteUsersRouteConfig = createRoute({
           schema: successResponseWithErrorsSchema(),
         },
       },
-      description: 'Delete users',
+      description: 'Success',
     },
     ...errorResponses,
   },
-  summary: 'Delete users by list of ids',
+  summary: 'Delete users',
   tags: ['users'],
 });
 
-export const getUserRouteConfig = createRoute({
-  description: 'Get a user by id',
+export const getUserRouteConfig = createRouteConfig({
+  description: 'Get a user by id.',
   guard: isAuthenticated,
   method: 'get',
-  path: '/users/{id}',
+  path: '/{id}',
   request: {
     params: entityParamSchema,
   },
@@ -79,15 +79,15 @@ export const getUserRouteConfig = createRoute({
     },
     ...errorResponses,
   },
-  summary: 'Get user by id',
+  summary: 'Get user',
   tags: ['users'],
 });
 
-export const updateUserRouteConfig = createRoute({
-  description: 'Update a user by id',
+export const updateUserRouteConfig = createRouteConfig({
+  description: 'Update a user by id.',
   guard: [isAuthenticated, isSystemAdmin],
   method: 'put',
-  path: '/users/{id}',
+  path: '/{id}',
   request: {
     body: {
       content: {
@@ -105,10 +105,10 @@ export const updateUserRouteConfig = createRoute({
           schema: successResponseWithDataSchema(userModelSchema),
         },
       },
-      description: 'Updated user',
+      description: 'User',
     },
     ...errorResponses,
   },
-  summary: 'Update user by id',
+  summary: 'Update user',
   tags: ['users'],
 });

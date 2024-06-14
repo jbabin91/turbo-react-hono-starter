@@ -5,14 +5,14 @@ import {
 } from 'hono/utils/http-status';
 import { type z } from 'zod';
 
-import { type errorSchema } from '../libs/common-schemas';
+import {
+  type errorResponseSchema,
+  type errorSchema,
+} from '../libs/common-schemas';
 
-export type Env = {
-  Variables: {
-    user: User;
-    APP_URL: string;
-  };
-};
+export type NonEmptyArray<T> = readonly [T, ...T[]];
+
+export type ErrorResponse = z.infer<typeof errorResponseSchema>;
 
 export type HttpErrorStatus = ClientErrorStatusCode | ServerErrorStatusCode;
 
@@ -26,3 +26,10 @@ export type ErrorType = z.infer<typeof errorSchema> & {
 export type EventData = Readonly<
   Record<string, number | string | boolean | null>
 >;
+
+export type Env = {
+  Variables: {
+    user: User;
+    APP_URL: string;
+  };
+};
