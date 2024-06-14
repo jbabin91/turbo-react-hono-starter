@@ -20,7 +20,7 @@ module.exports = {
     maxSubjectLength: 100,
     allowCustomIssuePrefix: false,
     allowEmptyIssuePrefix: false,
-    skipQuestions: ['footer', 'issues'],
+    skipQuestions: ['footer'],
     useEmoji: true,
     enableMultipleScopes: true,
     scopeEnumSeparator: ',',

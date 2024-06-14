@@ -13,10 +13,12 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.11.3",
-    "@hono/zod-openapi": "^0.14.2",
+    "@hono/zod-openapi": "^0.14.4",
     "@repo/api": "workspace:*",
     "@repo/configs": "workspace:*",
-    "hono": "^4.4.6"
+    "@repo/env": "workspace:*",
+    "hono": "^4.4.6",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

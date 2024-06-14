@@ -5,7 +5,6 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs'],
   minify: false,
-  noExternal: ['@repo/api', '@repo/configs'],
   sourcemap: true,
   splitting: false,
 });

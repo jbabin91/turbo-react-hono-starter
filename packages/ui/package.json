@@ -3,16 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
+    ".": "./src/index.ts",
     "./tailwindConfig": "./tailwind.config.ts"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf .turbo dist node_modules",
-    "dev": "tsc --watch",
+    "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },

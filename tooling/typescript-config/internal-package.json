@@ -3,9 +3,7 @@
   "display": "Internal Packages",
   "extends": "./base.json",
   "compilerOptions": {
-    "allowImportingTsExtensions": false,
     "declaration": true,
-    "declarationMap": true,
-    "noEmit": false
+    "declarationMap": true
   }
 }

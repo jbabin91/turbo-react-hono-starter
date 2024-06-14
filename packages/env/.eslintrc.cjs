@@ -11,7 +11,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/src/*.ts'],
+      files: ['**/libs/**/*.ts'],
       rules: {
         'sort-keys-fix/sort-keys-fix': 'off',
       },

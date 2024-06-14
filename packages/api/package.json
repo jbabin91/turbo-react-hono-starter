@@ -4,27 +4,24 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./dist/index.js"
-    }
+    "./*": "./src/*.ts"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf .turbo dist node_modules",
-    "dev": "tsc --watch",
+    "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/zod-openapi": "^0.14.2",
+    "@hono/zod-openapi": "^0.14.4",
     "@repo/auth": "workspace:*",
     "@repo/configs": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/locales": "workspace:*",
-    "@scalar/hono-api-reference": "^0.5.62",
+    "@scalar/hono-api-reference": "^0.5.64",
+    "drizzle-orm": "^0.31.2",
     "hono": "^4.4.6",
     "i18next": "^23.11.5",
+    "lucia": "^3.2.0",
     "nanoid": "^5.0.7",
     "react-i18next": "^14.1.2",
     "zod": "^3.23.8"

@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import { OpenAPIHono } from '@hono/zod-openapi';
-import { apiRoutes } from '@repo/api';
-import { env } from '@repo/configs';
+import { apiRoutes } from '@repo/api/api';
+import { env } from '@repo/env';
 
 const app = new OpenAPIHono();
 
