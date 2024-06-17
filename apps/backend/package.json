@@ -17,12 +17,12 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.11.3",
-    "@hono/zod-openapi": "^0.14.4",
+    "@hono/zod-openapi": "^0.14.5",
     "@repo/auth": "workspace:*",
     "@repo/configs": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/locales": "workspace:*",
-    "@scalar/hono-api-reference": "^0.5.64",
+    "@scalar/hono-api-reference": "^0.5.71",
     "@t3-oss/env-core": "^0.10.1",
     "drizzle-orm": "^0.31.2",
     "hono": "^4.4.6",
@@ -36,6 +36,6 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "tsup": "^8.1.0",
-    "tsx": "^4.15.4"
+    "tsx": "^4.15.6"
   }
 }
