@@ -1,4 +1,3 @@
-import { config } from '@repo/configs';
 import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
 import { secureHeaders } from 'hono/secure-headers';
@@ -24,7 +23,7 @@ middlewares.use(
     allowHeaders: [],
     allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
     credentials: true,
-    origin: [config.frontendUrl, 'http://starter.jacebabin.com'],
+    origin: ['https://starter.jacebabin.com', 'http://starter.jacebabin.com'],
   }),
 );
 
@@ -32,7 +31,7 @@ middlewares.use(
 middlewares.use(
   '*',
   csrf({
-    origin: [config.frontendUrl, 'http://starter.jacebabin.com'],
+    origin: ['https://starter.jacebabin.com', 'http://starter.jacebabin.com'],
   }),
 );
 
