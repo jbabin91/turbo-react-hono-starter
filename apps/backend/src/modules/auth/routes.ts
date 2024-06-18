@@ -39,7 +39,6 @@ export const signUpRouteConfig = createRouteConfig({
     },
     ...errorResponses,
   },
-  security: [],
   summary: 'Sign up',
   tags: ['auth'],
 });
@@ -72,7 +71,6 @@ export const signInRouteConfig = createRouteConfig({
     },
     ...errorResponses,
   },
-  security: [],
   summary: 'Sign in with email and password',
   tags: ['auth'],
 });
@@ -93,7 +91,6 @@ export const signOutRouteConfig = createRouteConfig({
     },
     ...errorResponses,
   },
-  security: [],
   summary: 'Sign out',
   tags: ['auth'],
 });
