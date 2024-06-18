@@ -59,7 +59,7 @@ export const docs = (app: CustomHono) => {
     },
     openapi: '3.1.0',
     security: [{ cookieAuth: [] }],
-    servers: isProduction ? [{ url: 'api' }] : undefined,
+    servers: isProduction ? [{ url: `${config.backendUrl}/api` }] : undefined,
     tags: openAPITags,
   });
 
