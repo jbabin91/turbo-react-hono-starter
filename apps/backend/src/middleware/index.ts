@@ -1,12 +1,7 @@
-import { secureHeaders } from 'hono/secure-headers';
-
 import { CustomHono } from '../libs/custom-hono';
 import { logEvent, logger } from './logger';
 
 const middlewares = new CustomHono();
-
-// Secure headers
-middlewares.use('*', secureHeaders());
 
 // Logger
 middlewares.use(

@@ -6,6 +6,8 @@ import { Lucia, type SessionCookieOptions, TimeSpan } from 'lucia';
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 const isProduction = config.mode === 'production';
 
+console.log('isProduction', isProduction);
+
 const sessionCookieOptions: SessionCookieOptions = {
   attributes: {
     sameSite: isProduction ? 'strict' : 'lax',

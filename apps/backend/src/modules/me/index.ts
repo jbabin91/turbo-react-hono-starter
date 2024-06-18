@@ -19,7 +19,7 @@ const meRoutes = app
    */
   .openapi(meRoutesConfig.me, (c) => {
     const user = c.get('user');
-    return c.json({ data: user, success: true }, 200);
+    return c.json({ data: transformDatabaseUser(user), success: true }, 200);
   })
   /**
    * Terminate a session
