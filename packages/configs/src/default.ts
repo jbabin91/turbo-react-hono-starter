@@ -5,8 +5,8 @@ export const config = {
 
   domain: 'jacebabin.com',
   frontendUrl: 'https://starter.jacebabin.com',
-  backendUrl: 'https://starter.jacebabin.com/api',
-  backendAuthUrl: 'https://starter.jacebabin.com/api/auth',
+  backendUrl: 'https://api.jacebabin.com',
+  backendAuthUrl: 'https://api.jacebabin.com/auth',
 
   debug: false,
   maintenance: false,
