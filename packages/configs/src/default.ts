@@ -4,9 +4,9 @@ export const config = {
   slug: 'turbo-starter',
 
   domain: 'jacebabin.com',
-  frontendUrl: 'http://starter.jacebabin.com',
-  backendUrl: 'http://starter-backend.jacebabin.com',
-  backendAuthUrl: 'http://starter-backend.jacebabin.com/auth',
+  frontendUrl: 'https://starter.jacebabin.com',
+  backendUrl: 'https://starter-backend.jacebabin.com',
+  backendAuthUrl: 'https://starter-backend.jacebabin.com/auth',
 
   debug: false,
   maintenance: false,
