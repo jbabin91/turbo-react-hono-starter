@@ -24,7 +24,7 @@ middlewares.use(
     allowHeaders: [],
     allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
     credentials: true,
-    origin: config.frontendUrl,
+    origin: [config.frontendUrl, 'http://starter.jacebabin.com'],
   }),
 );
 
@@ -32,7 +32,7 @@ middlewares.use(
 middlewares.use(
   '*',
   csrf({
-    origin: config.frontendUrl,
+    origin: [config.frontendUrl, 'http://starter.jacebabin.com'],
   }),
 );
 
