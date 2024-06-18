@@ -1,6 +1,3 @@
-import { config } from '@repo/configs';
-import { cors } from 'hono/cors';
-
 import { CustomHono } from './libs/custom-hono';
 import { defaultHook } from './libs/default-hook';
 import { docs } from './libs/docs';
@@ -17,48 +14,6 @@ const app = new CustomHono({
 
 // Add global middlewares
 app.route('', middlewares);
-
-// Secure headers
-// app.use('*', secureHeaders());
-
-console.log('config.frontendUrl', config.frontendUrl);
-
-app.use(
-  cors({
-    credentials: true,
-    origin: [config.frontendUrl, config.backendUrl],
-  }),
-);
-
-// CORS
-// app.use(
-//   '*',
-//   cors({
-//     allowHeaders: ['Content-Type', 'Authorization', 'Origin'],
-//     allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
-//     credentials: true,
-//     exposeHeaders: ['Content-Length', 'Set-Cookie'],
-//     origin: (origin) => {
-//       console.log('CORS origin', origin);
-//       console.log('CORS endsWith', origin.endsWith('.jacebabin.com'));
-//       // return origin.endsWith('.jacebabin.com') ? origin : config.frontendUrl;
-//       return origin;
-//     },
-//   }),
-// );
-
-// CSRF
-// app.use(
-//   '*',
-//   csrf({
-//     origin: (origin) => {
-//       console.log('CSRF origin', origin);
-//       console.log('CSRF endsWith', origin.endsWith('.jacebabin.com'));
-//       // return origin.endsWith('.jacebabin.com') || origin === config.frontendUrl;
-//       return true;
-//     },
-//   }),
-// );
 
 // Init OpenAPI docs
 docs(app);
