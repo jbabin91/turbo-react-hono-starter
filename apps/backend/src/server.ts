@@ -26,15 +26,15 @@ app.use(
   '*',
   cors({
     allowHeaders: ['Content-Type', 'Authorization', 'Origin'],
-    allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
+    allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true,
     exposeHeaders: ['Content-Length', 'Set-Cookie'],
-    origin: '*',
-    // origin: (origin) => {
-    //   console.log('CORS origin', origin);
-    //   console.log('CORS endsWith', origin.endsWith('.jacebabin.com'));
-    //   return origin.endsWith('.jacebabin.com') ? origin : config.frontendUrl;
-    // },
+    origin: (origin) => {
+      console.log('CORS origin', origin);
+      console.log('CORS endsWith', origin.endsWith('.jacebabin.com'));
+      // return origin.endsWith('.jacebabin.com') ? origin : config.frontendUrl;
+      return origin;
+    },
   }),
 );
 
@@ -42,12 +42,12 @@ app.use(
 app.use(
   '*',
   csrf({
-    origin: '*',
-    // origin: (origin) => {
-    //   console.log('CSRF origin', origin);
-    //   console.log('CSRF endsWith', origin.endsWith('.jacebabin.com'));
-    //   return origin.endsWith('.jacebabin.com') || origin === config.frontendUrl;
-    // },
+    origin: (origin) => {
+      console.log('CSRF origin', origin);
+      console.log('CSRF endsWith', origin.endsWith('.jacebabin.com'));
+      // return origin.endsWith('.jacebabin.com') || origin === config.frontendUrl;
+      return true;
+    },
   }),
 );
 
