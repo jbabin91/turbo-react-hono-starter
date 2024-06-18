@@ -22,7 +22,7 @@
     "@repo/configs": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/locales": "workspace:*",
-    "@scalar/hono-api-reference": "^0.5.71",
+    "@scalar/hono-api-reference": "^0.5.72",
     "@t3-oss/env-core": "^0.10.1",
     "drizzle-orm": "^0.31.2",
     "hono": "^4.4.6",
