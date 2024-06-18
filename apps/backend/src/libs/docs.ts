@@ -3,6 +3,8 @@ import { apiReference } from '@scalar/hono-api-reference';
 
 import { type CustomHono } from './custom-hono';
 
+const isProduction = config.mode === 'production';
+
 const openAPITags = [
   {
     description:
@@ -57,6 +59,7 @@ export const docs = (app: CustomHono) => {
     },
     openapi: '3.1.0',
     security: [{ cookieAuth: [] }],
+    servers: isProduction ? [{ url: 'api' }] : undefined,
     tags: openAPITags,
   });
 
