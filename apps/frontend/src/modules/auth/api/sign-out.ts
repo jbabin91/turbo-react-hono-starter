@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { apiClient, handleResponse } from '@/libs/api-client';
 
+import { useAuthStore } from '../store/auth';
 import { getMeQueryOptions } from './get-me';
 
 export async function signOut() {
@@ -13,6 +14,8 @@ export async function signOut() {
 
 export function useLogout() {
   const queryClient = useQueryClient();
+  const auth = useAuthStore();
+
   return useMutation({
     mutationFn: signOut,
     onError: (error) => {
@@ -24,6 +27,7 @@ export function useLogout() {
     onSuccess: () => {
       queryClient.setQueryData(getMeQueryOptions().queryKey, null);
       queryClient.invalidateQueries({ queryKey: getMeQueryOptions().queryKey });
+      auth.setAuth({ isAuthenticated: false, user: null });
       toast.success('Logged out successfully');
     },
   });

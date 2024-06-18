@@ -1,9 +1,19 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
+import { queryClient } from '@/libs/react-query';
+import { useAuthStore } from '@/modules/auth';
 import { routeTree } from '@/routeTree.gen';
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({
+  context: {
+    auth: undefined!,
+    queryClient,
+  },
+  defaultPreload: 'intent',
+  defaultPreloadStaleTime: 0,
+  routeTree,
+});
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -14,5 +24,6 @@ declare module '@tanstack/react-router' {
 }
 
 export function TanstackRouterProvider() {
-  return <RouterProvider router={router} />;
+  const auth = useAuthStore();
+  return <RouterProvider context={{ auth }} router={router} />;
 }

@@ -1,6 +1,7 @@
-import { Button, ModeToggle } from '@repo/ui';
+import { ModeToggle } from '@repo/ui';
+import { type QueryClient } from '@tanstack/react-query';
 import {
-  createRootRoute,
+  createRootRouteWithContext,
   Link,
   Outlet,
   useNavigate,
@@ -10,10 +11,15 @@ import {
   TanstackQueryDevtools,
   TanstackRouterDevtools,
 } from '@/components/utils';
-import { useLogout, useMe } from '@/modules/auth';
+import { type AuthStoreType, useAuthStore, useLogout } from '@/modules/auth';
 import { type NavigationLink } from '@/types';
 
-export const Route = createRootRoute({
+type RouterContext = {
+  auth: AuthStoreType;
+  queryClient: QueryClient;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
 });
 
@@ -22,8 +28,12 @@ const navigationLinks = [
   { name: 'About', to: '/about' },
 ] satisfies NavigationLink[];
 
+const authenticatedNavigationLinks = [
+  { name: 'Todos', to: '/todos' },
+] satisfies NavigationLink[];
+
 function RootComponent() {
-  const { data: me } = useMe();
+  const auth = useAuthStore();
   const logout = useLogout();
   const navigate = useNavigate();
 
@@ -44,12 +54,23 @@ function RootComponent() {
               {link.name}
             </Link>
           ))}
+          {auth.isAuthenticated
+            ? authenticatedNavigationLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  className="[&.active]:font-bold"
+                  to={link.to}
+                >
+                  {link.name}
+                </Link>
+              ))
+            : null}
         </nav>
         <div className="flex gap-4">
-          {me ? (
-            <Button variant="link" onClick={handleLogout}>
-              Logout
-            </Button>
+          {auth.isAuthenticated ? (
+            <div className="p-2">
+              <Link onClick={handleLogout}>Logout</Link>
+            </div>
           ) : (
             <div className="flex gap-2 p-2">
               <Link to="/sign-in">Sign in</Link>

@@ -14,20 +14,40 @@ import {
   FormMessage,
   Input,
 } from '@repo/ui';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router';
 import { signInSchema } from 'backend/modules/auth/schema';
 import { useForm } from 'react-hook-form';
-import { type z } from 'zod';
+import { z } from 'zod';
 
 import { useSignIn } from '@/modules/auth';
 
+const fallback = '/todos';
+
 export const Route = createFileRoute('/_auth/sign-in')({
+  beforeLoad: ({ context, search }) => {
+    if (context.auth.isAuthenticated) {
+      throw redirect({
+        to: search.redirect ?? fallback,
+      });
+    }
+  },
   component: SignInComponent,
+  validateSearch: z.object({
+    // eslint-disable-next-line unicorn/prefer-top-level-await
+    redirect: z.string().optional().catch(''),
+  }),
 });
 
 function SignInComponent() {
   const signIn = useSignIn();
   const navigate = useNavigate();
+
+  const search = Route.useSearch();
 
   const form = useForm<z.infer<typeof signInSchema>>({
     defaultValues: {
@@ -40,7 +60,7 @@ function SignInComponent() {
   function onSubmit(values: z.infer<typeof signInSchema>) {
     signIn.mutate(values, {
       onSuccess: () => {
-        navigate({ to: '/' });
+        navigate({ to: search.redirect ?? fallback });
       },
     });
   }

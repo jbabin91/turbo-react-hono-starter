@@ -5,6 +5,7 @@ import { type z } from 'zod';
 
 import { apiClient, handleResponse } from '@/libs/api-client';
 
+import { useAuthStore } from '../store/auth';
 import { getMeQueryOptions } from './get-me';
 
 export async function signIn(json: z.infer<typeof signInSchema>) {
@@ -17,6 +18,8 @@ export async function signIn(json: z.infer<typeof signInSchema>) {
 
 export function useSignIn() {
   const queryClient = useQueryClient();
+  const auth = useAuthStore();
+
   return useMutation({
     mutationFn: signIn,
     onError: (error) => {
@@ -27,6 +30,7 @@ export function useSignIn() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(getMeQueryOptions().queryKey, data);
+      auth.setAuth({ isAuthenticated: true, user: data });
       toast.success('Logged in successfully');
     },
   });
