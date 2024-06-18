@@ -23,12 +23,14 @@ console.log('config.frontendUrl', config.frontendUrl);
 
 // CORS
 app.use(
-  '*',
   cors({
-    allowHeaders: [],
+    allowHeaders: ['Content-Type', 'Authorization', 'Origin'],
     allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
     credentials: true,
+    exposeHeaders: ['Content-Length', 'Set-Cookie'],
     origin: (origin) => {
+      console.log('CORS origin', origin);
+      console.log('CORS endsWith', origin.endsWith('.jacebabin.com'));
       return origin.endsWith('.jacebabin.com') ? origin : config.frontendUrl;
     },
   }),
@@ -39,7 +41,9 @@ app.use(
   '*',
   csrf({
     origin: (origin) => {
-      return origin.endsWith('.jacebabin.com') ? true : false;
+      console.log('CSRF origin', origin);
+      console.log('CSRF endsWith', origin.endsWith('.jacebabin.com'));
+      return origin.endsWith('.jacebabin.com') || origin === config.frontendUrl;
     },
   }),
 );
