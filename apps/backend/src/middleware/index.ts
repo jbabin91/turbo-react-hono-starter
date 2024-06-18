@@ -57,3 +57,6 @@ export * from './guard';
 
 // Logger Middleware
 export * from './logger';
+
+// Rate Limiter Middleware
+export * from './rate-limiter';

@@ -8,7 +8,7 @@ import {
 } from '../../libs/common-responses';
 import { cookieSchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
-import { isPublicAccess } from '../../middleware';
+import { isPublicAccess, limiter } from '../../middleware';
 import { signInSchema, signUpSchema } from './schema';
 
 export const signUpRouteConfig = createRouteConfig({
@@ -47,6 +47,7 @@ export const signInRouteConfig = createRouteConfig({
   description: 'Sign in with email and password',
   guard: isPublicAccess,
   method: 'post',
+  middleware: [limiter],
   path: '/sign-in',
   request: {
     body: {
