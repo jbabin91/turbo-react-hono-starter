@@ -1,6 +1,3 @@
-import { config } from '@repo/configs';
-import { cors } from 'hono/cors';
-import { csrf } from 'hono/csrf';
 import { secureHeaders } from 'hono/secure-headers';
 
 import { CustomHono } from '../libs/custom-hono';
@@ -15,29 +12,6 @@ middlewares.use('*', secureHeaders());
 middlewares.use(
   '*',
   logger(logEvent as unknown as Parameters<typeof logger>[0]),
-);
-
-// CORS
-middlewares.use(
-  '*',
-  cors({
-    allowHeaders: [],
-    allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
-    credentials: true,
-    origin: (origin) => {
-      return origin.endsWith('.jacebabin.com') ? origin : config.frontendUrl;
-    },
-  }),
-);
-
-// CSRF
-middlewares.use(
-  '*',
-  csrf({
-    origin: (origin) => {
-      return origin.endsWith('.jacebabin.com') ? true : false;
-    },
-  }),
 );
 
 // Healthcheck

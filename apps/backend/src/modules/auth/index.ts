@@ -16,7 +16,7 @@ import {
   signUpRouteConfig,
 } from './routes';
 
-export const app = new CustomHono();
+const app = new CustomHono();
 
 // Auth endpoints
 const authRoutes = app

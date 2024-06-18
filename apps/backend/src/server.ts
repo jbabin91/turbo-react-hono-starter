@@ -1,3 +1,7 @@
+import { config } from '@repo/configs';
+import { cors } from 'hono/cors';
+import { csrf } from 'hono/csrf';
+
 import { CustomHono } from './libs/custom-hono';
 import { defaultHook } from './libs/default-hook';
 import { docs } from './libs/docs';
@@ -14,6 +18,31 @@ const app = new CustomHono({
 
 // Add global middlewares
 app.route('', middlewares);
+
+console.log('config.frontendUrl', config.frontendUrl);
+
+// CORS
+app.use(
+  '*',
+  cors({
+    allowHeaders: [],
+    allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
+    credentials: true,
+    origin: (origin) => {
+      return origin.endsWith('.jacebabin.com') ? origin : config.frontendUrl;
+    },
+  }),
+);
+
+// CSRF
+app.use(
+  '*',
+  csrf({
+    origin: (origin) => {
+      return origin.endsWith('.jacebabin.com') ? true : false;
+    },
+  }),
+);
 
 // Init OpenAPI docs
 docs(app);
