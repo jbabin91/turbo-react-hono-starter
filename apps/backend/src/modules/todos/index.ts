@@ -1,4 +1,4 @@
-import { db, todos as todosTable } from '@repo/db';
+import { db, todos, todos as todosTable } from '@repo/db';
 import { and, count, eq, ilike } from 'drizzle-orm';
 
 import { CustomHono } from '../../libs/custom-hono';
@@ -6,13 +6,7 @@ import { errorResponse } from '../../libs/errors';
 import { nanoid } from '../../libs/nanoid';
 import { getOrderColumn } from '../../libs/order-column';
 import { logEvent } from '../../middleware';
-import { createTodo } from './helper/todo';
-import {
-  createTodoRouteConfig,
-  deleteTodoRouteConfig,
-  getTodosRouteConfig,
-  updateTodoRouteConfig,
-} from './routes';
+import todosRoutesConfig from './routes';
 
 const app = new CustomHono();
 
@@ -21,7 +15,7 @@ const todosRoutes = app
   /**
    * Get a list of todos
    */
-  .openapi(getTodosRouteConfig, async (c) => {
+  .openapi(todosRoutesConfig.getTodos, async (c) => {
     const { q, sort, order, offset, limit } = c.req.valid('query');
 
     const orderColumn = getOrderColumn(
@@ -69,13 +63,13 @@ const todosRoutes = app
   /**
    * Create a new todo
    */
-  .openapi(createTodoRouteConfig, async (c) => {
+  .openapi(todosRoutesConfig.createTodo, async (c) => {
     const data = c.req.valid('json');
     const user = c.get('user');
 
     const todoId = nanoid();
 
-    await createTodo({
+    await db.insert(todos).values({
       ...data,
       authorId: user.id,
       id: todoId,
@@ -86,7 +80,7 @@ const todosRoutes = app
   /**
    * Delete todo by id
    */
-  .openapi(deleteTodoRouteConfig, async (c) => {
+  .openapi(todosRoutesConfig.deleteTodo, async (c) => {
     const { id } = c.req.valid('param');
     const user = c.get('user');
 
@@ -118,9 +112,28 @@ const todosRoutes = app
     return c.json({ success: true }, 200);
   })
   /**
+   * Get a todo by id
+   */
+  .openapi(todosRoutesConfig.getTodo, async (c) => {
+    const { id } = c.req.valid('param');
+
+    const targetTodo = await db.query.todos.findFirst({
+      where: eq(todosTable.id, id),
+    });
+
+    // Check if todo exists
+    if (!targetTodo) {
+      return errorResponse(c, 404, 'not_found', 'warn', {
+        todo: id,
+      });
+    }
+
+    return c.json({ data: targetTodo, success: true }, 200);
+  })
+  /**
    * Update a todo by id
    */
-  .openapi(updateTodoRouteConfig, async (c) => {
+  .openapi(todosRoutesConfig.updateTodo, async (c) => {
     const { id } = c.req.valid('param');
     const user = c.get('user');
 
@@ -135,7 +148,7 @@ const todosRoutes = app
       });
     }
 
-    // If the user doesn't have permission to delete any of the todos, return an error
+    // If the user doesn't have permission to update any of the todos, return an error
     if (user.role !== 'ADMIN' || user.id !== targetTodo.authorId) {
       return errorResponse(c, 403, 'forbidden', 'warn', {
         todo: id,
@@ -157,15 +170,11 @@ const todosRoutes = app
 
     return c.json(
       {
-        data: {
-          ...updatedTodo!,
-        },
+        data: updatedTodo!,
         success: true,
       },
       200,
     );
   });
-
-export type TodosRoutes = typeof todosRoutes;
 
 export default todosRoutes;

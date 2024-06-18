@@ -6,13 +6,13 @@ import { type User } from 'lucia';
 import { type z } from 'zod';
 
 import {
-  type errorResponseSchema,
   type errorSchema,
+  type failWithErrorSchema,
 } from '../libs/common-schemas';
 
 export type NonEmptyArray<T> = readonly [T, ...T[]];
 
-export type ErrorResponse = z.infer<typeof errorResponseSchema>;
+export type ErrorResponse = z.infer<typeof failWithErrorSchema>;
 
 export type HttpErrorStatus = ClientErrorStatusCode | ServerErrorStatusCode;
 

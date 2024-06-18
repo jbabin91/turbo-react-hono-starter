@@ -1,114 +1,113 @@
-import { updateUserSchema, userModelSchema } from '@repo/db';
-
 import {
   errorResponses,
-  successResponseWithDataSchema,
-  successResponseWithErrorsSchema,
-  successResponseWithPaginationSchema,
+  successWithDataSchema,
+  successWithErrorsSchema,
+  successWithPaginationSchema,
 } from '../../libs/common-responses';
-import {
-  deleteByIdsQuerySchema,
-  entityParamSchema,
-} from '../../libs/common-schemas';
+import { entityParamSchema, idsQuerySchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
 import { isAuthenticated, isSystemAdmin } from '../../middleware';
-import { getUsersQuerySchema } from './schema';
+import { updateUserSchema, userSchema, usersQuerySchema } from './schema';
 
-export const getUsersRouteConfig = createRouteConfig({
-  description: 'Get a list of users on system level.',
-  guard: [isAuthenticated, isSystemAdmin],
-  method: 'get',
-  path: '/',
-  request: {
-    query: getUsersQuerySchema,
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: successResponseWithPaginationSchema(userModelSchema),
-        },
-      },
-      description: 'Users',
+class UsersRoutesConfig {
+  public getUsers = createRouteConfig({
+    description: 'Get a list of users on system level.',
+    guard: [isAuthenticated, isSystemAdmin],
+    method: 'get',
+    path: '/',
+    request: {
+      query: usersQuerySchema,
     },
-    ...errorResponses,
-  },
-  summary: 'Get list of users',
-  tags: ['users'],
-});
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: successWithPaginationSchema(userSchema),
+          },
+        },
+        description: 'Users',
+      },
+      ...errorResponses,
+    },
+    summary: 'Get list of users',
+    tags: ['users'],
+  });
 
-export const deleteUsersRouteConfig = createRouteConfig({
-  description: 'Delete users from system by list of ids.',
-  guard: [isAuthenticated, isSystemAdmin],
-  method: 'delete',
-  path: '/',
-  request: {
-    query: deleteByIdsQuerySchema,
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: successResponseWithErrorsSchema(),
-        },
-      },
-      description: 'Success',
+  public deleteUsers = createRouteConfig({
+    description: 'Delete users from system by list of ids.',
+    guard: [isAuthenticated, isSystemAdmin],
+    method: 'delete',
+    path: '/',
+    request: {
+      query: idsQuerySchema,
     },
-    ...errorResponses,
-  },
-  summary: 'Delete users',
-  tags: ['users'],
-});
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: successWithErrorsSchema(),
+          },
+        },
+        description: 'Success',
+      },
+      ...errorResponses,
+    },
+    summary: 'Delete users',
+    tags: ['users'],
+  });
 
-export const getUserRouteConfig = createRouteConfig({
-  description: 'Get a user by id.',
-  guard: isAuthenticated,
-  method: 'get',
-  path: '/{id}',
-  request: {
-    params: entityParamSchema,
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: successResponseWithDataSchema(userModelSchema),
-        },
-      },
-      description: 'User',
+  public getUser = createRouteConfig({
+    description: 'Get a user by id or slug.',
+    guard: isAuthenticated,
+    method: 'get',
+    path: '/{id}',
+    request: {
+      params: entityParamSchema,
     },
-    ...errorResponses,
-  },
-  summary: 'Get user',
-  tags: ['users'],
-});
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: successWithDataSchema(userSchema),
+          },
+        },
+        description: 'User',
+      },
+      ...errorResponses,
+    },
+    summary: 'Get user',
+    tags: ['users'],
+  });
 
-export const updateUserRouteConfig = createRouteConfig({
-  description: 'Update a user by id.',
-  guard: [isAuthenticated, isSystemAdmin],
-  method: 'put',
-  path: '/{id}',
-  request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: updateUserSchema,
+  public updateUser = createRouteConfig({
+    description: 'Update a user by id.',
+    guard: [isAuthenticated, isSystemAdmin],
+    method: 'put',
+    path: '/{id}',
+    request: {
+      body: {
+        content: {
+          'application/json': {
+            schema: updateUserSchema,
+          },
         },
       },
+      params: entityParamSchema,
     },
-    params: entityParamSchema,
-  },
-  responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: successResponseWithDataSchema(userModelSchema),
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: successWithDataSchema(userSchema),
+          },
         },
+        description: 'User',
       },
-      description: 'User',
+      ...errorResponses,
     },
-    ...errorResponses,
-  },
-  summary: 'Update user',
-  tags: ['users'],
-});
+    summary: 'Update user',
+    tags: ['users'],
+  });
+}
+
+export default new UsersRoutesConfig();

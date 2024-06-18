@@ -1,14 +1,13 @@
-import { updateUserSchema, userModelSchema } from '@repo/db';
-
 import {
   errorResponses,
-  successResponseWithDataSchema,
-  successResponseWithErrorsSchema,
-  successResponseWithoutDataSchema,
+  successWithDataSchema,
+  successWithErrorsSchema,
+  successWithoutDataSchema,
 } from '../../libs/common-responses';
-import { deleteByIdsQuerySchema } from '../../libs/common-schemas';
+import { idsQuerySchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
 import { isAuthenticated } from '../../middleware';
+import { updateUserSchema, userSchema } from '../users/schema';
 
 class MeRoutesConfig {
   public me = createRouteConfig({
@@ -21,7 +20,7 @@ class MeRoutesConfig {
       200: {
         content: {
           'application/json': {
-            schema: successResponseWithDataSchema(userModelSchema),
+            schema: successWithDataSchema(userSchema),
           },
         },
         description: 'Current User',
@@ -52,7 +51,7 @@ class MeRoutesConfig {
       200: {
         content: {
           'application/json': {
-            schema: successResponseWithDataSchema(userModelSchema),
+            schema: successWithDataSchema(userSchema),
           },
         },
         description: 'User',
@@ -72,7 +71,7 @@ class MeRoutesConfig {
       200: {
         content: {
           'application/json': {
-            schema: successResponseWithoutDataSchema,
+            schema: successWithoutDataSchema,
           },
         },
         description: 'User deleted',
@@ -90,13 +89,13 @@ class MeRoutesConfig {
     method: 'delete',
     path: '/sessions',
     request: {
-      query: deleteByIdsQuerySchema,
+      query: idsQuerySchema,
     },
     responses: {
       200: {
         content: {
           'application/json': {
-            schema: successResponseWithErrorsSchema(),
+            schema: successWithErrorsSchema(),
           },
         },
         description: 'Success',

@@ -6,7 +6,7 @@ export const idSchema = z.string();
 
 export const errorSchema = z.object({
   logId: z.string().optional(),
-  message: z.string().optional(),
+  message: z.string(),
   method: z.string().optional(),
   path: z.string().optional(),
   severity: z.string(),
@@ -16,7 +16,7 @@ export const errorSchema = z.object({
   usr: z.string().optional(),
 });
 
-export const errorResponseSchema = z.object({
+export const failWithErrorSchema = z.object({
   error: errorSchema,
   success: z.boolean().default(false),
 });
@@ -40,10 +40,19 @@ export const paginationQuerySchema = z.object({
   sort: z.enum(['createdAt']).default('createdAt').optional(),
 });
 
-export const deleteByIdsQuerySchema = z.object({
+export const idsQuerySchema = z.object({
   ids: z.union([z.string(), z.array(z.string())]),
 });
 
 export const entityParamSchema = z.object({
   id: idSchema,
 });
+
+export const nameSchema = z
+  .string()
+  .min(2)
+  .max(100)
+  .refine(
+    (s) => /^[ ',.a-z-]+$/i.test(s),
+    "Name may only contain letters, spaces and these characters: ,.'-",
+  );

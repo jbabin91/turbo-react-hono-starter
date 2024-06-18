@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { lucia } from '@repo/auth';
 import { db, users } from '@repo/db';
 import { and, count, eq, ilike, inArray, or } from 'drizzle-orm';
@@ -10,12 +11,7 @@ import { getOrderColumn } from '../../libs/order-column';
 import { logEvent } from '../../middleware';
 import { type ErrorType } from '../../types';
 import { transformDatabaseUser } from './helpers/transform-database-user';
-import {
-  deleteUsersRouteConfig,
-  getUserRouteConfig,
-  getUsersRouteConfig,
-  updateUserRouteConfig,
-} from './routes';
+import usersRoutesConfig from './routes';
 
 const app = new CustomHono();
 
@@ -24,15 +20,15 @@ const usersRoutes = app
   /**
    * Get a list of users
    */
-  .openapi(getUsersRouteConfig, async (c) => {
+  .openapi(usersRoutesConfig.getUsers, async (c) => {
     const { q, sort, order, offset, limit, role } = c.req.valid('query');
 
     const orderColumn = getOrderColumn(
       {
-        createdAt: users.createdAt,
-        email: users.email,
         id: users.id,
         name: users.name,
+        email: users.email,
+        createdAt: users.createdAt,
         role: users.role,
       },
       sort,
@@ -60,21 +56,18 @@ const usersRoutes = app
       .where(filters.length > 0 ? and(...filters) : undefined)
       .orderBy(orderColumn);
 
-    const totalQuery = await db
+    const [totalQuery] = await db
       .select({ total: count() })
-      .from(usersQuery.as('users'))
-      .then((res) => res[0]);
+      .from(usersQuery.as('users'));
 
     const result = await usersQuery.limit(Number(limit)).offset(Number(offset));
 
-    const usersResults = result.map(({ user }) => ({
-      ...transformDatabaseUser(user),
-    }));
+    const items = result.map(({ user }) => transformDatabaseUser(user));
 
     return c.json(
       {
         data: {
-          items: usersResults,
+          items,
           total: totalQuery?.total ?? 0,
         },
         success: true,
@@ -85,7 +78,7 @@ const usersRoutes = app
   /**
    * Delete users
    */
-  .openapi(deleteUsersRouteConfig, async (c) => {
+  .openapi(usersRoutesConfig.deleteUsers, async (c) => {
     const { ids } = c.req.valid('query');
     const user = c.get('user');
 
@@ -152,7 +145,7 @@ const usersRoutes = app
   /**
    * Get a user by id
    */
-  .openapi(getUserRouteConfig, async (c) => {
+  .openapi(usersRoutesConfig.getUser, async (c) => {
     const { id } = c.req.valid('param');
     const user = c.get('user');
 
@@ -172,9 +165,7 @@ const usersRoutes = app
 
     return c.json(
       {
-        data: {
-          ...transformDatabaseUser(targetUser),
-        },
+        data: transformDatabaseUser(targetUser),
         success: true,
       },
       200,
@@ -183,7 +174,7 @@ const usersRoutes = app
   /**
    * Update a user by id
    */
-  .openapi(updateUserRouteConfig, async (c) => {
+  .openapi(usersRoutesConfig.updateUser, async (c) => {
     const { id } = c.req.valid('param');
     const user = c.get('user');
 
@@ -220,15 +211,11 @@ const usersRoutes = app
 
     return c.json(
       {
-        data: {
-          ...transformDatabaseUser(updatedUser!),
-        },
+        data: transformDatabaseUser(updatedUser!),
         success: true,
       },
       200,
     );
   });
-
-export type UsersRoutes = typeof usersRoutes;
 
 export default usersRoutes;

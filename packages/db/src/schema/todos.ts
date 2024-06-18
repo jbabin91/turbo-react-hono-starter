@@ -1,6 +1,4 @@
 import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { type z } from 'zod';
 
 import { users } from './users';
 
@@ -19,20 +17,5 @@ export const todos = pgTable('todos', {
     .defaultNow(),
 });
 
-export const insertTodoSchema = createInsertSchema(todos);
-export const createTodoSchema = createInsertSchema(todos).omit({
-  id: true,
-  authorId: true,
-  createdAt: true,
-});
-export const selectTodoSchema = createSelectSchema(todos);
-export const updateTodoSchema = createInsertSchema(todos)
-  .pick({
-    text: true,
-    done: true,
-  })
-  .partial();
-
-export type TodoInputs = z.infer<typeof insertTodoSchema>;
-export type TodoUpdateInputs = z.infer<typeof updateTodoSchema>;
-export type TodoModel = z.infer<typeof selectTodoSchema>;
+export type TodoModel = typeof todos.$inferSelect;
+export type InsertTodoModel = typeof todos.$inferInsert;

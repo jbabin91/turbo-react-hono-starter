@@ -10,11 +10,7 @@ import { errorResponse } from '../../libs/errors';
 import { nanoid } from '../../libs/nanoid';
 import { logEvent } from '../../middleware';
 import { transformDatabaseUser } from '../users/helpers/transform-database-user';
-import {
-  signInRouteConfig,
-  signOutRouteConfig,
-  signUpRouteConfig,
-} from './routes';
+import authRoutesConfig from './routes';
 
 const app = new CustomHono();
 
@@ -23,7 +19,7 @@ const authRoutes = app
   /**
    * Sign up with email and password
    */
-  .openapi(signUpRouteConfig, async (c) => {
+  .openapi(authRoutesConfig.signUp, async (c) => {
     const data = c.req.valid('json');
 
     // Hash Password
@@ -59,7 +55,7 @@ const authRoutes = app
   /**
    * Sign in with email and password
    */
-  .openapi(signInRouteConfig, async (c) => {
+  .openapi(authRoutesConfig.signIn, async (c) => {
     const { email, password } = c.req.valid('json');
 
     const user = await db.query.users.findFirst({
@@ -93,7 +89,7 @@ const authRoutes = app
   /**
    * Sign out
    */
-  .openapi(signOutRouteConfig, async (c) => {
+  .openapi(authRoutesConfig.signOut, async (c) => {
     const cookieHeader = c.req.raw.headers.get('Cookie');
     const sessionId = lucia.readSessionCookie(cookieHeader ?? '');
 
@@ -113,7 +109,5 @@ const authRoutes = app
 
     return c.json({ success: true }, 200);
   });
-
-export type AuthRoutes = typeof authRoutes;
 
 export default authRoutes;
