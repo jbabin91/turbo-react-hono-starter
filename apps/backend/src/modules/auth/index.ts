@@ -10,7 +10,6 @@ import { errorResponse } from '../../libs/errors';
 import { nanoid } from '../../libs/nanoid';
 import { logEvent } from '../../middleware';
 import { transformDatabaseUser } from '../users/helpers/transform-database-user';
-import { createUser } from './helper/user';
 import {
   signInRouteConfig,
   signOutRouteConfig,
@@ -31,18 +30,31 @@ const authRoutes = app
     const hashedPassword = await new LegacyScrypt().hash(data.password);
     const userId = nanoid();
 
-    // Create user
-    await createUser(c, {
-      email: data.email.toLowerCase(),
-      firstName: data.firstName,
-      hashedPassword,
-      id: userId,
-      language: config.defaultLanguage,
-      lastName: data.lastName,
-      name: `${data.firstName} ${data.lastName}`,
+    const existingUser = await db.query.users.findFirst({
+      where: eq(users.email, data.email.toLowerCase()),
     });
 
-    return c.json({ success: true }, 200);
+    if (existingUser) {
+      return errorResponse(c, 409, 'email_exists', 'warn');
+    }
+
+    // Create user
+    const [user] = await db
+      .insert(users)
+      .values({
+        email: data.email.toLowerCase(),
+        firstName: data.firstName,
+        hashedPassword,
+        id: userId,
+        language: config.defaultLanguage,
+        lastName: data.lastName,
+        name: `${data.firstName} ${data.lastName}`,
+      })
+      .returning();
+
+    if (user) await setSessionCookie(c, userId, 'password');
+
+    return c.json({ data: transformDatabaseUser(user!), success: true }, 200);
   })
   /**
    * Sign in with email and password

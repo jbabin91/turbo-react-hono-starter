@@ -14,16 +14,21 @@ import {
   FormMessage,
   Input,
 } from '@repo/ui';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { signUpSchema } from 'backend/modules/auth/schema';
 import { useForm } from 'react-hook-form';
 import { type z } from 'zod';
+
+import { useSignUp } from '@/modules/auth';
 
 export const Route = createFileRoute('/_auth/sign-up')({
   component: SignUpComponent,
 });
 
 function SignUpComponent() {
+  const signUp = useSignUp();
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof signUpSchema>>({
     defaultValues: {
       email: '',
@@ -35,7 +40,11 @@ function SignUpComponent() {
   });
 
   function onSubmit(values: z.infer<typeof signUpSchema>) {
-    console.log(values);
+    signUp.mutate(values, {
+      onSuccess() {
+        navigate({ to: '/' });
+      },
+    });
   }
 
   return (

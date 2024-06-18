@@ -9,9 +9,9 @@
   "scripts": {
     "build": "tsc --noEmit && tsup",
     "clean": "rm -rf .turbo dist node_modules",
-    "dev": "tsup --watch --onSuccess \"tsx dist/index.cjs\"",
+    "dev": "NODE_ENV=development tsup --watch --onSuccess \"tsx dist/index.cjs\"",
     "lint": "eslint .",
-    "preview": "tsx dist/index.cjs",
+    "preview": "NODE_ENV=development tsup --watch --onSuccess \"tsx dist/index.cjs\"",
     "start": "tsx dist/index.cjs",
     "typecheck": "tsc --noEmit"
   },

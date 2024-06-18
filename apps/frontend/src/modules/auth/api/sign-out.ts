@@ -22,7 +22,8 @@ export function useLogout() {
       });
     },
     onSuccess: () => {
-      queryClient.setQueryData(getMeQueryOptions().queryKey, undefined);
+      queryClient.setQueryData(getMeQueryOptions().queryKey, null);
+      queryClient.invalidateQueries({ queryKey: getMeQueryOptions().queryKey });
       toast.success('Logged out successfully');
     },
   });

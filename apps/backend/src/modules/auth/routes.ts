@@ -29,7 +29,7 @@ export const signUpRouteConfig = createRouteConfig({
     200: {
       content: {
         'application/json': {
-          schema: successResponseWithoutDataSchema,
+          schema: successResponseWithDataSchema(userModelSchema),
         },
       },
       description: 'User sign up',

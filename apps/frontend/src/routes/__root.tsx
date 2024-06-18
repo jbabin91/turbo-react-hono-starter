@@ -1,10 +1,16 @@
-import { ModeToggle } from '@repo/ui';
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { Button, ModeToggle } from '@repo/ui';
+import {
+  createRootRoute,
+  Link,
+  Outlet,
+  useNavigate,
+} from '@tanstack/react-router';
 
 import {
   TanstackQueryDevtools,
   TanstackRouterDevtools,
 } from '@/components/utils';
+import { useLogout, useMe } from '@/modules/auth';
 import { type NavigationLink } from '@/types';
 
 export const Route = createRootRoute({
@@ -17,6 +23,19 @@ const navigationLinks = [
 ] satisfies NavigationLink[];
 
 function RootComponent() {
+  const { data: me } = useMe();
+  const logout = useLogout();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout.mutate(undefined, {
+      onSuccess: () => {
+        console.log('Logged out');
+        navigate({ to: '/sign-in' });
+      },
+    });
+  }
+
   return (
     <>
       <header className="flex justify-between border-b p-2">
@@ -27,7 +46,19 @@ function RootComponent() {
             </Link>
           ))}
         </nav>
-        <ModeToggle />
+        <div className="flex gap-4">
+          {me ? (
+            <Button variant="link" onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <div className="flex gap-2 p-2">
+              <Link to="/sign-in">Sign in</Link>
+              <Link to="/sign-up">Sign up</Link>
+            </div>
+          )}
+          <ModeToggle />
+        </div>
       </header>
       <Outlet />
       <TanstackRouterDevtools />
