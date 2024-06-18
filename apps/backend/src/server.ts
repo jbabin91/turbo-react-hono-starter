@@ -23,6 +23,7 @@ console.log('config.frontendUrl', config.frontendUrl);
 
 // CORS
 app.use(
+  '*',
   cors({
     allowHeaders: ['Content-Type', 'Authorization', 'Origin'],
     allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],

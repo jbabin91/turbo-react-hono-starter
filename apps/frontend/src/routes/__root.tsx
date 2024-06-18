@@ -30,7 +30,6 @@ function RootComponent() {
   function handleLogout() {
     logout.mutate(undefined, {
       onSuccess: () => {
-        console.log('Logged out');
         navigate({ to: '/sign-in' });
       },
     });

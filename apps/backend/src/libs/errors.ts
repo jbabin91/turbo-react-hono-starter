@@ -7,6 +7,7 @@ import {
   type HttpErrorStatus,
   type Severity,
 } from '../types';
+import { i18n } from './i18n';
 
 export function createError(
   c: Context,
@@ -16,7 +17,8 @@ export function createError(
   eventData?: EventData,
   err?: Error,
 ) {
-  const message = '';
+  const translationKey = `common:error.${type}`;
+  const message = i18n.t(translationKey);
 
   const user = c.get('user');
 
@@ -34,7 +36,7 @@ export function createError(
   if (err ?? ['warn', 'error'].includes(severity)) {
     // TODO: wire up error reporting
     // Log error messages
-    console.error(err);
+    console.error('error:', err ?? message);
   } else if (eventData) {
     // Log significant events with additional data
     logEvent(message, eventData, severity);

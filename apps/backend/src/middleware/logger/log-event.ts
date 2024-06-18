@@ -6,8 +6,8 @@ export function logEvent(
   severity: Severity = 'info',
 ) {
   if (eventData) {
-    console[severity](message, eventData);
+    console[severity]('logEvent:', message, eventData);
   } else {
-    console[severity](message);
+    console[severity]('logEvent:', message);
   }
 }
