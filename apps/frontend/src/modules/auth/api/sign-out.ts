@@ -6,7 +6,7 @@ import { apiClient, handleResponse } from '@/libs/api-client';
 import { getMeQueryOptions } from './get-me';
 
 export async function signOut() {
-  const response = await apiClient.auth['sign-out'].$post();
+  const response = await apiClient.api.auth['sign-out'].$post();
   const responseData = await handleResponse(response);
   return responseData.success;
 }

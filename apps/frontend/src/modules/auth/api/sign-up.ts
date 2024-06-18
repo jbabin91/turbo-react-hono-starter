@@ -15,7 +15,7 @@ export async function signUp({
   email,
   password,
 }: SignUpInputs) {
-  const response = await apiClient.auth['sign-up'].$post({
+  const response = await apiClient.api.auth['sign-up'].$post({
     json: { email, firstName, lastName, password },
   });
   const responseData = await handleResponse(response);

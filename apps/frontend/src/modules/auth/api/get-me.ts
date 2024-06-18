@@ -5,7 +5,7 @@ import { apiClient, handleResponse } from '@/libs/api-client';
 import { type Nullable } from '@/types';
 
 export async function getMe(): Promise<Nullable<UserModel>> {
-  const response = await apiClient.me.$get();
+  const response = await apiClient.api.me.$get();
   const json = await handleResponse(response);
   return json.data;
 }

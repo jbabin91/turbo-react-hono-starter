@@ -35,10 +35,10 @@ app.onError((err, c) => {
 
 // API routes
 const routes = app
-  .route('/auth', authRoutes)
-  .route('/me', meRoutes)
-  .route('/users', usersRoutes)
-  .route('/todos', todosRoutes);
+  .route('/api/auth', authRoutes)
+  .route('/api/me', meRoutes)
+  .route('/api/users', usersRoutes)
+  .route('/api/todos', todosRoutes);
 
 export type AppTypes = typeof routes;
 
