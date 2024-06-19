@@ -11,19 +11,22 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as AboutImport } from './routes/about'
+import { Route as PublicRouteImport } from './routes/_public/route'
 import { Route as AuthRouteImport } from './routes/_auth/route'
 import { Route as AppRouteImport } from './routes/_app/route'
-import { Route as IndexImport } from './routes/index'
+import { Route as PublicIndexImport } from './routes/_public/index'
+import { Route as PublicAboutImport } from './routes/_public/about'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInImport } from './routes/_auth/sign-in'
-import { Route as AppUsersImport } from './routes/_app/users'
-import { Route as AppTodosImport } from './routes/_app/todos'
+import { Route as AppDashboardImport } from './routes/_app/dashboard'
+import { Route as AppDashboardIndexImport } from './routes/_app/dashboard.index'
+import { Route as AppDashboardUsersImport } from './routes/_app/dashboard.users'
+import { Route as AppDashboardTodosImport } from './routes/_app/dashboard.todos'
 
 // Create/Update Routes
 
-const AboutRoute = AboutImport.update({
-  path: '/about',
+const PublicRouteRoute = PublicRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -37,9 +40,14 @@ const AppRouteRoute = AppRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
+const PublicIndexRoute = PublicIndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+
+const PublicAboutRoute = PublicAboutImport.update({
+  path: '/about',
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 
 const AuthSignUpRoute = AuthSignUpImport.update({
@@ -52,27 +60,30 @@ const AuthSignInRoute = AuthSignInImport.update({
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
-const AppUsersRoute = AppUsersImport.update({
-  path: '/users',
+const AppDashboardRoute = AppDashboardImport.update({
+  path: '/dashboard',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
-const AppTodosRoute = AppTodosImport.update({
+const AppDashboardIndexRoute = AppDashboardIndexImport.update({
+  path: '/',
+  getParentRoute: () => AppDashboardRoute,
+} as any)
+
+const AppDashboardUsersRoute = AppDashboardUsersImport.update({
+  path: '/users',
+  getParentRoute: () => AppDashboardRoute,
+} as any)
+
+const AppDashboardTodosRoute = AppDashboardTodosImport.update({
   path: '/todos',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppDashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -87,25 +98,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRoute
     }
-    '/_app/todos': {
-      id: '/_app/todos'
-      path: '/todos'
-      fullPath: '/todos'
-      preLoaderRoute: typeof AppTodosImport
-      parentRoute: typeof AppRouteImport
-    }
-    '/_app/users': {
-      id: '/_app/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AppUsersImport
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardImport
       parentRoute: typeof AppRouteImport
     }
     '/_auth/sign-in': {
@@ -122,19 +126,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignUpImport
       parentRoute: typeof AuthRouteImport
     }
+    '/_public/about': {
+      id: '/_public/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof PublicAboutImport
+      parentRoute: typeof PublicRouteImport
+    }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexImport
+      parentRoute: typeof PublicRouteImport
+    }
+    '/_app/dashboard/todos': {
+      id: '/_app/dashboard/todos'
+      path: '/todos'
+      fullPath: '/dashboard/todos'
+      preLoaderRoute: typeof AppDashboardTodosImport
+      parentRoute: typeof AppDashboardImport
+    }
+    '/_app/dashboard/users': {
+      id: '/_app/dashboard/users'
+      path: '/users'
+      fullPath: '/dashboard/users'
+      preLoaderRoute: typeof AppDashboardUsersImport
+      parentRoute: typeof AppDashboardImport
+    }
+    '/_app/dashboard/': {
+      id: '/_app/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AppDashboardIndexImport
+      parentRoute: typeof AppDashboardImport
+    }
   }
 }
 
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  AppRouteRoute: AppRouteRoute.addChildren({ AppTodosRoute, AppUsersRoute }),
+  AppRouteRoute: AppRouteRoute.addChildren({
+    AppDashboardRoute: AppDashboardRoute.addChildren({
+      AppDashboardTodosRoute,
+      AppDashboardUsersRoute,
+      AppDashboardIndexRoute,
+    }),
+  }),
   AuthRouteRoute: AuthRouteRoute.addChildren({
     AuthSignInRoute,
     AuthSignUpRoute,
   }),
-  AboutRoute,
+  PublicRouteRoute: PublicRouteRoute.addChildren({
+    PublicAboutRoute,
+    PublicIndexRoute,
+  }),
 })
 
 /* prettier-ignore-end */
@@ -145,20 +192,15 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/_app",
         "/_auth",
-        "/about"
+        "/_public"
       ]
-    },
-    "/": {
-      "filePath": "index.tsx"
     },
     "/_app": {
       "filePath": "_app/route.tsx",
       "children": [
-        "/_app/todos",
-        "/_app/users"
+        "/_app/dashboard"
       ]
     },
     "/_auth": {
@@ -168,16 +210,21 @@ export const routeTree = rootRoute.addChildren({
         "/_auth/sign-up"
       ]
     },
-    "/about": {
-      "filePath": "about.tsx"
+    "/_public": {
+      "filePath": "_public/route.tsx",
+      "children": [
+        "/_public/about",
+        "/_public/"
+      ]
     },
-    "/_app/todos": {
-      "filePath": "_app/todos.tsx",
-      "parent": "/_app"
-    },
-    "/_app/users": {
-      "filePath": "_app/users.tsx",
-      "parent": "/_app"
+    "/_app/dashboard": {
+      "filePath": "_app/dashboard.tsx",
+      "parent": "/_app",
+      "children": [
+        "/_app/dashboard/todos",
+        "/_app/dashboard/users",
+        "/_app/dashboard/"
+      ]
     },
     "/_auth/sign-in": {
       "filePath": "_auth/sign-in.tsx",
@@ -186,6 +233,26 @@ export const routeTree = rootRoute.addChildren({
     "/_auth/sign-up": {
       "filePath": "_auth/sign-up.tsx",
       "parent": "/_auth"
+    },
+    "/_public/about": {
+      "filePath": "_public/about.tsx",
+      "parent": "/_public"
+    },
+    "/_public/": {
+      "filePath": "_public/index.tsx",
+      "parent": "/_public"
+    },
+    "/_app/dashboard/todos": {
+      "filePath": "_app/dashboard.todos.tsx",
+      "parent": "/_app/dashboard"
+    },
+    "/_app/dashboard/users": {
+      "filePath": "_app/dashboard.users.tsx",
+      "parent": "/_app/dashboard"
+    },
+    "/_app/dashboard/": {
+      "filePath": "_app/dashboard.index.tsx",
+      "parent": "/_app/dashboard"
     }
   }
 }

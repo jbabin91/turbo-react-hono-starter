@@ -3,23 +3,21 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { getTodosQueryOptions } from '@/modules/todos';
 
-export const Route = createFileRoute('/_app/todos')({
-  component: TodosComponent,
+export const Route = createFileRoute('/_app/dashboard/')({
+  component: DashboardIndexComponent,
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(getTodosQueryOptions()),
 });
 
-function TodosComponent() {
+function DashboardIndexComponent() {
   const todosQuery = useSuspenseQuery(getTodosQueryOptions());
-  const todos = todosQuery.data;
-
-  console.log('todos', todos);
+  const todos = todosQuery.data.filter((todo) => !todo.done);
 
   return (
-    <div className="p-5">
-      <h1 className="text-3xl font-semibold">Todos</h1>
-      <div className="pt-2">
-        <pre>{JSON.stringify(todos, null, 2)}</pre>
+    <div className="p-2">
+      <div className="p-2">
+        Welcome to the dashboard! You have{' '}
+        <strong>{todos.length} total todos</strong>
       </div>
     </div>
   );

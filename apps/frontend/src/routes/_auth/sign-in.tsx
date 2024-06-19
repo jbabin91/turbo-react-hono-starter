@@ -26,7 +26,7 @@ import { z } from 'zod';
 
 import { useSignIn } from '@/modules/auth';
 
-const fallback = '/todos';
+const fallback = '/dashboard';
 
 export const Route = createFileRoute('/_auth/sign-in')({
   beforeLoad: ({ context, search }) => {

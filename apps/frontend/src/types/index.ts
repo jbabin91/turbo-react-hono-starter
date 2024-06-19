@@ -6,6 +6,7 @@ import { type apiClient } from '@/libs/api-client';
 export type NavigationLink = {
   name: string;
   to: FileRoutesByPath[keyof FileRoutesByPath]['fullPath'];
+  exact?: boolean;
 };
 
 export type Nullable<T> = T | undefined | null;

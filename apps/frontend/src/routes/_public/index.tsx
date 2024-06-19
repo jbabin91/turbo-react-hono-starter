@@ -5,7 +5,7 @@ import { useState } from 'react';
 import viteLogo from '/vite.svg';
 import reactLogo from '@/assets/react.svg';
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_public/')({
   component: HomeComponent,
 });
 
