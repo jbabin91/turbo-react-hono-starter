@@ -72,8 +72,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/locales
       '@scalar/hono-api-reference':
-        specifier: ^0.5.72
-        version: 0.5.72(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)
+        specifier: ^0.5.73
+        version: 0.5.73(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)
       '@t3-oss/env-core':
         specifier: ^0.10.1
         version: 0.10.1(typescript@5.4.5)(zod@3.23.8)
@@ -120,6 +120,9 @@ importers:
 
   apps/frontend:
     dependencies:
+      '@github/mini-throttle':
+        specifier: ^2.1.1
+        version: 2.1.1
       '@hookform/resolvers':
         specifier: ^3.6.0
         version: 3.6.0(react-hook-form@7.52.0(react@18.3.1))
@@ -1192,6 +1195,9 @@ packages:
   '@floating-ui/vue@1.0.6':
     resolution: {integrity: sha512-EdrOljjkpkkqZnrpqUcPoz9NvHxuTjUtSInh6GMv3+Mcy+giY2cE2pHh9rpacRcZ2eMSCxel9jWkWXTjLmY55w==}
 
+  '@github/mini-throttle@2.1.1':
+    resolution: {integrity: sha512-KtOPaB+FiKJ6jcKm9UKyaM5fPURHGf+xcp+b4Mzoi81hOc6M1sIGpMZMAVbNzfa2lW5+RPGKq888Px0j76OZ/A==}
+
   '@headlessui/tailwindcss@0.2.1':
     resolution: {integrity: sha512-2+5+NZ+RzMyrVeCZOxdbvkUSssSxGvcUxphkIfSVLpRiKsj+/63T2TOL9dBYMXVfj/CGr6hMxSRInzXv6YY7sA==}
     engines: {node: '>=10'}
@@ -2183,8 +2189,8 @@ packages:
     resolution: {integrity: sha512-BVZorvaN1nQAqVRG/xpjdwTHFbvhacVunpYxk1Zi8++r/TVuuRpvHD3hSNzseGq2Cz3FlW23a5urL64tf1+/Dw==}
     engines: {node: '>=18'}
 
-  '@scalar/api-reference@1.24.11':
-    resolution: {integrity: sha512-On7D92MIoOoSm1YbB5MlLkiIC2dz1AetbSBHF91jHngjw7x1Vig3c5sCqfMzRhd8Q7re+KA8UqvZ0kkdeZ0F0w==}
+  '@scalar/api-reference@1.24.12':
+    resolution: {integrity: sha512-EJ6w3IRR8RfaB0hUeVdRkBXqpDmVzI8RQ68jnnzqNiFnQ80foV+J03UgRfxVhrerUerPaIBo93hu5cjtMFd1PQ==}
     engines: {node: '>=18'}
 
   '@scalar/client-app@0.1.8':
@@ -2203,8 +2209,8 @@ packages:
     resolution: {integrity: sha512-fcQMzJDWNCJkKxiua20LiZB0J3rkEANVdCX+2+z4x2uEpmRcQx3TqT2/aETs9OmNqr/jlNMtSubUqAgBnDpc/A==}
     engines: {node: '>=18'}
 
-  '@scalar/hono-api-reference@0.5.72':
-    resolution: {integrity: sha512-g8irDLxZj0WNMgDSdDAWpaLhcnsfngK+KMtuMLvw3DgAHCGbA6yLtBScrHuzuMMdaVLXrkAyS5H9KGsjMtL6EQ==}
+  '@scalar/hono-api-reference@0.5.73':
+    resolution: {integrity: sha512-wsNnBqhtxF6V556I1ZvV0B/JkxyOJMsYQP0z/9nUoxjx075D1KmjnnpMA5tL+S31SfeuOjuwELhN6J9KBQJv0g==}
     engines: {node: '>=18'}
 
   '@scalar/oas-utils@0.2.3':
@@ -6674,6 +6680,8 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@github/mini-throttle@2.1.1': {}
+
   '@headlessui/tailwindcss@0.2.1(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))':
     dependencies:
       tailwindcss: 3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5))
@@ -7733,7 +7741,7 @@ snapshots:
       - typescript
       - vitest
 
-  '@scalar/api-reference@1.24.11(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)':
+  '@scalar/api-reference@1.24.12(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)':
     dependencies:
       '@headlessui/vue': 1.7.22(vue@3.4.29(typescript@5.4.5))
       '@scalar/api-client': 1.3.12(typescript@5.4.5)
@@ -7852,9 +7860,9 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@scalar/hono-api-reference@0.5.72(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)':
+  '@scalar/hono-api-reference@0.5.73(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)':
     dependencies:
-      '@scalar/api-reference': 1.24.11(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)
+      '@scalar/api-reference': 1.24.12(postcss@8.4.38)(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.1)(@types/node@20.14.5)(typescript@5.4.5)))(typescript@5.4.5)
       hono: 4.4.6
     transitivePeerDependencies:
       - '@jest/globals'
