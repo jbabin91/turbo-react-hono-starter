@@ -24,7 +24,8 @@ The recommended settings to put in your `.vscode/settings.json` or to edit the s
   "i18n-ally.enabledFrameworks": ["react-i18next"],
   "i18n-ally.extract.autoDetect": true,
   "i18n-ally.namespace": true,
-  "i18n-ally.pathMatcher": "{locale}/{namespace}.json"
+  "i18n-ally.pathMatcher": "{locale}/{namespace}.json",
+  "i18n-ally.sourceLanguage": "en"
 }
 ```
 
