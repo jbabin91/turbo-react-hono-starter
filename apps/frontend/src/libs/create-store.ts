@@ -41,7 +41,7 @@ export const localPersistStorage: PersistStorage<any> = {
   getItem: (name) => {
     const str = localStorage.getItem(name);
     if (!str) return null;
-    return JSON.parse(str);
+    return JSON.parse(str) as any;
   },
   removeItem: (name) => localStorage.removeItem(name),
   setItem: (name, value) => {
