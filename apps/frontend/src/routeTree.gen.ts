@@ -17,6 +17,7 @@ import { Route as AppRouteImport } from './routes/_app/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInImport } from './routes/_auth/sign-in'
+import { Route as AppUsersImport } from './routes/_app/users'
 import { Route as AppTodosImport } from './routes/_app/todos'
 
 // Create/Update Routes
@@ -49,6 +50,11 @@ const AuthSignUpRoute = AuthSignUpImport.update({
 const AuthSignInRoute = AuthSignInImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+
+const AppUsersRoute = AppUsersImport.update({
+  path: '/users',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 const AppTodosRoute = AppTodosImport.update({
@@ -95,6 +101,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTodosImport
       parentRoute: typeof AppRouteImport
     }
+    '/_app/users': {
+      id: '/_app/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AppUsersImport
+      parentRoute: typeof AppRouteImport
+    }
     '/_auth/sign-in': {
       id: '/_auth/sign-in'
       path: '/sign-in'
@@ -116,7 +129,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
-  AppRouteRoute: AppRouteRoute.addChildren({ AppTodosRoute }),
+  AppRouteRoute: AppRouteRoute.addChildren({ AppTodosRoute, AppUsersRoute }),
   AuthRouteRoute: AuthRouteRoute.addChildren({
     AuthSignInRoute,
     AuthSignUpRoute,
@@ -144,7 +157,8 @@ export const routeTree = rootRoute.addChildren({
     "/_app": {
       "filePath": "_app/route.tsx",
       "children": [
-        "/_app/todos"
+        "/_app/todos",
+        "/_app/users"
       ]
     },
     "/_auth": {
@@ -159,6 +173,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_app/todos": {
       "filePath": "_app/todos.tsx",
+      "parent": "/_app"
+    },
+    "/_app/users": {
+      "filePath": "_app/users.tsx",
       "parent": "/_app"
     },
     "/_auth/sign-in": {

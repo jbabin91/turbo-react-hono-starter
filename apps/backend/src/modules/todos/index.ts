@@ -1,10 +1,9 @@
 import { db, todos, todos as todosTable } from '@repo/db';
-import { and, count, eq, ilike } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { CustomHono } from '../../libs/custom-hono';
 import { errorResponse } from '../../libs/errors';
 import { nanoid } from '../../libs/nanoid';
-import { getOrderColumn } from '../../libs/order-column';
 import { logEvent } from '../../middleware';
 import todosRoutesConfig from './routes';
 
@@ -16,45 +15,16 @@ const todosRoutes = app
    * Get a list of todos
    */
   .openapi(todosRoutesConfig.getTodos, async (c) => {
-    const { q, sort, order, offset, limit } = c.req.valid('query');
+    const user = c.get('user');
 
-    const orderColumn = getOrderColumn(
-      {
-        authorId: todosTable.authorId,
-        createdAt: todosTable.createdAt,
-        done: todosTable.done,
-        id: todosTable.id,
-        text: todosTable.text,
-      },
-      sort,
-      todosTable.id,
-      order,
-    );
-
-    const filters = [];
-
-    if (q) {
-      filters.push(ilike(todosTable.text, `%${q}%`));
-    }
-
-    const todosQuery = db
+    const todos = await db
       .select()
       .from(todosTable)
-      .where(filters.length > 0 ? and(...filters) : undefined)
-      .orderBy(orderColumn);
-
-    const [totalQuery] = await db
-      .select({ total: count() })
-      .from(todosQuery.as('todos'));
-
-    const result = await todosQuery.limit(Number(limit)).offset(Number(offset));
+      .where(eq(todosTable.authorId, user.id));
 
     return c.json(
       {
-        data: {
-          items: result,
-          total: totalQuery?.total ?? 0,
-        },
+        data: todos,
         success: true,
       },
       200,

@@ -2,7 +2,6 @@ import {
   errorResponses,
   successWithDataSchema,
   successWithoutDataSchema,
-  successWithPaginationSchema,
 } from '../../libs/common-responses';
 import { entityParamSchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
@@ -10,7 +9,7 @@ import { isAuthenticated } from '../../middleware';
 import {
   createTodoSchema,
   todoSchema,
-  todosQuerySchema,
+  todosSchema,
   updateTodoSchema,
 } from './schema';
 
@@ -20,14 +19,11 @@ class TodosRoutesConfig {
     guard: isAuthenticated,
     method: 'get',
     path: '/',
-    request: {
-      query: todosQuerySchema,
-    },
     responses: {
       200: {
         content: {
           'application/json': {
-            schema: successWithPaginationSchema(todoSchema),
+            schema: successWithDataSchema(todosSchema),
           },
         },
         description: 'Successfully retrive a list of todos',
