@@ -119,7 +119,7 @@ const todosRoutes = app
     }
 
     // If the user doesn't have permission to update any of the todos, return an error
-    if (user.role !== 'ADMIN' || user.id !== targetTodo.authorId) {
+    if (user.id !== targetTodo.authorId && user.role !== 'ADMIN') {
       return errorResponse(c, 403, 'forbidden', 'warn', {
         todo: id,
       });

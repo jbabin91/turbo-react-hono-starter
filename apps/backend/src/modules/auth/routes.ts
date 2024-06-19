@@ -1,3 +1,4 @@
+import { userSchema } from '@repo/db';
 import { z } from 'zod';
 
 import {
@@ -8,7 +9,6 @@ import {
 import { cookieSchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
 import { isPublicAccess, limiter } from '../../middleware';
-import { userSchema } from '../users/schema';
 import { signInSchema, signUpSchema } from './schema';
 
 class AuthRoutesConfig {

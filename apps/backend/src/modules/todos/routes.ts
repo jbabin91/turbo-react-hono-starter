@@ -1,3 +1,6 @@
+import { todoSchema } from '@repo/db';
+import { z } from 'zod';
+
 import {
   errorResponses,
   successWithDataSchema,
@@ -6,12 +9,7 @@ import {
 import { entityParamSchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
 import { isAuthenticated } from '../../middleware';
-import {
-  createTodoSchema,
-  todoSchema,
-  todosSchema,
-  updateTodoSchema,
-} from './schema';
+import { createTodoSchema, updateTodoSchema } from './schema';
 
 class TodosRoutesConfig {
   public getTodos = createRouteConfig({
@@ -23,7 +21,7 @@ class TodosRoutesConfig {
       200: {
         content: {
           'application/json': {
-            schema: successWithDataSchema(todosSchema),
+            schema: successWithDataSchema(z.array(todoSchema)),
           },
         },
         description: 'Successfully retrive a list of todos',

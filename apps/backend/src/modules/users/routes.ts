@@ -1,3 +1,5 @@
+import { updateUserSchema, userSchema } from '@repo/db';
+
 import {
   errorResponses,
   successWithDataSchema,
@@ -7,7 +9,7 @@ import {
 import { entityParamSchema, idsQuerySchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
 import { isAuthenticated, isSystemAdmin } from '../../middleware';
-import { updateUserSchema, userSchema, usersQuerySchema } from './schema';
+import { usersQuerySchema } from './schema';
 
 class UsersRoutesConfig {
   public getUsers = createRouteConfig({

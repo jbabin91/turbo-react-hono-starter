@@ -1,11 +1,11 @@
-import { todos } from '@repo/db';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-export const todoSchema = createSelectSchema(todos);
+export const createTodoSchema = z.object({
+  done: z.boolean(),
+  text: z.string(),
+});
 
-export const todosSchema = z.array(todoSchema);
-
-export const createTodoSchema = createInsertSchema(todos);
-
-export const updateTodoSchema = createInsertSchema(todos).partial();
+export const updateTodoSchema = z.object({
+  done: z.boolean(),
+  text: z.string(),
+});
