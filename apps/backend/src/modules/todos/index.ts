@@ -1,5 +1,5 @@
 import { db, todos, todos as todosTable } from '@repo/db';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 
 import { CustomHono } from '../../libs/custom-hono';
 import { errorResponse } from '../../libs/errors';
@@ -20,7 +20,8 @@ const todosRoutes = app
     const todos = await db
       .select()
       .from(todosTable)
-      .where(eq(todosTable.authorId, user.id));
+      .where(eq(todosTable.authorId, user.id))
+      .orderBy(asc(todosTable.createdAt));
 
     return c.json(
       {
@@ -67,7 +68,7 @@ const todosRoutes = app
     }
 
     // If the user doesn't have permission to delete any of the todos, return an error
-    if (user.role !== 'ADMIN' || user.id !== targetTodo.authorId) {
+    if (user.role !== 'ADMIN' && user.id !== targetTodo.authorId) {
       return errorResponse(c, 403, 'forbidden', 'warn', {
         todo: id,
       });
@@ -119,7 +120,7 @@ const todosRoutes = app
     }
 
     // If the user doesn't have permission to update any of the todos, return an error
-    if (user.id !== targetTodo.authorId && user.role !== 'ADMIN') {
+    if (user.role !== 'ADMIN' && user.id !== targetTodo.authorId) {
       return errorResponse(c, 403, 'forbidden', 'warn', {
         todo: id,
       });
