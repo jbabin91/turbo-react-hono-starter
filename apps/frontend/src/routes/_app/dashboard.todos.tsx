@@ -22,8 +22,9 @@ function TodosComponent() {
               <Link
                 key={id}
                 className="block px-3 py-2 [&.active]:font-bold"
+                params={{ todoId: id }}
                 preload="intent"
-                to={`/dashboard/todos`}
+                to="/dashboard/todos/$todoId"
               >
                 {text}
               </Link>
@@ -32,7 +33,7 @@ function TodosComponent() {
             <div className="block px-3 py-2">No Todos</div>
           )}
         </div>
-        <div className="flex-1 border-l border-gray-200">
+        <div className="flex-1 border-l border-gray-200 p-5">
           <Outlet />
         </div>
       </div>

@@ -38,8 +38,7 @@ export const Route = createFileRoute('/_auth/sign-in')({
   },
   component: SignInComponent,
   validateSearch: z.object({
-    // eslint-disable-next-line unicorn/prefer-top-level-await
-    redirect: z.string().optional().catch(''),
+    redirect: z.string().optional(),
   }),
 });
 

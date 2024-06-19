@@ -22,6 +22,8 @@ import { Route as AppDashboardImport } from './routes/_app/dashboard'
 import { Route as AppDashboardIndexImport } from './routes/_app/dashboard.index'
 import { Route as AppDashboardUsersImport } from './routes/_app/dashboard.users'
 import { Route as AppDashboardTodosImport } from './routes/_app/dashboard.todos'
+import { Route as AppDashboardTodosIndexImport } from './routes/_app/dashboard.todos.index'
+import { Route as AppDashboardTodosTodoIdImport } from './routes/_app/dashboard.todos.$todoId'
 
 // Create/Update Routes
 
@@ -78,6 +80,16 @@ const AppDashboardUsersRoute = AppDashboardUsersImport.update({
 const AppDashboardTodosRoute = AppDashboardTodosImport.update({
   path: '/todos',
   getParentRoute: () => AppDashboardRoute,
+} as any)
+
+const AppDashboardTodosIndexRoute = AppDashboardTodosIndexImport.update({
+  path: '/',
+  getParentRoute: () => AppDashboardTodosRoute,
+} as any)
+
+const AppDashboardTodosTodoIdRoute = AppDashboardTodosTodoIdImport.update({
+  path: '/$todoId',
+  getParentRoute: () => AppDashboardTodosRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -161,6 +173,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardIndexImport
       parentRoute: typeof AppDashboardImport
     }
+    '/_app/dashboard/todos/$todoId': {
+      id: '/_app/dashboard/todos/$todoId'
+      path: '/$todoId'
+      fullPath: '/dashboard/todos/$todoId'
+      preLoaderRoute: typeof AppDashboardTodosTodoIdImport
+      parentRoute: typeof AppDashboardTodosImport
+    }
+    '/_app/dashboard/todos/': {
+      id: '/_app/dashboard/todos/'
+      path: '/'
+      fullPath: '/dashboard/todos/'
+      preLoaderRoute: typeof AppDashboardTodosIndexImport
+      parentRoute: typeof AppDashboardTodosImport
+    }
   }
 }
 
@@ -169,7 +195,10 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   AppRouteRoute: AppRouteRoute.addChildren({
     AppDashboardRoute: AppDashboardRoute.addChildren({
-      AppDashboardTodosRoute,
+      AppDashboardTodosRoute: AppDashboardTodosRoute.addChildren({
+        AppDashboardTodosTodoIdRoute,
+        AppDashboardTodosIndexRoute,
+      }),
       AppDashboardUsersRoute,
       AppDashboardIndexRoute,
     }),
@@ -244,7 +273,11 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_app/dashboard/todos": {
       "filePath": "_app/dashboard.todos.tsx",
-      "parent": "/_app/dashboard"
+      "parent": "/_app/dashboard",
+      "children": [
+        "/_app/dashboard/todos/$todoId",
+        "/_app/dashboard/todos/"
+      ]
     },
     "/_app/dashboard/users": {
       "filePath": "_app/dashboard.users.tsx",
@@ -253,6 +286,14 @@ export const routeTree = rootRoute.addChildren({
     "/_app/dashboard/": {
       "filePath": "_app/dashboard.index.tsx",
       "parent": "/_app/dashboard"
+    },
+    "/_app/dashboard/todos/$todoId": {
+      "filePath": "_app/dashboard.todos.$todoId.tsx",
+      "parent": "/_app/dashboard/todos"
+    },
+    "/_app/dashboard/todos/": {
+      "filePath": "_app/dashboard.todos.index.tsx",
+      "parent": "/_app/dashboard/todos"
     }
   }
 }

@@ -17,7 +17,7 @@ function DashboardIndexComponent() {
     <div className="p-2">
       <div className="p-2">
         Welcome to the dashboard! You have{' '}
-        <strong>{todos.length} total todos</strong>
+        <strong>{todos.length} remaining todo(s).</strong>
       </div>
     </div>
   );
