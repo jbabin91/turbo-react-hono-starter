@@ -87,6 +87,7 @@ const todosRoutes = app
    */
   .openapi(todosRoutesConfig.getTodo, async (c) => {
     const { id } = c.req.valid('param');
+    const user = c.get('user');
 
     const targetTodo = await db.query.todos.findFirst({
       where: eq(todosTable.id, id),
@@ -95,6 +96,13 @@ const todosRoutes = app
     // Check if todo exists
     if (!targetTodo) {
       return errorResponse(c, 404, 'not_found', 'warn', {
+        todo: id,
+      });
+    }
+
+    // If the user doesn't have permission to delete any of the todos, return an error
+    if (user.role !== 'ADMIN' && user.id !== targetTodo.authorId) {
+      return errorResponse(c, 403, 'forbidden', 'warn', {
         todo: id,
       });
     }
