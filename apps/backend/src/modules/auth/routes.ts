@@ -8,7 +8,11 @@ import {
 } from '../../libs/common-responses';
 import { cookieSchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
-import { isPublicAccess, limiter } from '../../middleware';
+import {
+  authRateLimiter,
+  isPublicAccess,
+  signInRateLimiter,
+} from '../../middleware';
 import { signInSchema, signUpSchema } from './schema';
 
 class AuthRoutesConfig {
@@ -16,7 +20,7 @@ class AuthRoutesConfig {
     description: 'Sign up with email and password',
     guard: isPublicAccess,
     method: 'post',
-    middleware: [limiter],
+    middleware: [authRateLimiter],
     path: '/sign-up',
     request: {
       body: {
@@ -50,7 +54,7 @@ class AuthRoutesConfig {
     description: 'Sign in with email and password.',
     guard: isPublicAccess,
     method: 'post',
-    middleware: [limiter],
+    middleware: [signInRateLimiter],
     path: '/sign-in',
     request: {
       body: {
@@ -84,6 +88,7 @@ class AuthRoutesConfig {
     description: 'Sign out yourself and clear session.',
     guard: isPublicAccess,
     method: 'post',
+    middleware: [authRateLimiter],
     path: '/sign-out',
     responses: {
       200: {
