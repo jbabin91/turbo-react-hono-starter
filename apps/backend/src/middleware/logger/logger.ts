@@ -1,6 +1,5 @@
+import { nanoid } from '@repo/utils';
 import { type MiddlewareHandler } from 'hono';
-
-import { nanoid } from '../../libs/nanoid';
 
 const LogPrefix = {
   Error: 'err',

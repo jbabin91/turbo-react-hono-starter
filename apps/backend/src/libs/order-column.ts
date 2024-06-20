@@ -10,5 +10,5 @@ export const getOrderColumn = <
   order: 'asc' | 'desc' = 'asc',
 ) => {
   const orderFunc = order === 'asc' ? asc : desc;
-  return orderFunc(sort && sortOptions[sort] ? sortOptions[sort]! : def);
+  return orderFunc(sort && sortOptions[sort] ? sortOptions[sort] : def);
 };

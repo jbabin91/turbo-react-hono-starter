@@ -7,7 +7,6 @@ import { LegacyScrypt } from 'lucia';
 import { removeSessionCookie, setSessionCookie } from '../../libs/cookies';
 import { CustomHono } from '../../libs/custom-hono';
 import { errorResponse } from '../../libs/errors';
-import { nanoid } from '../../libs/nanoid';
 import { logEvent } from '../../middleware';
 import { transformDatabaseUser } from '../users/helpers/transform-database-user';
 import authRoutesConfig from './routes';
@@ -24,7 +23,6 @@ const authRoutes = app
 
     // Hash Password
     const hashedPassword = await new LegacyScrypt().hash(data.password);
-    const userId = nanoid();
 
     const existingUser = await db.query.users.findFirst({
       where: eq(users.email, data.email.toLowerCase()),
@@ -41,14 +39,13 @@ const authRoutes = app
         email: data.email.toLowerCase(),
         firstName: data.firstName,
         hashedPassword,
-        id: userId,
         language: config.defaultLanguage,
         lastName: data.lastName,
         name: `${data.firstName} ${data.lastName}`,
       })
       .returning();
 
-    if (user) await setSessionCookie(c, userId, 'password');
+    if (user) await setSessionCookie(c, user.id, 'password');
 
     return c.json({ data: transformDatabaseUser(user!), success: true }, 200);
   })

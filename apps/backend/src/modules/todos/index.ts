@@ -3,7 +3,6 @@ import { asc, eq } from 'drizzle-orm';
 
 import { CustomHono } from '../../libs/custom-hono';
 import { errorResponse } from '../../libs/errors';
-import { nanoid } from '../../libs/nanoid';
 import { logEvent } from '../../middleware';
 import todosRoutesConfig from './routes';
 
@@ -38,12 +37,9 @@ const todosRoutes = app
     const data = c.req.valid('json');
     const user = c.get('user');
 
-    const todoId = nanoid();
-
     await db.insert(todos).values({
       ...data,
       authorId: user.id,
-      id: todoId,
     });
 
     return c.json({ success: true }, 200);
