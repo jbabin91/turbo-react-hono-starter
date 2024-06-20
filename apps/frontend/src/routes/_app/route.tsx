@@ -4,6 +4,7 @@ import {
   Link,
   Outlet,
   redirect,
+  useLocation,
   useNavigate,
 } from '@tanstack/react-router';
 
@@ -34,11 +35,12 @@ const navigationLinks = [
 function AppComponent() {
   const logout = useLogout();
   const navigate = useNavigate();
+  const location = useLocation();
 
   function handleLogout() {
     logout.mutate(undefined, {
       onSuccess: () => {
-        navigate({ to: '/sign-in' });
+        navigate({ search: { redirect: location.href }, to: '/sign-in' });
       },
     });
   }

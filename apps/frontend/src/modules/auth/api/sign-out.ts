@@ -26,7 +26,7 @@ export function useLogout() {
     },
     onSuccess: () => {
       queryClient.setQueryData(getMeQueryOptions().queryKey, null);
-      queryClient.invalidateQueries({ queryKey: getMeQueryOptions().queryKey });
+      queryClient.clear();
       auth.setAuth({ isAuthenticated: false, user: null });
       toast.success('Logged out successfully');
     },

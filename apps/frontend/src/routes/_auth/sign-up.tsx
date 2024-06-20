@@ -14,39 +14,20 @@ import {
   FormMessage,
   Input,
 } from '@repo/ui';
-import {
-  createFileRoute,
-  Link,
-  redirect,
-  useNavigate,
-} from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { signUpSchema } from 'backend/modules/auth/schema';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { type z } from 'zod';
 
 import { useSignUp } from '@/modules/auth';
 
-const fallback = '/dashboard';
-
 export const Route = createFileRoute('/_auth/sign-up')({
-  beforeLoad: ({ context, search }) => {
-    if (context.auth.isAuthenticated) {
-      throw redirect({
-        to: search.redirect ?? fallback,
-      });
-    }
-  },
   component: SignUpComponent,
-  validateSearch: z.object({
-    redirect: z.string().optional(),
-  }),
 });
 
 function SignUpComponent() {
   const signUp = useSignUp();
   const navigate = useNavigate();
-
-  const search = Route.useSearch();
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     defaultValues: {
@@ -61,7 +42,7 @@ function SignUpComponent() {
   function onSubmit(values: z.infer<typeof signUpSchema>) {
     signUp.mutate(values, {
       onSuccess: () => {
-        navigate({ to: search.redirect ?? fallback });
+        navigate({ to: '/dashboard' });
       },
     });
   }
