@@ -1,4 +1,5 @@
 import { config } from '@repo/configs';
+import { nanoid } from '@repo/utils';
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
@@ -9,7 +10,9 @@ const roleEnum = config.rolesByType.systemRoles;
 const supportedLanguagesEnum = config.supportedLanguages;
 
 export const users = pgTable('users', {
-  id: text('id').primaryKey(),
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
   name: text('name').notNull(),
