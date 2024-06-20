@@ -1,5 +1,6 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
+import { DefaultCatchBoundary, NotFound } from '@/components/errors';
 import { queryClient } from '@/libs/react-query';
 import { useAuthStore } from '@/modules/auth';
 import { routeTree } from '@/routeTree.gen';
@@ -10,6 +11,8 @@ const router = createRouter({
     auth: undefined!,
     queryClient,
   },
+  defaultErrorComponent: DefaultCatchBoundary,
+  defaultNotFoundComponent: () => <NotFound />,
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
   routeTree,
