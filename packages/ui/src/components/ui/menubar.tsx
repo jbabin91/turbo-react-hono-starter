@@ -4,8 +4,6 @@ import * as React from 'react';
 import { cn } from '../../libs/utils';
 import { Icons } from '../icons';
 
-const MenubarMenu = MenubarPrimitive.Menu;
-
 const MenubarGroup = MenubarPrimitive.Group;
 
 const MenubarPortal = MenubarPrimitive.Portal;
@@ -221,7 +219,6 @@ export {
   MenubarGroup,
   MenubarItem,
   MenubarLabel,
-  MenubarMenu,
   MenubarPortal,
   MenubarRadioGroup,
   MenubarRadioItem,
@@ -232,3 +229,5 @@ export {
   MenubarSubTrigger,
   MenubarTrigger,
 };
+
+export { Menu as MenubarMenu } from '@radix-ui/react-menubar';
