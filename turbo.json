@@ -19,6 +19,7 @@
       "persistent": true
     },
     "db:reset": {},
+    "db:seed": {},
     "db:studio": {},
     "dev": {
       "cache": false,

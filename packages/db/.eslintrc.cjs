@@ -17,7 +17,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/seed/**/*.ts'],
+      files: ['**/scripts/**/*.ts'],
       rules: {
         'unicorn/no-process-exit': 'off',
         'unicorn/prefer-top-level-await': 'off',
