@@ -6,6 +6,7 @@
     "clean": "turbo clean",
     "db:generate": "turbo db:generate",
     "db:migrate": "pnpm with-env turbo db:migrate",
+    "db:reset": "pnpm with-env turbo db:reset",
     "db:studio": "pnpm with-env turbo db:studio",
     "dev": "pnpm with-env turbo dev",
     "format": "prettier -uw --cache .",

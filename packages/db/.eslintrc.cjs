@@ -16,5 +16,13 @@ module.exports = {
         'sort-keys-fix/sort-keys-fix': 'off',
       },
     },
+    {
+      files: ['**/seed/**/*.ts'],
+      rules: {
+        'unicorn/no-process-exit': 'off',
+        'unicorn/prefer-top-level-await': 'off',
+        'unicorn/no-process-exit': 'off',
+      },
+    },
   ],
 };

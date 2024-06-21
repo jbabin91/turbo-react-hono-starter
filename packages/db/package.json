@@ -10,6 +10,7 @@
     "clean": "rm -rf .turbo node_modules",
     "db:generate": "drizzle-kit generate --config ./drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config ./drizzle.config.ts",
+    "db:reset": "tsx ./src/seed/reset.ts",
     "db:studio": "drizzle-kit studio --config ./drizzle.config.ts",
     "dev": "pnpm db:studio",
     "lint": "eslint .",
@@ -20,12 +21,15 @@
     "@repo/utils": "workspace:*",
     "drizzle-orm": "^0.31.2",
     "drizzle-zod": "^0.5.1",
+    "lucia": "^3.2.0",
     "postgres": "^3.4.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "drizzle-kit": "^0.22.7"
+    "drizzle-kit": "^0.22.7",
+    "tsx": "^4.15.6"
   }
 }
