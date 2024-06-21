@@ -1,13 +1,10 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { lucia } from '@repo/auth';
 import { db, users } from '@repo/db';
-import { and, count, eq, ilike, inArray, or } from 'drizzle-orm';
-import { type User } from 'lucia';
+import { eq, inArray } from 'drizzle-orm';
 
 import { removeSessionCookie } from '../../libs/cookies';
 import { CustomHono } from '../../libs/custom-hono';
 import { createError, errorResponse } from '../../libs/errors';
-import { getOrderColumn } from '../../libs/order-column';
 import { logEvent } from '../../middleware';
 import { type ErrorType } from '../../types';
 import { transformDatabaseUser } from './helpers/transform-database-user';
@@ -21,55 +18,19 @@ const usersRoutes = app
    * Get a list of users
    */
   .openapi(usersRoutesConfig.getUsers, async (c) => {
-    const { q, sort, order, offset, limit, role } = c.req.valid('query');
+    const user = c.get('user');
 
-    const orderColumn = getOrderColumn(
-      {
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        createdAt: users.createdAt,
-        role: users.role,
-      },
-      sort,
-      users.id,
-      order,
-    );
-
-    const filters = [];
-
-    if (q) {
-      filters.push(
-        or(ilike(users.name, `%${q}%`), ilike(users.email, `%${q}%`)),
-      );
+    if (user.role !== 'ADMIN') {
+      return errorResponse(c, 403, 'forbidden', 'warn', {
+        user: user.id,
+      });
     }
 
-    if (role) {
-      filters.push(eq(users.role, role.toUpperCase() as User['role']));
-    }
-
-    const usersQuery = db
-      .select({
-        user: users,
-      })
-      .from(users)
-      .where(filters.length > 0 ? and(...filters) : undefined)
-      .orderBy(orderColumn);
-
-    const [totalQuery] = await db
-      .select({ total: count() })
-      .from(usersQuery.as('users'));
-
-    const result = await usersQuery.limit(Number(limit)).offset(Number(offset));
-
-    const items = result.map(({ user }) => transformDatabaseUser(user));
+    const users = await db.query.users.findMany();
 
     return c.json(
       {
-        data: {
-          items,
-          total: totalQuery?.total ?? 0,
-        },
+        data: users,
         success: true,
       },
       200,
@@ -88,10 +49,9 @@ const usersRoutes = app
     const errors: ErrorType[] = [];
 
     // Get the users
-    const targets = await db
-      .select()
-      .from(users)
-      .where(inArray(users.id, userIds));
+    const targets = await db.query.users.findMany({
+      where: inArray(users.id, userIds),
+    });
 
     // Check if the users exist
     for (const id of userIds) {
@@ -149,7 +109,9 @@ const usersRoutes = app
     const { id } = c.req.valid('param');
     const user = c.get('user');
 
-    const [targetUser] = await db.select().from(users).where(eq(users.id, id));
+    const targetUser = await db.query.users.findFirst({
+      where: eq(users.id, id),
+    });
 
     if (!targetUser) {
       return errorResponse(c, 404, 'not_found', 'warn', {
@@ -178,7 +140,9 @@ const usersRoutes = app
     const { id } = c.req.valid('param');
     const user = c.get('user');
 
-    const [targetUser] = await db.select().from(users).where(eq(users.id, id));
+    const targetUser = await db.query.users.findFirst({
+      where: eq(users.id, id),
+    });
 
     if (!targetUser) {
       return errorResponse(c, 404, 'not_found', 'warn', {

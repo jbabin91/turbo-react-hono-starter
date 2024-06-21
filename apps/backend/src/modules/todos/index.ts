@@ -16,11 +16,10 @@ const todosRoutes = app
   .openapi(todosRoutesConfig.getTodos, async (c) => {
     const user = c.get('user');
 
-    const todos = await db
-      .select()
-      .from(todosTable)
-      .where(eq(todosTable.authorId, user.id))
-      .orderBy(asc(todosTable.createdAt));
+    const todos = await db.query.todos.findMany({
+      orderBy: asc(todosTable.createdAt),
+      where: eq(todosTable.authorId, user.id),
+    });
 
     return c.json(
       {

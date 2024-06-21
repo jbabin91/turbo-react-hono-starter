@@ -1,15 +1,14 @@
 import { updateUserSchema, userSchema } from '@repo/db';
+import { z } from 'zod';
 
 import {
   errorResponses,
   successWithDataSchema,
   successWithErrorsSchema,
-  successWithPaginationSchema,
 } from '../../libs/common-responses';
 import { entityParamSchema, idsQuerySchema } from '../../libs/common-schemas';
 import { createRouteConfig } from '../../libs/route-config';
 import { isAuthenticated, isSystemAdmin } from '../../middleware';
-import { usersQuerySchema } from './schema';
 
 class UsersRoutesConfig {
   public getUsers = createRouteConfig({
@@ -17,14 +16,11 @@ class UsersRoutesConfig {
     guard: [isAuthenticated, isSystemAdmin],
     method: 'get',
     path: '/',
-    request: {
-      query: usersQuerySchema,
-    },
     responses: {
       200: {
         content: {
           'application/json': {
-            schema: successWithPaginationSchema(userSchema),
+            schema: successWithDataSchema(z.array(userSchema)),
           },
         },
         description: 'Users',
