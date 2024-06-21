@@ -125,7 +125,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col space-y-4">
       {enableFilterBar ? (
         <DataTableToolbar
           globalOnChange={setGlobalFilter}
