@@ -14,6 +14,13 @@ export const userSchema = z.object({
   createdAt: z.string(),
 });
 
+export const updateUserSchema = userSchema
+  .omit({
+    id: true,
+    createdAt: true,
+  })
+  .partial();
+
 export const usersQuerySchema = paginationQuerySchema.merge(
   z.object({
     role: z.enum(config.rolesByType.systemRoles).default('USER').optional(),
