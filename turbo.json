@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV", "PROD", "DATABASE_URL"],
+  "globalEnv": ["NODE_ENV", "PROD", "DEV", "DATABASE_URL"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
