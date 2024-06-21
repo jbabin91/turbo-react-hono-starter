@@ -13,7 +13,13 @@ export default defineConfig({
         entryFileNames: 'assets/[name]-[hash].js',
         manualChunks: {
           react: ['react', 'react-dom'],
-          tanstack: ['@tanstack/react-router', '@tanstack/router-devtools'],
+          tanstack: [
+            '@tanstack/react-router',
+            '@tanstack/router-devtools',
+            '@tanstack/react-query',
+            '@tanstack/react-query-devtools',
+            '@tanstack/react-table',
+          ],
           ui: ['@repo/ui'],
         },
       },

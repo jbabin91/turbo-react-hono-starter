@@ -97,7 +97,7 @@ importers:
         version: 3.2.0
       react-i18next:
         specifier: ^14.1.2
-        version: 14.1.2(i18next@23.11.5)(react@18.3.1)
+        version: 14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -126,6 +126,9 @@ importers:
       '@repo/configs':
         specifier: workspace:*
         version: link:../../packages/configs
+      '@repo/locales':
+        specifier: workspace:*
+        version: link:../../packages/locales
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -156,6 +159,15 @@ importers:
       hono:
         specifier: ^4.4.7
         version: 4.4.7
+      i18next:
+        specifier: ^23.11.5
+        version: 23.11.5
+      i18next-browser-languagedetector:
+        specifier: ^8.0.0
+        version: 8.0.0
+      i18next-http-backend:
+        specifier: ^2.5.2
+        version: 2.5.2
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -165,6 +177,9 @@ importers:
       react-hook-form:
         specifier: ^7.52.0
         version: 7.52.0(react@18.3.1)
+      react-i18next:
+        specifier: ^14.1.2
+        version: 14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -386,6 +401,9 @@ importers:
       react-hook-form:
         specifier: ^7.52.0
         version: 7.52.0(react@18.3.1)
+      react-i18next:
+        specifier: ^14.1.2
+        version: 14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-resizable-panels:
         specifier: ^2.0.19
         version: 2.0.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3346,6 +3364,9 @@ packages:
   crelt@1.0.6:
     resolution: {integrity: sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==}
 
+  cross-fetch@4.0.0:
+    resolution: {integrity: sha512-e4a5N8lVvuLgAWgnCrLr2PP0YyDOTHa9H/Rj54dirp61qXnNq46m82bRhNqIA5VccJtWBvPTFRV3TtvHUKPB1g==}
+
   cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
@@ -4212,6 +4233,12 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  i18next-browser-languagedetector@8.0.0:
+    resolution: {integrity: sha512-zhXdJXTTCoG39QsrOCiOabnWj2jecouOqbchu3EfhtSHxIB5Uugnm9JaizenOy39h7ne3+fLikIjeW88+rgszw==}
+
+  i18next-http-backend@2.5.2:
+    resolution: {integrity: sha512-+K8HbDfrvc1/2X8jpb7RLhI9ZxBDpx3xogYkQwGKlWAUXLSEGXzgdt3EcUjLlBCdMwdQY+K+EUF6oh8oB6rwHw==}
+
   i18next@23.11.5:
     resolution: {integrity: sha512-41pvpVbW9rhZPk5xjCX2TPJi2861LEig/YRhUkY+1FQ2IQPS0bKUDYnEqY8XPPbB48h1uIwLnP9iiEfuSl20CA==}
 
@@ -4843,6 +4870,15 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+
+  node-fetch@2.7.0:
+    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
 
   node-releases@2.0.14:
     resolution: {integrity: sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==}
@@ -5739,6 +5775,9 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
+  tr46@0.0.3:
+    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+
   tr46@1.0.1:
     resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
 
@@ -6077,6 +6116,9 @@ packages:
     resolution: {integrity: sha512-QW95TCTaHmsYfHDybGMwO5IJIM93I/6vTRk+daHTWFPhwh+C8Cg7j7XyKrwrj8Ib6vYXe0ocYNrmzY4xAAN6ug==}
     engines: {node: '>= 14'}
 
+  webidl-conversions@3.0.1:
+    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+
   webidl-conversions@4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
 
@@ -6086,6 +6128,9 @@ packages:
 
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
+
+  whatwg-url@5.0.0:
+    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
 
   whatwg-url@7.1.0:
     resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}
@@ -9387,6 +9432,12 @@ snapshots:
 
   crelt@1.0.6: {}
 
+  cross-fetch@4.0.0:
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
   cross-spawn@7.0.3:
     dependencies:
       path-key: 3.1.1
@@ -10442,6 +10493,16 @@ snapshots:
 
   husky@9.0.11: {}
 
+  i18next-browser-languagedetector@8.0.0:
+    dependencies:
+      '@babel/runtime': 7.24.7
+
+  i18next-http-backend@2.5.2:
+    dependencies:
+      cross-fetch: 4.0.0
+    transitivePeerDependencies:
+      - encoding
+
   i18next@23.11.5:
     dependencies:
       '@babel/runtime': 7.24.7
@@ -11193,6 +11254,10 @@ snapshots:
 
   node-domexception@1.0.0: {}
 
+  node-fetch@2.7.0:
+    dependencies:
+      whatwg-url: 5.0.0
+
   node-releases@2.0.14: {}
 
   normalize-package-data@2.5.0:
@@ -11569,12 +11634,14 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  react-i18next@14.1.2(i18next@23.11.5)(react@18.3.1):
+  react-i18next@14.1.2(i18next@23.11.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.24.7
       html-parse-stringify: 3.0.1
       i18next: 23.11.5
       react: 18.3.1
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
 
   react-is@16.13.1: {}
 
@@ -12175,6 +12242,8 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
+  tr46@0.0.3: {}
+
   tr46@1.0.1:
     dependencies:
       punycode: 2.3.1
@@ -12514,11 +12583,18 @@ snapshots:
 
   web-streams-polyfill@4.0.0-beta.3: {}
 
+  webidl-conversions@3.0.1: {}
+
   webidl-conversions@4.0.2: {}
 
   webpack-sources@3.2.3: {}
 
   webpack-virtual-modules@0.6.2: {}
+
+  whatwg-url@5.0.0:
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1
 
   whatwg-url@7.1.0:
     dependencies:

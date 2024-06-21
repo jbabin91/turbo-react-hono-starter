@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import '@/libs/i18n';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';

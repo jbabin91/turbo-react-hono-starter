@@ -1,7 +1,8 @@
+import { DataTable } from '@repo/ui';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { UsersDataTable, useUsers } from '@/modules/users';
+import { columns, useUsers } from '@/modules/users';
 
 export const Route = createFileRoute('/_app/dashboard/users/')({
   component: UsersIndexComponent,
@@ -9,7 +10,7 @@ export const Route = createFileRoute('/_app/dashboard/users/')({
 
 function UsersIndexComponent() {
   // Query users
-  const { data } = useUsers();
+  const { data, isLoading } = useUsers();
 
   const flatData = useMemo(
     () => data?.pages.flatMap((page) => page.items),
@@ -17,8 +18,7 @@ function UsersIndexComponent() {
   );
 
   // Total count
-  const totalDbRowCount = data?.pages?.[0]?.total;
-  console.log(totalDbRowCount);
+  const totalCount = data?.pages?.[0]?.total;
 
   const totalFetched = flatData?.length;
   console.log(totalFetched);
@@ -26,7 +26,13 @@ function UsersIndexComponent() {
   return (
     <div className="container mx-auto space-y-10 p-5">
       <h1 className="text-3xl font-semibold">Users</h1>
-      <UsersDataTable data={flatData ?? []} />
+      <DataTable
+        enableFilterBar
+        columns={columns}
+        data={flatData ?? []}
+        isLoading={isLoading}
+        totalCount={totalCount}
+      />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { cn } from '../../libs';
 import { Icons } from '../icons';
@@ -75,12 +76,22 @@ export type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   enableFilterBar?: boolean;
+  error?: Error | null;
+  isLoading?: boolean;
+  isFetching?: boolean;
+  totalCount?: number;
+  fetchMore?: () => Promise<unknown>;
+  enableVirtualization?: boolean;
+  NoRowsComponent?: React.ReactNode;
 };
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   enableFilterBar = false,
+  error,
+  isFetching,
+  NoRowsComponent,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -143,7 +154,16 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {error && table.getRowModel().rows?.length ? (
+              <TableRow>
+                <TableCell
+                  className="h-24 text-center"
+                  colSpan={columns.length}
+                >
+                  <ErrorMessage error={error} />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -165,7 +185,11 @@ export function DataTable<TData, TValue>({
                   className="h-24 text-center"
                   colSpan={columns.length}
                 >
-                  No results.
+                  <NoRows
+                    customComponent={NoRowsComponent}
+                    isFetching={isFetching}
+                    isFiltered={!!globalFilter}
+                  />
                 </TableCell>
               </TableRow>
             )}
@@ -173,6 +197,46 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
+    </div>
+  );
+}
+
+export function NoRows({
+  isFiltered,
+  isFetching,
+  customComponent,
+}: {
+  isFiltered?: boolean;
+  isFetching?: boolean;
+  customComponent?: React.ReactNode;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <div>
+      {isFiltered && !isFetching ? (
+        <div>
+          {t('common:no_resource_found', {
+            resource: t('common:results').toLowerCase(),
+          })}
+        </div>
+      ) : null}
+      {!isFiltered && !isFetching
+        ? customComponent ??
+          t('common:no_resource_yet', {
+            resource: t('common:results').toLowerCase(),
+          })
+        : null}
+    </div>
+  );
+}
+
+export function ErrorMessage({ error }: { error: Error }) {
+  return (
+    <div className="flex size-full flex-col items-center justify-center bg-background text-muted-foreground">
+      <div className="my-8 text-center text-sm text-red-500">
+        {error.message}
+      </div>
     </div>
   );
 }
@@ -188,6 +252,8 @@ export function DataTableToolbar<TData>({
   globalValue,
   globalOnChange,
 }: DataTableToolbarProps<TData>) {
+  const { t } = useTranslation();
+
   const isFiltered = table.getState().globalFilter?.length > 0;
 
   return (
@@ -208,7 +274,7 @@ export function DataTableToolbar<TData>({
               globalOnChange('');
             }}
           >
-            Reset
+            {t('common:reset')}
             <Icons.X className="ml-2 size-4" />
           </Button>
         ) : null}
@@ -225,6 +291,8 @@ export type DataTableViewOptionsProps<TData> = {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
+  const { t } = useTranslation();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -234,11 +302,11 @@ export function DataTableViewOptions<TData>({
           variant="outline"
         >
           <Icons.SlidersHorizontal className="mr-2 size-4" />
-          View
+          {t('common:view')}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('common:toggle_columns')}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
@@ -270,6 +338,8 @@ export function DataTableColumnHeader<TData, TValue>({
   title,
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+  const { t } = useTranslation();
+
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;
   }
@@ -296,18 +366,18 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
             <Icons.ArrowUp className="mr-2 size-3.5 text-muted-foreground/70" />
-            Asc
+            {t('common:sort_asc')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
             <Icons.ArrowDown className="mr-2 size-3.5 text-muted-foreground/70" />
-            Desc
+            {t('common:sort_desc')}
           </DropdownMenuItem>
           {column.getCanHide() ? (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
                 <Icons.EyeOff className="mr-2 size-3.5 text-muted-foreground/70" />
-                Hide
+                {t('common:hide')}
               </DropdownMenuItem>
             </>
           ) : null}
@@ -322,6 +392,8 @@ export type DataTableRowActionsProps = {
 };
 
 export function DataTableRowActions({ children }: DataTableRowActionsProps) {
+  const { t } = useTranslation();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -330,7 +402,7 @@ export function DataTableRowActions({ children }: DataTableRowActionsProps) {
           variant="ghost"
         >
           <Icons.Ellipsis className="size-4" />
-          <span className="sr-only">Open menu</span>
+          <span className="sr-only">{t('common:open_menu')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
@@ -347,15 +419,19 @@ export type DataTablePaginationProps<TData> = {
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{' '}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+        {t('common:filtered_selected_rows', {
+          selected: table.getFilteredSelectedRowModel().rows.length,
+          total: table.getFilteredRowModel().rows.length,
+        })}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">{t('common:rows_per_page')}</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -385,7 +461,7 @@ export function DataTablePagination<TData>({
             variant="outline"
             onClick={() => table.setPageIndex(0)}
           >
-            <span className="sr-only">Go to first page</span>
+            <span className="sr-only">{t('common:go_to_first_page')}</span>
             <Icons.ChevronsLeft className="size-4" />
           </Button>
           <Button
@@ -394,7 +470,7 @@ export function DataTablePagination<TData>({
             variant="outline"
             onClick={() => table.previousPage()}
           >
-            <span className="sr-only">Go to previous page</span>
+            <span className="sr-only">{t('common:go_to_previous_page')}</span>
             <Icons.ChevronLeft className="size-4" />
           </Button>
           <Button
@@ -403,7 +479,7 @@ export function DataTablePagination<TData>({
             variant="outline"
             onClick={() => table.nextPage()}
           >
-            <span className="sr-only">Go to next page</span>
+            <span className="sr-only">{t('common:go_to_next_page')}</span>
             <Icons.ChevronRight className="size-4" />
           </Button>
           <Button
@@ -412,7 +488,7 @@ export function DataTablePagination<TData>({
             variant="outline"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
           >
-            <span className="sr-only">Go to last page</span>
+            <span className="sr-only">{t('common:go_to_last_page')}</span>
             <Icons.ChevronsRight className="size-4" />
           </Button>
         </div>
