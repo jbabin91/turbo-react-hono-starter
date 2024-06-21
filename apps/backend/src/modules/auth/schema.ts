@@ -6,9 +6,9 @@ export const signInSchema = z.object({
 });
 
 export const signUpSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email'),
   firstName: z.string().min(1, 'First Name is required'),
   lastName: z.string().min(1, 'Last Name is required'),
+  email: z.string().min(1, 'Email is required').email('Invalid email'),
   password: z
     .string()
     .min(1, 'Password is required')
