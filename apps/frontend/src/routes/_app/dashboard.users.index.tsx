@@ -1,6 +1,5 @@
 import { DataTable } from '@repo/ui';
 import { createFileRoute } from '@tanstack/react-router';
-import { useMemo } from 'react';
 
 import { columns, useUsers } from '@/modules/users';
 
@@ -12,16 +11,8 @@ function UsersIndexComponent() {
   // Query users
   const { data, isLoading } = useUsers();
 
-  const flatData = useMemo(
-    () => data?.pages.flatMap((page) => page.items),
-    [data],
-  );
-
   // Total count
-  const totalCount = data?.pages?.[0]?.total;
-
-  const totalFetched = flatData?.length;
-  console.log(totalFetched);
+  const totalCount = data?.length;
 
   return (
     <div className="container mx-auto space-y-10 p-5">
@@ -29,7 +20,7 @@ function UsersIndexComponent() {
       <DataTable
         enableFilterBar
         columns={columns}
-        data={flatData ?? []}
+        data={data ?? []}
         isLoading={isLoading}
         totalCount={totalCount}
       />

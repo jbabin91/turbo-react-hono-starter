@@ -4,6 +4,8 @@ import { useMutation } from '@tanstack/react-query';
 import { apiClient, handleResponse } from '@/libs/api-client';
 import { queryClient } from '@/libs/react-query';
 
+import { getUsersQueryOptions } from './get-users';
+
 export async function deleteUser(ids: string | string[]) {
   const response = await apiClient.users.$delete({
     query: {
@@ -24,7 +26,9 @@ export function useDeleteUser() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({
+        queryKey: getUsersQueryOptions().queryKey,
+      });
       toast.success('User deleted successfully');
     },
   });
