@@ -8,7 +8,7 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 
-import { useLogout } from '@/modules/auth';
+import { useAuthStore, useLogout } from '@/modules/auth';
 import { type NavigationLink } from '@/types';
 
 export const Route = createFileRoute('/_app')({
@@ -29,10 +29,14 @@ const navigationLinks = [
   { name: 'Home', to: '/' },
   { exact: true, name: 'Dashboard', to: '/dashboard' },
   { name: 'Todos', to: '/dashboard/todos' },
+] satisfies NavigationLink[];
+
+const adminNavigationLinks = [
   { name: 'Users', to: '/dashboard/users' },
 ] satisfies NavigationLink[];
 
 function AppComponent() {
+  const auth = useAuthStore();
   const logout = useLogout();
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,6 +63,17 @@ function AppComponent() {
               {link.name}
             </Link>
           ))}
+          {auth.user?.role === 'ADMIN'
+            ? adminNavigationLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  className="[&.active]:font-bold"
+                  to={link.to}
+                >
+                  {link.name}
+                </Link>
+              ))
+            : null}
         </nav>
         <div className="flex gap-4">
           <div className="p-2">
