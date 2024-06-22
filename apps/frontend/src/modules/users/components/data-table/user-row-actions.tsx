@@ -30,6 +30,21 @@ export function UserRowActions<TData>({ row }: UserRowActionProps<TData>) {
           })
         }
       >
+        View
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() =>
+          navigate({
+            params: {
+              userId: user.id,
+            },
+            search: {
+              edit: true,
+            },
+            to: '/dashboard/users/$userId',
+          })
+        }
+      >
         Edit
       </DropdownMenuItem>
       <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
