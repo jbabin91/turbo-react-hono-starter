@@ -44,7 +44,7 @@ export function UserCard({ user }: { user: User }) {
               })
             }
           >
-            Edit User
+            Edit
           </Button>
         </div>
       </CardContent>
