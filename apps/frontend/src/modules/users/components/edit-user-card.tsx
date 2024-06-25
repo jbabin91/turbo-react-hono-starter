@@ -141,7 +141,7 @@ export function EditUserCard({ user }: { user: User }) {
               )}
             />
             <div className="flex justify-end gap-4">
-              <Button type="submit">Update User</Button>
+              <Button type="submit">Update</Button>
               <Button
                 type="button"
                 variant="outline"

@@ -25,7 +25,15 @@ export default defineConfig({
       },
     },
   },
-  plugins: [react(), TanStackRouterVite(), tsconfigPaths()],
+  plugins: [
+    react(),
+    TanStackRouterVite({
+      experimental: {
+        enableCodeSplitting: true,
+      },
+    }),
+    tsconfigPaths(),
+  ],
   preview: {
     port: 5173,
   },
