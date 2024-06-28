@@ -30,7 +30,7 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^20.14.8",
+    "@types/node": "^20.14.9",
     "commitlint": "^19.3.0",
     "cz-git": "^1.9.3",
     "dotenv-cli": "^7.4.2",
@@ -38,7 +38,7 @@
     "lint-staged": "^15.2.7",
     "prettier": "^3.3.2",
     "prettier-plugin-packagejson": "^2.5.0",
-    "sherif": "^0.8.4",
+    "sherif": "^0.9.0",
     "turbo": "latest",
     "typescript": "^5.5.2"
   },
