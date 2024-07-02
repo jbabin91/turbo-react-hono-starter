@@ -1,9 +1,7 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "types": ["node"],
-    "resolveJsonModule": true,
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

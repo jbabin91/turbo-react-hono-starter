@@ -1,29 +1,68 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Default",
+  "display": "Strictest",
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "allowJs": true,
-    "checkJs": true,
-    "disableSourceOfProjectReferenceRedirect": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "incremental": true,
-    "isolatedModules": true,
-    "lib": ["ES2022"],
-    "module": "Preserve",
-    "moduleDetection": "force",
-    "moduleResolution": "Bundler",
-    "noEmit": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": true,
+
+    "isolatedModules": true,
+
+    "allowJs": true,
+    "checkJs": true,
+
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "target": "Es2022",
-    "useDefineForClassFields": true
-  }
+    "useDefineForClassFields": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "lib": ["ES2022"],
+    "target": "ES2022",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "incremental": true,
+
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "pretty": true,
+    "preserveWatchOutput": true,
+
+    "tsBuildInfoFile": "${configDir}/node_modules/.cache/tsconfig.tsbuildinfo"
+  },
+  "include": [
+    "${configDir}/.commitlintrc.cjs",
+    "${configDir}/.storybook/**/*",
+    "${configDir}/**/*.astro",
+    "${configDir}/**/*.ts",
+    "${configDir}/**/*.tsx",
+    "${configDir}/**/*.cts",
+    "${configDir}/**/*.ctsx",
+    "${configDir}/**/*.mts",
+    "${configDir}/**/*.mtsx",
+    "${configDir}/**/*.js",
+    "${configDir}/**/*.jsx",
+    "${configDir}/**/*.cjs",
+    "${configDir}/**/*.cjsx",
+    "${configDir}/**/*.mjs",
+    "${configDir}/**/*.mjsx"
+  ],
+  "exclude": [
+    "${configDir}/node_modules",
+    "${configDir}/dist",
+    "${configDir}/storybook-static",
+    "${configDir}/playwright-report",
+    "${configDir}/test-results"
+  ]
 }

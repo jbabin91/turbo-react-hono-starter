@@ -1,11 +1,19 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV", "PROD", "DEV", "DATABASE_URL"],
+  "globalPassThroughEnv": ["NODE_ENV", "DATABASE_URL", "PROD"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!CHANGELOG.md",
+        "!eslint.config.js",
+        "!playwright.config.ts",
+        "!e2e/**",
+        "!.env.example",
+        ".env*"
+      ],
+      "outputs": ["dist/**"]
     },
     "clean": {
       "cache": false
@@ -22,11 +30,14 @@
     "db:seed": {},
     "db:studio": {},
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
     },
     "lint": {
       "dependsOn": ["^lint"],
+      "inputs": ["$TURBO_DEFAULT$", "!CHANGELOG.md"],
       "outputs": ["node_modules/.cache/.eslintcache"]
     },
     "preview": {
@@ -35,7 +46,7 @@
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
-      "outputs": ["node_modules/.cache/tsbuildinfo.json"]
+      "outputs": ["node_modules/.cache/*.tsbuildinfo"]
     }
   }
 }

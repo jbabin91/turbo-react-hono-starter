@@ -20,4 +20,5 @@ export const defaultHook: Hook<unknown, Env, '', unknown> = (result, c) => {
       400,
     );
   }
+  return;
 };

@@ -1,10 +1,7 @@
 {
-  "extends": "@repo/typescript-config/internal-package.json",
-  "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "jsx": "preserve",
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "extends": [
+    "@repo/typescript-config/react.json",
+    "@repo/typescript-config/build.json"
+  ],
+  "include": ["src"]
 }
