@@ -30,7 +30,7 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^20.14.9",
+    "@types/node": "^20.14.10",
     "commitlint": "^19.3.0",
     "cz-git": "^1.9.3",
     "dotenv-cli": "^7.4.2",
