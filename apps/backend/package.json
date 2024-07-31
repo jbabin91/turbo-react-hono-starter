@@ -23,10 +23,10 @@
     "@repo/db": "workspace:*",
     "@repo/locales": "workspace:*",
     "@repo/utils": "workspace:*",
-    "@scalar/hono-api-reference": "^0.5.113",
+    "@scalar/hono-api-reference": "0.5.109",
     "@t3-oss/env-core": "^0.11.0",
-    "drizzle-orm": "^0.32.0",
-    "hono": "^4.5.1",
+    "drizzle-orm": "^0.32.1",
+    "hono": "^4.5.3",
     "hono-rate-limiter": "^0.4.0",
     "i18next": "^23.12.2",
     "lucia": "^3.2.0",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "tsup": "^8.2.2",
-    "tsx": "^4.16.2"
+    "tsup": "^8.2.3",
+    "tsx": "^4.16.3"
   }
 }
