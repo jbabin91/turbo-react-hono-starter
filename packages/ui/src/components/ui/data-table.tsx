@@ -222,10 +222,10 @@ export function NoRows({
         </div>
       ) : null}
       {!isFiltered && !isFetching
-        ? customComponent ??
+        ? (customComponent ??
           t('common:no_resource_yet', {
             resource: t('common:results').toLowerCase(),
-          })
+          }))
         : null}
     </div>
   );
