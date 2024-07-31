@@ -13,13 +13,6 @@ middlewares.use('*', secureHeaders());
 
 console.log('config.frontendUrl', config.frontendUrl);
 
-middlewares.use(
-  cors({
-    credentials: true,
-    origin: [config.frontendUrl, config.backendUrl],
-  }),
-);
-
 // CORS
 middlewares.use(
   '*',

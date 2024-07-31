@@ -47,6 +47,7 @@ module.exports = {
           'error',
           { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
         ],
+        '@typescript-eslint/only-throw-error': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
       },
     },

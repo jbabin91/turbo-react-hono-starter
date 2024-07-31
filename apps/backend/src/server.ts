@@ -34,7 +34,7 @@ app.onError((err, c) => {
 });
 
 // API routes
-const routes = app
+export const routes = app
   .route('/auth', authRoutes)
   .route('/me', meRoutes)
   .route('/users', usersRoutes)
