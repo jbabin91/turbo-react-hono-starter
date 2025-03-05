@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "turbo-react-hono-starter",
   "private": true,
   "scripts": {
     "build": "turbo run build",
