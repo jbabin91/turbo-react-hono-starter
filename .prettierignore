@@ -1,0 +1,11 @@
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Ignore all files in the dist directory
+dist/
+.turbo
+
+# Ignore all files in the node_modules directory
+node_modules/

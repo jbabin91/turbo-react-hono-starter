@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --target node20 --clean",
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint .",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.8",
+    "hono": "^4.7.4"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.13.9",
+    "eslint": "^9.21.0",
+    "globals": "^16.0.0",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3"
+  }
+}

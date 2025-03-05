@@ -1,13 +1,13 @@
 {
-  "name": "@repo/ui",
+  "name": "frontend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "exports": {
-    "./*": "./src/*.tsx"
-  },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
+    "build": "rsbuild build",
+    "dev": "rsbuild dev --open",
+    "lint": "eslint .",
+    "preview": "rsbuild preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -15,12 +15,19 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.7",
+    "@eslint/js": "^9.21.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.13.9",
+    "@rsbuild/core": "^1.2.15",
+    "@rsbuild/plugin-react": "^1.1.1",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "eslint": "^9.21.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
     "typescript": "^5.8.2"
   }
 }
