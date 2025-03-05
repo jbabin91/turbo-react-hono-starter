@@ -49,13 +49,13 @@ export default defineConfig({
       { value: 'fix', name: 'fix:      🐛 A bug fix', emoji: '🐛' },
       {
         value: 'docs',
-        name: 'docs:     📝 Documentation only changes',
-        emoji: '📝',
+        name: 'docs:     📚 Documentation only changes',
+        emoji: '📚',
       },
       {
         value: 'style',
-        name: 'style:    💄 Changes that do not affect the meaning of the code',
-        emoji: '💄',
+        name: 'style:    💎 Changes that do not affect the meaning of the code',
+        emoji: '💎',
       },
       {
         value: 'refactor',
@@ -74,8 +74,8 @@ export default defineConfig({
       },
       {
         value: 'build',
-        name: 'build:    📦️ Changes that affect the build system or external dependencies',
-        emoji: '📦️',
+        name: 'build:    📦 Changes that affect the build system or external dependencies',
+        emoji: '📦',
       },
       {
         value: 'ci',
@@ -89,8 +89,8 @@ export default defineConfig({
       },
       {
         value: 'revert',
-        name: 'revert:   ⏪️ Reverts a previous commit',
-        emoji: '⏪️',
+        name: 'revert:   ⏪ Reverts a previous commit',
+        emoji: '⏪',
       },
     ],
     allowBreakingChanges: ['feat', 'fix', 'refactor', 'perf'],
