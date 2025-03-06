@@ -12,17 +12,17 @@
   "commitMessageTopic": "{{depName}}",
   "commitBody": "Updates {{depName}} from version {{currentVersion}} to {{newVersion}}.\n\nFor details see: {{{sourceUrl}}}",
   "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{configDescription}}}{{{footer}}}",
-  "stabilityDays": 3,
+  "minimumReleaseAge": "3 days",
   "prCreation": "not-pending",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "📦 Dependency Dashboard",
   "major": {
-    "stabilityDays": 7
+    "minimumReleaseAge": "7 days"
   },
   "vulnerabilityAlerts": {
     "labels": ["security"],
     "automerge": false,
-    "stabilityDays": 0
+    "minimumReleaseAge": null
   },
   "packageRules": [
     {
@@ -42,8 +42,8 @@
     },
     {
       "description": "Disable updates for internal packages",
-      "matchPackagePatterns": ["^@repo/"],
-      "enabled": false
+      "enabled": false,
+      "matchPackageNames": ["/^@repo//"]
     }
   ],
   "updateInternalDeps": true,
