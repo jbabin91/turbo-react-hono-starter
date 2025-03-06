@@ -1,29 +1,21 @@
-import { fixupConfigRules } from '@eslint/compat';
-import js from '@eslint/js';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactJsx from 'eslint-plugin-react/configs/jsx-runtime.js';
-import react from 'eslint-plugin-react/configs/recommended.js';
-import globals from 'globals';
+import { config as reactConfig } from '@repo/eslint-config/react.js';
 
+/** @type {import("eslint").Linter.Config[]} */
 export default [
-  { languageOptions: { globals: globals.browser } },
-  js.configs.recommended,
-  ...fixupConfigRules([
-    {
-      ...react,
-      settings: {
-        react: { version: 'detect' },
+  ...reactConfig,
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.json', './tsconfig.lint.json'],
+        tsconfigRootDir: import.meta.dirname,
       },
     },
-    reactJsx,
-  ]),
+  },
+  // Additional frontend-specific overrides if needed
   {
-    plugins: {
-      'react-hooks': reactHooks,
-    },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      // Add any app-specific rule overrides here
     },
   },
-  { ignores: ['dist/'] },
 ];
