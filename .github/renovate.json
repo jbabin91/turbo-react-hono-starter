@@ -1,0 +1,58 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":semanticCommitScope(dependencies)",
+    ":rebaseStalePrs"
+  ],
+  "timezone": "America/Chicago",
+  "schedule": ["on the first day of the month"],
+  "commitMessageExtra": "from {{{currentVersion}}} to {{{newVersion}}}",
+  "commitMessageTopic": "{{depName}}",
+  "commitBody": "Updates {{depName}} from version {{currentVersion}} to {{newVersion}}.\n\nFor details see: {{{sourceUrl}}}",
+  "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}{{{configDescription}}}{{{footer}}}",
+  "stabilityDays": 3,
+  "prCreation": "not-pending",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "📦 Dependency Dashboard",
+  "major": {
+    "stabilityDays": 7
+  },
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "automerge": false,
+    "stabilityDays": 0
+  },
+  "packageRules": [
+    {
+      "description": "Group all non-major updates together",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
+      "schedule": ["on the first day of the month"]
+    },
+    {
+      "description": "Group all major updates together",
+      "matchUpdateTypes": ["major"],
+      "groupName": "all major dependencies",
+      "groupSlug": "all-major",
+      "labels": ["dependencies", "breaking"],
+      "schedule": ["on the first day of the month"]
+    },
+    {
+      "description": "Disable updates for internal packages",
+      "matchPackagePatterns": ["^@repo/"],
+      "enabled": false
+    }
+  ],
+  "updateInternalDeps": true,
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "postUpdateOptions": ["pnpmDedupe"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["on the first day of the month"]
+  },
+  "ignoreDeps": []
+}
