@@ -1,0 +1,375 @@
+---
+description: ENFORCE Zod validation patterns when creating or modifying data schemas
+globs: ["packages/**/*.schema.ts", "apps/**/schemas/**/*.ts", "apps/**/validations/**/*.ts"]
+---
+
+# Zod Validation Standards
+
+<version>1.0.0</version>
+
+## Context
+
+- Defines standards for Zod schema creation and usage
+- Ensures consistent validation patterns
+- Maintains type safety across application
+- Integrates with React Hook Form
+- Supports API request/response validation
+- Enables runtime type checking
+
+## Requirements
+
+### Schema Organization
+
+- [ ] Use feature-based schema files
+- [ ] Create reusable base schemas
+- [ ] Implement proper error messages
+- [ ] Version schema changes
+- [ ] Document complex validations
+- [ ] Include type exports
+- [ ] Define transformation rules
+
+### Integration Points
+
+- [ ] React Hook Form integration
+- [ ] API validation
+- [ ] Database schema alignment
+- [ ] Client-side validation
+- [ ] Error message handling
+- [ ] Custom validation rules
+
+## Standards
+
+### Base Schema Patterns
+
+<example>
+    // typescript
+    import { z } from 'zod'
+
+    // Define base schemas for reuse
+    const baseUserSchema = z.object({
+      email: z
+        .string()
+        .email('Invalid email address')
+        .min(5, 'Email too short')
+        .max(255, 'Email too long'),
+      password: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+          'Password must contain uppercase, lowercase, and number'
+        )
+    })
+
+    // Extend base schemas
+    export const createUserSchema = baseUserSchema.extend({
+      confirmPassword: z.string()
+    }).refine(
+      (data) => data.password === data.confirmPassword,
+      {
+        message: 'Passwords do not match',
+        path: ['confirmPassword']
+      }
+    )
+
+    // Export types
+    export type CreateUserInput = z.infer<typeof createUserSchema>
+</example>
+
+### Form Integration
+
+<example>
+    // typescript
+    import { useForm } from 'react-hook-form'
+    import { zodResolver } from '@hookform/resolvers/zod'
+    import { createUserSchema, type CreateUserInput } from './schemas/user'
+
+    export function SignupForm() {
+      const form = useForm<CreateUserInput>({
+        resolver: zodResolver(createUserSchema),
+        defaultValues: {
+          email: '',
+          password: '',
+          confirmPassword: ''
+        }
+      })
+
+      return (
+        <form onSubmit={form.handleSubmit(async (data) => {
+          // Type-safe data
+          await createUser(data)
+        })}>
+          <input
+            {...form.register('email')}
+            type="email"
+            aria-invalid={!!form.formState.errors.email}
+          />
+          {form.formState.errors.email && (
+            <p role="alert">{form.formState.errors.email.message}</p>
+          )}
+          {/* ... other fields */}
+        </form>
+      )
+    }
+</example>
+
+### API Validation
+
+<example>
+    // typescript
+    import { z } from 'zod'
+    import { createRoute } from '@hono/openapi'
+
+    // Define request schema
+    const searchParamsSchema = z.object({
+      query: z.string().min(1).max(100),
+      page: z.coerce.number().int().min(1).default(1),
+      limit: z.coerce.number().int().min(1).max(100).default(20)
+    })
+
+    // Create route with validation
+    const route = createRoute({
+      method: 'get',
+      path: '/search',
+      request: {
+        query: searchParamsSchema
+      },
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              schema: z.object({
+                results: z.array(itemSchema),
+                total: z.number(),
+                page: z.number(),
+                limit: z.number()
+              })
+            }
+          }
+        }
+      }
+    })
+
+    app.openapi(route, async (c) => {
+      // Params are validated and typed
+      const params = c.req.valid('query')
+      const results = await search(params)
+      return c.json(results)
+    })
+</example>
+
+### Complex Validations
+
+<example>
+    // typescript
+    import { z } from 'zod'
+
+    // Custom validation with context
+    const transferSchema = z.object({
+      fromAccount: z.string().uuid(),
+      toAccount: z.string().uuid(),
+      amount: z.number().positive()
+    }).superRefine((data, ctx) => {
+      if (data.fromAccount === data.toAccount) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Cannot transfer to same account',
+          path: ['toAccount']
+        })
+      }
+    })
+
+    // Async validation
+    const emailSchema = z.string().email().superRefine(async (email, ctx) => {
+      const exists = await checkEmailExists(email)
+      if (exists) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Email already registered'
+        })
+      }
+    })
+
+    // Union types with validation
+    const paymentMethodSchema = z.discriminatedUnion('type', [
+      z.object({
+        type: z.literal('card'),
+        cardNumber: z.string().regex(/^\d{16}$/),
+        expiry: z.string().regex(/^\d{2}\/\d{2}$/),
+        cvv: z.string().regex(/^\d{3,4}$/)
+      }),
+      z.object({
+        type: z.literal('bank'),
+        accountNumber: z.string(),
+        routingNumber: z.string()
+      })
+    ])
+</example>
+
+### API Input Validation
+
+<example>
+    // typescript
+    import { z } from 'zod'
+    import { createRoute } from '@hono/openapi'
+
+    // Define comprehensive validation schema
+    const createUserSchema = z.object({
+      email: z
+        .string()
+        .email('Invalid email format')
+        .transform((email) => email.toLowerCase()),
+      password: z
+        .string()
+        .min(8, 'Password must be at least 8 characters')
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+          'Password must include uppercase, lowercase, number, and special character'
+        ),
+      name: z
+        .string()
+        .min(2, 'Name must be at least 2 characters')
+        .max(100, 'Name must be less than 100 characters')
+        .regex(/^[a-zA-Z\s-]+$/, 'Name can only contain letters, spaces, and hyphens'),
+      age: z
+        .number()
+        .int('Age must be a whole number')
+        .min(13, 'Must be at least 13 years old')
+        .max(120, 'Invalid age'),
+      preferences: z.object({
+        theme: z.enum(['light', 'dark', 'system']),
+        notifications: z.boolean(),
+        language: z.string().regex(/^[a-z]{2}-[A-Z]{2}$/)
+      }).strict() // No unknown keys allowed
+    })
+
+    // Use in API route
+    const route = createRoute({
+      method: 'post',
+      path: '/users',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: createUserSchema
+            }
+          }
+        }
+      },
+      responses: {
+        201: {
+          description: 'User created successfully',
+          content: {
+            'application/json': {
+              schema: userResponseSchema
+            }
+          }
+        },
+        400: {
+          description: 'Validation error',
+          content: {
+            'application/json': {
+              schema: z.object({
+                errors: z.array(z.object({
+                  path: z.array(z.string()),
+                  message: z.string()
+                }))
+              })
+            }
+          }
+        }
+      }
+    })
+
+    // Error handling middleware
+    const validationMiddleware = async (c, next) => {
+      try {
+        await next()
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return c.json({
+            errors: error.errors.map(err => ({
+              path: err.path,
+              message: err.message
+            }))
+          }, 400)
+        }
+        throw error
+      }
+    }
+</example>
+
+<example type="invalid">
+    // typescript
+    // Don't use partial validation
+    const schema = z.object({
+      email: z.string(),  // Wrong: Missing email validation
+      age: z.number()     // Wrong: Missing range checks
+    })
+
+    // Don't skip transformation
+    const emailSchema = z.string().email()  // Wrong: Should lowercase
+
+    // Don't use loose type checking
+    const dataSchema = z.object({
+      data: z.any()  // Wrong: Too permissive
+    })
+
+    // Don't mix validation approaches
+    const schema = {
+      name: z.string(),
+      age: (value) => value > 0  // Wrong: Use Zod validators
+    }
+
+    // Don't skip error messages
+    const schema = z.object({
+      title: z.string().min(1)  // Wrong: No error message
+    })
+</example>
+
+### Error Handling
+
+<example>
+    // typescript
+    import { z } from 'zod'
+    import { fromZodError } from 'zod-validation-error'
+
+    // Custom error map
+    z.setErrorMap((issue, ctx) => {
+      switch (issue.code) {
+        case z.ZodIssueCode.invalid_type:
+          return { message: `Expected ${issue.expected}, received ${issue.received}` }
+        default:
+          return { message: ctx.defaultError }
+      }
+    })
+
+    // Error formatting
+    try {
+      const result = schema.parse(data)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Convert to friendly format
+        const validationError = fromZodError(error)
+        console.error(validationError.message)
+      }
+    }
+</example>
+
+<critical>
+- ALWAYS use descriptive error messages
+- NEVER use type assertions over validation
+- Define reusable base schemas
+- Use proper type inference
+- Include validation context
+- Handle async validation properly
+- Format error messages consistently
+- Integrate with form libraries correctly
+- Version breaking schema changes
+- Document complex validation rules
+- Validate ALL inputs before processing
+- Transform data during validation when needed
+- Use strict mode for object validation
+- Implement comprehensive error handling
+- Follow security best practices
+</critical>

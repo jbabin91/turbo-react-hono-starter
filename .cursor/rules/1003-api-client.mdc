@@ -1,0 +1,241 @@
+---
+description: ENFORCE API client generation standards when creating or updating API endpoints
+globs: ["packages/api/**/*.ts", "packages/api-client/**/*.ts"]
+alwaysApply: false
+---
+
+# API Client Generation
+
+<version>1.1.0</version>
+
+## Context
+
+- Defines standards for API client generation using Hono RPC
+- Ensures consistent API interface across packages
+- Maintains type safety between backend and frontend
+- Uses hono-openapi for OpenAPI spec generation and validation
+- Facilitates automatic client generation from OpenAPI specs
+
+## Requirements
+
+### OpenAPI Documentation
+
+- [ ] Document all endpoints using hono-openapi
+- [ ] Define request/response schemas using validation libraries
+- [ ] Include error responses with proper status codes
+- [ ] Specify security requirements
+- [ ] Generate and maintain OpenAPI specs
+- [ ] Set up and maintain Swagger UI documentation
+
+### Client Generation
+
+- [ ] Use Hono RPC with type inference
+- [ ] Generate types from OpenAPI specs
+- [ ] Include proper error handling
+- [ ] Maintain version compatibility
+- [ ] Follow route organization standards
+
+### Validation Libraries
+
+- [ ] Use Zod as primary validation library
+- [ ] Consider Valibot for size-constrained environments
+- [ ] Consider Arktype for performance-critical paths
+- [ ] Maintain consistent validation patterns
+
+## OpenAPI Standards
+
+### Route Definition
+
+<example>
+    // typescript
+    import { createRoute } from '@hono-dev/openapi'
+    import { z } from 'zod'
+
+    const route = createRoute({
+      method: 'post',
+      path: '/posts',
+      tags: ['Posts'],
+      summary: 'Create a new post',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: z.object({
+                title: z.string().min(1),
+                content: z.string().min(1)
+              })
+            }
+          }
+        }
+      },
+      responses: {
+        201: {
+          description: 'Post created successfully',
+          content: {
+            'application/json': {
+              schema: z.object({
+                id: z.string().uuid(),
+                title: z.string(),
+                content: z.string(),
+                createdAt: z.string().datetime()
+              })
+            }
+          }
+        },
+        400: {
+          description: 'Invalid request',
+          content: {
+            'application/json': {
+              schema: z.object({
+                error: z.string(),
+                details: z.array(z.string()).optional()
+              })
+            }
+          }
+        }
+      }
+    })
+
+    export const postsRoute = app.openapi(route, async (c) => {
+      const body = c.req.valid('json')
+      const post = await createPost(body)
+      return c.json(post, 201)
+    })
+</example>
+
+### Error Handling
+
+<example>
+    // typescript
+    // Error type definition
+    const ApiError = z.object({
+      code: z.string(),
+      message: z.string(),
+      details: z.record(z.unknown()).optional()
+    })
+
+    // Route with error handling
+    const route = createRoute({
+      // ... route config
+      responses: {
+        200: {
+          content: { 'application/json': { schema: SuccessSchema } }
+        },
+        400: {
+          content: { 'application/json': { schema: ApiError } }
+        },
+        404: {
+          content: { 'application/json': { schema: ApiError } }
+        }
+      }
+    })
+</example>
+
+### Client Usage with RPC
+
+<example>
+    // typescript
+    import { hc } from 'hono/client'
+    import type { AppType } from './api'
+
+    // Create type-safe client
+    const client = hc<AppType>('http://localhost:3000')
+
+    // Use with full type inference
+    const response = await client.posts.$post({
+      json: {
+        title: 'Hello',
+        content: 'World'
+      }
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      console.log(data.id) // Fully typed
+    } else {
+      const error = await response.json()
+      console.error(error.message) // Fully typed
+    }
+</example>
+
+### Route Organization
+
+<example>
+    // typescript
+    // Feature-based organization
+    src/routes/
+      ├── posts/
+      │   ├── index.ts        // List, create
+      │   ├── [id].ts        // Get, update, delete
+      │   └── schema.ts      // Shared schemas
+      ├── users/
+      │   ├── index.ts
+      │   ├── [id].ts
+      │   └── schema.ts
+      └── index.ts           // Route aggregation
+
+    // Export for RPC
+    export type AppType = typeof app
+</example>
+
+<example type="invalid">
+    // typescript
+    // Don't mix validation libraries
+    import { z } from 'zod'
+    import { v } from 'valibot'
+
+    const route = createRoute({
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: z.object({}) // Using Zod
+            }
+          }
+        },
+        query: v.object({}) // Don't mix with Valibot
+      }
+    })
+
+    // Don't use any or unknown types
+    const BadErrorSchema = z.object({
+      error: z.any() // Wrong: Use specific types
+    })
+
+    // Don't skip status codes
+    return c.json(data) // Wrong: Always specify status
+</example>
+
+### Swagger UI Setup
+
+<example>
+    // typescript
+    import { swaggerUI } from '@hono/swagger-ui'
+
+    // Configure Swagger UI
+    app.doc('/swagger', {
+      openapi: '3.0.0',
+      info: {
+        title: 'API Documentation',
+        version: '1.0.0'
+      },
+      servers: [
+        {
+          url: 'http://localhost:3000',
+          description: 'Development server'
+        }
+      ]
+    })
+
+    // Mount Swagger UI
+    app.get('/docs', swaggerUI({ url: '/swagger' }))
+</example>
+
+<critical>
+- ALWAYS use hono-openapi for route definitions
+- NEVER mix validation libraries in the same route
+- Document all endpoints completely
+- Maintain type safety end-to-end
+- Always specify status codes
+- Keep route organization consistent
+</critical>

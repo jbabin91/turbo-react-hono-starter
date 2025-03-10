@@ -1,0 +1,388 @@
+---
+description: ENFORCE OpenAPI standards when creating or modifying Hono API endpoints
+globs: ["packages/api/**/*.ts", "apps/**/routes/**/*.ts"]
+---
+
+# Hono OpenAPI Standards
+
+<version>1.0.0</version>
+
+## Context
+
+- Defines standards for OpenAPI integration with Hono
+- Ensures consistent API documentation
+- Maintains type safety between schema and implementation
+- Leverages hono-openapi for route validation
+- Automates API client generation
+
+## Requirements
+
+### Schema Organization
+
+- [ ] Use feature-based schema structure
+- [ ] Define reusable components
+- [ ] Maintain consistent naming
+- [ ] Version API endpoints
+- [ ] Document security schemes
+- [ ] Include comprehensive examples
+- [ ] Define error responses
+
+### Type Generation
+
+- [ ] Generate TypeScript types from schema
+- [ ] Use generated types in routes
+- [ ] Maintain schema-type consistency
+- [ ] Version type definitions
+- [ ] Include JSDoc comments
+
+## Standards
+
+### Schema Definition
+
+<example>
+    // typescript
+    import { createRoute } from '@hono/openapi'
+
+    // Define schema with type inference
+    const route = createRoute({
+      method: 'post',
+      path: '/posts',
+      request: {
+        body: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string', minLength: 1 },
+                  content: { type: 'string' },
+                  tags: {
+                    type: 'array',
+                    items: { type: 'string' }
+                  }
+                },
+                required: ['title', 'content']
+              }
+            }
+          }
+        }
+      },
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  title: { type: 'string' },
+                  content: { type: 'string' },
+                  createdAt: { type: 'string', format: 'date-time' }
+                },
+                required: ['id', 'title', 'content', 'createdAt']
+              }
+            }
+          },
+          description: 'Post created successfully'
+        },
+        400: {
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Error'
+              }
+            }
+          },
+          description: 'Invalid request body'
+        }
+      }
+    })
+
+    // Use in route handler with type inference
+    app.openapi(route, async (c) => {
+      const data = await c.req.json()
+      // TypeScript knows data structure
+      return c.json({
+        id: crypto.randomUUID(),
+        ...data,
+        createdAt: new Date().toISOString()
+      })
+    })
+</example>
+
+### Component Reuse
+
+<example>
+    // typescript
+    import { z } from 'zod'
+    import { createRoute } from '@hono/openapi'
+
+    // Define reusable components
+    const components = {
+      schemas: {
+        Error: {
+          type: 'object',
+          properties: {
+            code: { type: 'integer' },
+            message: { type: 'string' }
+          },
+          required: ['code', 'message']
+        },
+        Pagination: {
+          type: 'object',
+          properties: {
+            page: { type: 'integer', minimum: 1 },
+            limit: { type: 'integer', minimum: 1, maximum: 100 }
+          }
+        }
+      },
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer'
+        }
+      }
+    }
+
+    // Use in route definition
+    const route = createRoute({
+      method: 'get',
+      path: '/posts',
+      security: [{ bearerAuth: [] }],
+      parameters: [{
+        name: 'page',
+        in: 'query',
+        schema: components.schemas.Pagination
+      }],
+      responses: {
+        401: {
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Error'
+              }
+            }
+          }
+        }
+      }
+    })
+</example>
+
+### API Documentation
+
+<example>
+    // typescript
+    import { OpenAPIHono } from '@hono/openapi'
+
+    const app = new OpenAPIHono()
+
+    // Configure OpenAPI documentation
+    app.doc('/docs', {
+      openapi: '3.1.0',
+      info: {
+        title: 'My API',
+        version: '1.0.0',
+        description: 'API documentation',
+        contact: {
+          name: 'API Support',
+          email: 'support@example.com'
+        }
+      },
+      servers: [{
+        url: 'https://api.example.com',
+        description: 'Production server'
+      }],
+      components,
+      security: [{
+        bearerAuth: []
+      }]
+    })
+
+    // Routes will be automatically documented
+    app.openapi(route, handler)
+</example>
+
+<example type="invalid">
+    // typescript
+    // Don't mix schema and implementation
+    app.post('/posts', (c) => {
+      const data = c.req.json()
+      // Wrong: No schema validation
+      return c.json(data)
+    })
+
+    // Don't use inline types
+    const route = createRoute({
+      // Wrong: Define in components
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {} // Inline schema
+              }
+            }
+          }
+        }
+      }
+    })
+
+    // Don't skip error responses
+    const route = createRoute({
+      method: 'post',
+      path: '/posts',
+      responses: {
+        200: {} // Wrong: Missing error cases
+      }
+    })
+</example>
+
+### Client Generation
+
+<example>
+    // typescript
+    import { generateClient } from '@hono/openapi-client'
+
+    // Generate type-safe client
+    const client = generateClient({
+      apiName: 'MyAPI',
+      baseUrl: 'https://api.example.com',
+      schema: app.getOpenAPI()
+    })
+
+    // Use with full type safety
+    const response = await client.posts.$post({
+      json: {
+        title: 'Hello',
+        content: 'World'
+      }
+    })
+</example>
+
+### RESTful API Standards
+
+<example>
+    // typescript
+    import { createRoute } from '@hono/openapi'
+
+    // Resource-based routing
+    const routes = {
+      // Collection endpoints
+      list: createRoute({
+        method: 'get',
+        path: '/posts',
+        summary: 'List all posts',
+        tags: ['Posts'],
+        request: {
+          query: paginationSchema
+        },
+        responses: {
+          200: { content: { 'application/json': { schema: postListSchema } } }
+        }
+      }),
+
+      // Single resource endpoints
+      create: createRoute({
+        method: 'post',
+        path: '/posts',
+        summary: 'Create a new post',
+        tags: ['Posts'],
+        request: {
+          body: { content: { 'application/json': { schema: createPostSchema } } }
+        },
+        responses: {
+          201: { content: { 'application/json': { schema: postSchema } } }
+        }
+      }),
+
+      // Nested resources
+      comments: createRoute({
+        method: 'get',
+        path: '/posts/{postId}/comments',
+        summary: 'List comments for a post',
+        tags: ['Comments'],
+        request: {
+          params: z.object({
+            postId: z.string().uuid()
+          })
+        },
+        responses: {
+          200: { content: { 'application/json': { schema: commentListSchema } } }
+        }
+      }),
+
+      // Actions/operations
+      publish: createRoute({
+        method: 'post',
+        path: '/posts/{postId}/publish',
+        summary: 'Publish a post',
+        tags: ['Posts'],
+        request: {
+          params: z.object({
+            postId: z.string().uuid()
+          })
+        },
+        responses: {
+          200: { content: { 'application/json': { schema: postSchema } } }
+        }
+      })
+    }
+
+    // Implementation with proper status codes
+    app.openapi(routes.create, async (c) => {
+      const post = await createPost(c.req.valid('json'))
+      return c.json(post, 201)  // Created
+    })
+
+    app.openapi(routes.list, async (c) => {
+      const posts = await listPosts(c.req.valid('query'))
+      return c.json(posts, 200)  // OK
+    })
+
+    app.openapi(routes.publish, async (c) => {
+      const post = await publishPost(c.req.param('postId'))
+      if (!post) throw new HTTPException(404)  // Not Found
+      return c.json(post, 200)  // OK
+    })
+</example>
+
+<example type="invalid">
+    // typescript
+    // Don't use verbs in paths
+    app.post('/searchPosts', (c) => {})  // Wrong: Use GET /posts?q=...
+
+    // Don't use inconsistent pluralization
+    app.get('/user', (c) => {})  // Wrong: Use /users
+    app.get('/posts', (c) => {})
+
+    // Don't mix resource levels
+    app.get('/posts/recent/comments/5', (c) => {})  // Wrong: Too nested
+
+    // Don't use wrong methods
+    app.get('/posts/delete/5', (c) => {})  // Wrong: Use DELETE /posts/5
+
+    // Don't return wrong status codes
+    app.post('/posts', async (c) => {
+      const post = await createPost()
+      return c.json(post, 200)  // Wrong: Use 201 for creation
+    })
+</example>
+
+<critical>
+- ALWAYS define schemas in components when reusable
+- NEVER mix schema definition with implementation
+- Use OpenAPI 3.1.0 or higher
+- Include all possible response types
+- Document security requirements
+- Generate and use type-safe clients
+- Validate requests against schema
+- Keep schema and types in sync
+- Include comprehensive examples
+- Document error responses
+- Follow RESTful naming conventions
+- Use correct HTTP methods
+- Return appropriate status codes
+- Structure endpoints consistently
+- Document all endpoints completely
+</critical>
