@@ -1,6 +1,7 @@
 ---
 description: ALWAYS use when writing or reviewing TypeScript code to ensure consistent quality and maintainability
 globs: "**/*.{ts,tsx}"
+alwaysApply: false
 ---
 
 # TypeScript and Code Quality Standards
