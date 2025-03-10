@@ -1,0 +1,273 @@
+---
+description: ALWAYS use when creating or modifying React components to ensure consistent structure and best practices
+globs: "**/components/**/*.tsx"
+alwaysApply: false
+---
+
+# React Component Standards
+
+<version>1.0.0</version>
+
+## Context
+
+- Applied to all React components across packages
+- Ensures consistent component architecture
+- Promotes maintainable and performant code
+- Leverages React 19 and modern tooling
+
+## Requirements
+
+- [ ] Use functional components with kebab-case naming
+- [ ] Follow component location conventions
+- [ ] Apply Tailwind CSS for styling
+- [ ] Implement proper state management
+- [ ] Include component documentation
+- [ ] Write required tests
+- [ ] Use proper type definitions
+
+## Styling
+
+### Tailwind CSS v4 Setup
+
+#### Performance
+
+- Use `@layer` for custom utilities
+- Avoid unnecessary class repetition
+- Leverage CSS variables for themes
+- Keep specificity low
+
+<example>
+@layer utilities {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) transparent;
+  }
+}
+
+function ScrollArea({ children }: PropsWithChildren) {
+  return (
+    <div className="custom-scrollbar overflow-auto">
+      {children}
+    </div>
+  );
+}
+</example>
+
+#### Plugins
+
+- Use `@plugin` directive for custom plugins
+- Import plugins using CSS imports
+- Configure plugin options in CSS
+- Keep plugin-specific styles in separate files
+- Follow plugin-specific naming conventions
+- Use plugin features through utility classes
+
+##### Plugin Setup
+
+<example>
+/* plugins.css */
+@import "@tailwindcss/forms";
+@import "@tailwindcss/typography";
+@import "@tailwindcss/aspect-ratio";
+@import "@tailwindcss/container-queries";
+
+/* Configure plugins with @plugin directive */
+@plugin forms {
+  strategy: class;
+  className: form-input;
+}
+
+@plugin typography {
+  className: prose;
+  rhythm: true;
+  vertical: true;
+}
+
+@plugin container-queries {
+  prefix: cq;
+}
+</example>
+
+##### Plugin Usage
+
+<example>
+/* Component with multiple plugin features */
+function BlogPost({ post }: BlogPostProps) {
+  return (
+    <article className="prose prose-lg dark:prose-invert">
+      {/* Typography plugin styles */}
+      <h1>{post.title}</h1>
+      <div className="lead">{post.excerpt}</div>
+
+      {/* Forms plugin */}
+      <form className="mt-6 space-y-4">
+        <input
+          type="email"
+          className="form-input px-4 py-2 w-full"
+          placeholder="Subscribe to newsletter"
+        />
+        <button className="form-submit">Subscribe</button>
+      </form>
+
+      {/* Aspect ratio plugin */}
+      <figure className="aspect-w-16 aspect-h-9 my-8">
+        <img
+          src={post.image}
+          alt={post.imageAlt}
+          className="object-cover rounded-lg"
+        />
+      </figure>
+
+      {/* Container queries plugin */}
+      <div className="@container">
+        <div className="@lg:grid @lg:grid-cols-2 gap-4">
+          {post.content}
+        </div>
+      </div>
+    </article>
+  );
+}
+</example>
+
+##### Plugin Best Practices
+
+- Import plugins in a dedicated CSS file
+- Configure plugins using the `@plugin` directive
+- Use plugin utilities with their intended semantics
+- Follow plugin documentation for proper usage
+- Keep plugin configurations separate and organized
+- Test plugin features across different viewports
+
+<example type="invalid">
+// Don't mix plugin imports and configurations
+@import "@tailwindcss/forms";
+.form-input {
+  @apply border-primary; /* Don't override plugin styles directly */
+}
+
+// Don't use @variants with plugin classes
+@variants hover, focus {
+  .prose {
+    @apply text-lg; /* Don't modify plugin classes with variants */
+  }
+}
+
+// Don't nest plugin configurations
+@plugin forms {
+  @plugin typography { /* Don't nest plugin configs */
+    className: prose;
+  }
+}
+</example>
+
+### Adding shadcn Components
+
+<example>
+    // bash
+    # Add components (in ui package)
+    pnpm dlx shadcn@canary add button
+    pnpm dlx shadcn@canary add card
+</example>
+
+### CSS Guidelines
+
+- Use Tailwind CSS classes for styling
+- Avoid inline styles
+- Use CSS variables for dynamic values
+- Follow responsive design patterns
+- Keep styles modular and reusable
+
+<example>
+function Card({ children }: PropsWithChildren) {
+  return (
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <div className="p-6">{children}</div>
+    </div>
+  );
+}
+</example>
+
+<example type="invalid">
+// Don't use inline styles
+function Card({ children }) {
+  return (
+    <div style={{
+      padding: '1.5rem',
+      borderRadius: '0.5rem'
+    }}>
+      {children}
+    </div>
+  );
+}
+</example>
+
+## Testing
+
+### Unit Tests (Vitest + React Testing Library)
+
+- Test component rendering
+- Test user interactions
+- Test state changes
+- Test error states
+
+<example>
+import { render, screen } from '@testing-library/react';
+import { expect, test } from 'vitest';
+import { Button } from './button';
+
+test('renders button with text', () => {
+  render(<Button>Click me</Button>);
+  expect(screen.getByText('Click me')).toBeInTheDocument();
+});
+</example>
+
+### E2E Tests (Playwright)
+
+- Test critical user flows
+- Test component integration
+- Test responsive behavior
+
+<example>
+test('user can submit login form', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('[name=email]', 'user@example.com');
+  await page.fill('[name=password]', 'password');
+  await page.click('button[type=submit]');
+  await expect(page).toHaveURL('/dashboard');
+});
+</example>
+
+## Documentation
+
+### Component Stories
+
+- Create stories for all UI components
+- Include different variants and states
+- Document props and usage
+
+<example>
+// button.stories.tsx
+export default {
+  title: 'Components/Button',
+  component: Button,
+  args: {
+    children: 'Button',
+    variant: 'default',
+  },
+} satisfies Meta<typeof Button>;
+
+export const Default: Story = {};
+export const Secondary: Story = {
+  args: {
+    variant: 'secondary',
+  },
+};
+</example>
+
+<critical>
+- ALWAYS use functional components
+- NEVER use inline styles
+- Keep components focused and single-purpose
+- Follow proper state management patterns
+- Include required tests
+</critical>
