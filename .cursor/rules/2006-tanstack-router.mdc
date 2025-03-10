@@ -1,0 +1,215 @@
+---
+description: ENFORCE TanStack Router standards when creating or modifying routes to ensure consistent routing patterns and type safety
+globs: src/**/routes/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# TanStack Router Standards
+
+<version>1.0.0</version>
+
+## Table of Contents
+
+- [Context](#context)
+- [Requirements](#requirements)
+  - [Route Organization](#route-organization)
+  - [Route Definition](#route-definition)
+  - [Type Safety](#type-safety)
+  - [Data Integration](#data-integration)
+  - [Authentication & Authorization](#authentication--authorization)
+  - [Performance](#performance)
+- [Examples](#examples)
+
+## Context
+
+- When defining new routes or modifying existing ones
+- When implementing route components and handlers
+- When setting up route configurations and loaders
+- When managing route parameters and search params
+
+> 💡 **Tip:** Always consider the relationship between routes when organizing your file structure.
+
+## Requirements
+
+### Route Organization
+
+- [ ] Place all route definitions in `src/routes` directory
+- [ ] Use TanStack Router's file-based routing conventions:
+  - Use `__root.tsx` for root layout
+  - Use `_pathless.tsx` for pathless layouts
+  - Use `$param` for dynamic parameters (not `[param]`)
+  - Use `.tsx` extension for route files
+- [ ] Choose appropriate routing style based on nesting depth:
+  - Use directory-based for wide, shallow route trees
+  - Use flat (dot-notation) for deep, specific routes
+  - Mix both styles where appropriate
+- [ ] Group related routes in feature-specific subdirectories
+- [ ] Implement route components in separate files from route definitions
+
+> ℹ️ **Note:** Directory-based routing is preferred for feature organization, while flat routing is better for deeply nested routes.
+
+### Route Definition
+
+- [ ] Define routes using the createFileRoute helper
+- [ ] Implement proper type safety for route params and search params
+- [ ] Use zod for validating route parameters
+- [ ] Implement proper error boundaries for route components
+- [ ] Define loaders and actions in separate files with `.loader.ts` and `.action.ts` extensions
+
+### Type Safety
+
+- [ ] Use proper type inference for route params
+- [ ] Define search params using zod schemas
+- [ ] Implement proper error types for route errors
+- [ ] Use type-safe links with `Link` component
+
+### Data Integration
+
+- [ ] Use TanStack Query for data management:
+  - Integrate loaders with `useQuery`
+  - Use `queryClient.prefetchQuery` for route preloading
+  - Implement mutations with proper invalidation
+  - Share types between route loaders and query hooks
+- [ ] Structure API integration:
+  - Use generated API types from Hono OpenAPI
+  - Keep API client instantiation in loaders
+  - Handle API errors consistently
+  - Implement proper retry and error recovery
+
+### Authentication & Authorization
+
+- [ ] Integrate with better-auth:
+  - Use auth guards in route definitions
+  - Handle unauthorized access with proper redirects
+  - Implement login/logout flows
+  - Manage auth state across routes
+- [ ] Implement route protection:
+  - Use `beforeLoad` for auth checks
+  - Handle token refresh in route guards
+  - Implement role-based access control
+  - Manage authenticated layouts
+
+### Performance
+
+- [ ] Use automatic code-splitting provided by the TanStack Router bundler plugin:
+  - Do NOT manually create `.lazy.tsx` files
+  - Do NOT use `createLazyFileRoute` or `Route.lazy()`
+  - Let the bundler handle code-splitting automatically
+- [ ] Optimize data loading:
+  - Implement parallel route loading where possible
+  - Use deferred data loading for non-critical data
+  - Implement proper suspense boundaries
+  - Use proper error boundaries for failed loads
+- [ ] Implement proper caching:
+  - Configure TanStack Query cache lifetime
+  - Use staleTime and gcTime appropriately
+  - Implement optimistic updates
+  - Handle cache invalidation properly
+- [ ] Route optimization:
+  - Use preload hints for critical routes
+  - Implement proper loading states
+  - Use search param serialization
+  - Optimize route transitions
+
+## Examples
+
+<example>
+    // typescript
+    // Directory-based routing example
+    // src/routes/__root.tsx
+    import { createRootRoute } from '@tanstack/react-router'
+    import { z } from 'zod'
+
+    export const Route = createRootRoute({
+      validateSearch: z.object({
+        q: z.string().optional()
+      }),
+      component: RootLayout
+    })
+</example>
+
+<example>
+    // typescript
+    // Flat routing example
+    // src/routes/users.$userId.profile.tsx
+    import { createFileRoute } from '@tanstack/react-router'
+    import { z } from 'zod'
+
+    export const Route = createFileRoute('/users/$userId/profile')({
+      parseParams: (params) => ({
+        userId: z.string().parse(params.userId)
+      }),
+      loader: async ({ params }) => {
+        return fetchUserProfile(params.userId)
+      },
+      component: UserProfilePage
+    })
+</example>
+
+<example>
+    // typescript
+    // Directory structure example
+    /*
+    src/routes/
+    ├── __root.tsx
+    ├── index.tsx
+    ├── about.tsx
+    ├── dashboard/
+    │   ├── _layout.tsx
+    │   ├── index.tsx
+    │   └── projects/
+    │       ├── index.tsx
+    │       ├── $projectId.tsx
+    │       └── $projectId.settings.tsx
+    └── users/
+        ├── $userId.tsx
+        └── $userId.profile.tsx
+    */
+</example>
+
+<example>
+    // typescript
+    // Good: TanStack Query Integration
+    // src/routes/dashboard/projects/$projectId/route.tsx
+    import { createFileRoute } from '@tanstack/react-router'
+    import { ProjectDetails } from './ProjectDetails'
+    import { queryClient } from '@/lib/query'
+    import { projectKeys } from '@/lib/query/keys'
+    import { type Project } from '@/types/api'
+
+    export const Route = createFileRoute('/dashboard/projects/$projectId')({
+      beforeLoad: ({ params }) => {
+        return queryClient.prefetchQuery({
+          queryKey: projectKeys.detail(params.projectId),
+          queryFn: () => api.projects.getById(params.projectId)
+        })
+      },
+      loader: async ({ params }) => {
+        return queryClient.ensureQueryData({
+          queryKey: projectKeys.detail(params.projectId),
+          queryFn: () => api.projects.getById(params.projectId)
+        })
+      },
+      component: ProjectDetails
+    })
+</example>
+
+<example type="invalid">
+    // typescript
+    // Bad: Manual code-splitting (not needed)
+    // src/routes/dashboard.lazy.tsx
+    import { createLazyFileRoute } from '@tanstack/react-router'
+
+    export const Route = createLazyFileRoute('/dashboard')({
+      component: DashboardPage
+    })
+</example>
+
+<critical>
+- NEVER use manual code-splitting with `.lazy` files
+- ALWAYS use `beforeLoad` for auth checks, not loaders
+- ALWAYS separate route components from route definitions
+- NEVER skip error boundaries and loading states
+- ALWAYS use proper type inference and validation
+- ALWAYS follow the file organization patterns
+</critical>
