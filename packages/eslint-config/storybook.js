@@ -18,7 +18,6 @@ export const config = tseslint.config(
     rules: {
       // Allow default exports for stories
       'import-x/no-default-export': 'off',
-
       // Allow props spreading in stories
       'react/jsx-props-no-spreading': 'off',
     },
