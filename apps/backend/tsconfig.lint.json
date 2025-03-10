@@ -1,4 +1,4 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "include": ["eslint.config.js"]
+  "include": ["eslint.config.js", "rslib.config.ts"]
 }
