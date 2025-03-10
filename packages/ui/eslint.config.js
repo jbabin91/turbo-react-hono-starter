@@ -1,8 +1,10 @@
 import { config as reactConfig } from '@repo/eslint-config/react.js';
+import { config as storybookConfig } from '@repo/eslint-config/storybook.js';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
   ...reactConfig,
+  ...storybookConfig,
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
