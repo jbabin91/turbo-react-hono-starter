@@ -58,6 +58,7 @@
   ],
   "exclude": [
     "${configDir}/node_modules",
+    "${configDir}/coverage",
     "${configDir}/dist",
     "${configDir}/storybook-static",
     "${configDir}/playwright-report",
