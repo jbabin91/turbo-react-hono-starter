@@ -1,0 +1,106 @@
+---
+description: ENFORCE test organization standards when creating or updating tests
+globs: ["**/tests/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"]
+alwaysApply: false
+---
+
+# Test Organization
+
+<version>1.0.0</version>
+
+## Context
+
+- Defines standards for test organization and naming
+- Ensures consistent test structure across packages
+- Makes tests easy to find and maintain
+- Facilitates test coverage reporting
+
+## Requirements
+
+### Test File Location
+
+- [ ] Place unit tests next to source files with `.test.ts` suffix
+- [ ] Place integration tests in `tests/integration/`
+- [ ] Place E2E tests in `tests/e2e/`
+- [ ] Group test utilities in `tests/utils/`
+- [ ] Store test fixtures in `tests/fixtures/`
+
+### Test File Naming
+
+- [ ] Use `.test.ts` suffix for unit tests
+- [ ] Use `.spec.ts` suffix for integration tests
+- [ ] Use `.e2e.ts` suffix for E2E tests
+- [ ] Match test file name to source file
+- [ ] Use descriptive names for test suites
+
+## Examples
+
+### Unit Tests
+
+<example>
+    // src/components/button.tsx
+    export const Button = () => {}
+
+    // src/components/button.test.tsx
+    import { Button } from './button'
+
+    describe('Button', () => {
+        it('renders correctly', () => {})
+        it('handles click events', () => {})
+    })
+</example>
+
+### Integration Tests
+
+<example>
+    // tests/integration/api/auth.spec.ts
+    import { app } from '../../src/app'
+
+    describe('Auth API', () => {
+        it('handles login flow', async () => {})
+        it('manages sessions correctly', async () => {})
+    })
+</example>
+
+### E2E Tests
+
+<example>
+    // tests/e2e/login.e2e.ts
+    import { test, expect } from '@playwright/test'
+
+    test('user can log in', async ({ page }) => {
+        await page.goto('/login')
+        await page.fill('[name=email]', 'user@example.com')
+        await page.click('button[type=submit]')
+        await expect(page).toHaveURL('/dashboard')
+    })
+</example>
+
+### Test Utils and Fixtures
+
+<example>
+    // tests/utils/test-utils.ts
+    export const createTestUser = () => {}
+
+    // tests/fixtures/users.ts
+    export const testUsers = [
+        { id: 1, name: 'Test User' }
+    ]
+</example>
+
+<example type="invalid">
+    // Don't mix test types
+    // src/components/button.spec.tsx  # Wrong: Integration test in source
+    // src/components/button.e2e.ts    # Wrong: E2E test in source
+
+    // Don't use inconsistent suffixes
+    // button.test.spec.ts            # Wrong: Mixed suffixes
+    // buttonTest.ts                  # Wrong: Not using standard suffix
+</example>
+
+<critical>
+- ALWAYS place tests in appropriate directories
+- NEVER mix different types of tests
+- Use consistent naming conventions
+- Keep test files organized and maintainable
+</critical>
