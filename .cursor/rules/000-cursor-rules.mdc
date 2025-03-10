@@ -1,6 +1,7 @@
 ---
 description: Use ALWAYS when creating, updating, or learning rules to ensure consistent rule format
 globs: .cursor/rules/*.mdc
+alwaysApply: false
 ---
 
 # Cursor Rules Format
@@ -9,33 +10,34 @@ globs: .cursor/rules/*.mdc
 
 ## Quick Start Template
 
-```mdc
----
-description: ACTION when TRIGGER to OUTCOME
-globs: path/to/*.{ext}
----
-
-# Rule Title
-
-## Context
-- When this rule applies
-- Required conditions
-
-## Requirements
-- [ ] Requirement 1
-- [ ] Requirement 2
-
-## Examples
 <example>
-// Good example
-const goodExample = true;
-</example>
+    // mdc
+    ---
+    description: ACTION when TRIGGER to OUTCOME
+    globs: path/to/*.{ext}
+    ---
 
-<example type="invalid">
-// Bad example
-const badExample = false;
+    # Rule Title
+
+    ## Context
+    - When this rule applies
+    - Required conditions
+
+    ## Requirements
+    - [ ] Requirement 1
+    - [ ] Requirement 2
+
+    ## Examples
+    <example>
+        // Good example
+        const goodExample = true;
+    </example>
+
+    <example type="invalid">
+        // Bad example
+        const badExample = false;
+    </example>
 </example>
-```
 
 ## Core Structure
 
@@ -43,15 +45,17 @@ const badExample = false;
 
 #### Frontmatter
 
-Only these fields are allowed:
+The following fields are allowed:
 
 - `description`: Must follow ACTION TRIGGER OUTCOME format
 - `globs`: Pattern for matching relevant files and folders
+- `alwaysApply`: Boolean flag indicating if the rule should be applied regardless of glob matches (default: false)
 
 <example>
 ---
 description: ACTION when TRIGGER to OUTCOME
 globs: path/to/*.{ext}
+alwaysApply: false
 ---
 </example>
 
@@ -59,8 +63,7 @@ globs: path/to/*.{ext}
 ---
 description: Some description
 globs: *.{js,ts}
-alwaysApply: false  # Invalid: no other fields allowed
-customField: value  # Invalid: no other fields allowed
+customField: value  # Invalid: only description, globs, and alwaysApply allowed
 ---
 </example>
 
@@ -85,24 +88,29 @@ customField: value  # Invalid: no other fields allowed
 - Tags must be properly nested
 - Content must be indented 2 spaces
 - Closing tags at parent indentation
+- Code blocks within `<example>` tags:
+  - Use indented style (2 spaces)
+  - Do not use fenced code blocks (```)
+  - Language hints should be in comments
+- Do not use outer code blocks around MDC file content
 - Allowed attributes:
   - `type`: Only on `<example>` ("invalid" | "valid")
   - `version`: Only on `<version>` (semver format)
 
 <example>
-<rule>
-  <example type="valid">
-    Good content
-  </example>
-</rule>
+    // typescript
+    function example() {
+        return true;
+    }
 </example>
 
 <example type="invalid">
-<rule>
-<example>
-Bad indentation
-</example>
-</rule>
+```typescript
+// Don't use fenced blocks in MDC files
+function example() {
+    return true;
+}
+```
 </example>
 
 ## File Organization
@@ -158,7 +166,7 @@ Bad indentation
 <critical>
 - NEVER include verbose explanations
 - Keep files concise but impactful
-- Frontmatter: ONLY description and globs
+- Frontmatter: Only use documented fields (description, globs, alwaysApply)
 - Always include validation examples
 </critical>
 

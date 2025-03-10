@@ -1,6 +1,7 @@
 ---
 description: ALWAYS use when writing or updating Markdown files to ensure consistent formatting and readability
 globs: **/*.md
+alwaysApply: false
 ---
 
 # Markdown Documentation Standards
@@ -43,35 +44,35 @@ globs: **/*.md
 
 Common patterns and their correct usage:
 
-```markdown
-# Document Title
-## Section Heading
+<example>
+    // markdown
+    # Document Title
+    ## Section Heading
 
-Regular paragraph with **bold** and *italic* text.
+    Regular paragraph with **bold** and *italic* text.
 
-- List item (2 space indent)
-  - Nested item
-  - Another nested item
+    - List item (2 space indent)
+      - Nested item
+      - Another nested item
 
-1. Ordered list
-2. Second item
+    1. Ordered list
+    2. Second item
 
-[Descriptive Link](mdc:relative/path.md "Optional Title")
+    [Descriptive Link](mdc:relative/path.md "Optional Title")
 
-![Alt text for image](mdc:path/to/image.png "Image Title")
+    ![Alt text for image](mdc:path/to/image.png "Image Title")
 
-> 💡 **Tip:** Callout block
+    > 💡 **Tip:** Callout block
 
-| Column 1 | Column 2 |
-|:---------|:---------|
-| Content  | Content  |
+    | Column 1 | Column 2 |
+    |:---------|:---------|
+    | Content  | Content  |
 
-```typescript
-// Code block with language
-function example(): void {
-  // With comments
-}
-```
+    // Code block with language
+    function example(): void {
+      // With comments
+    }
+</example>
 
 ## Markdown Rules
 
@@ -89,6 +90,7 @@ The following markdownlint rules are explicitly disabled:
 - [`MD036`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md036): Emphasis used instead of a heading
 - [`MD037`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md037): Spaces inside emphasis markers
 - [`MD041`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md041): First line in a file should be a top-level heading
+- [`MD046`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md046): Code block style (disabled to allow indented blocks in MDC files)
 
 ### Heading Rules
 
@@ -156,9 +158,10 @@ The following markdownlint rules are explicitly disabled:
 - [`MD031`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md031): Fenced code blocks should be surrounded by blank lines
 - [`MD038`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md038): No spaces inside code span elements
 - [`MD040`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md040): Fenced code blocks must have a language specified
-- [`MD046`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md046): Code block style must be consistent
 - [`MD048`](mdc:https:/github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md048): Code fence style must be consistent
 - Include code comments when needed
+- Use fenced code blocks (```) in regular markdown files
+- Use indented code blocks (2 spaces) in MDC files within `<example>` tags
 
 <example>
 ```typescript
@@ -269,3 +272,42 @@ graph TD
 - Document breaking changes
 - Keep a changelog for significant updates
 - Follow semver for versioning
+
+## MDC File Handling
+
+MDC files (`.mdc`) are special documentation files that use XML-style tags. They have different rules from regular markdown files:
+
+- Do not use outer code blocks around the entire file content
+- Use indented style (2 spaces) for code blocks within `<example>` tags
+- XML tags are allowed and exempt from MD033 (inline HTML)
+- Code blocks within `<example>` tags should specify language
+- Maintain proper indentation for nested XML tags
+
+<example>
+    # Valid MDC Format
+
+    ## Section
+
+    Content with `inline code`
+
+    <example>
+        // Code with 4-space indentation
+        function example() {
+            return true;
+        }
+    </example>
+</example>
+
+<example type="invalid">
+```
+# Invalid: Don't wrap MDC content in code blocks
+
+## Section
+
+<example>
+```typescript
+// Don't use fenced code blocks in examples
+```
+</example>
+```
+</example>
