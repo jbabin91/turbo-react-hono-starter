@@ -1,0 +1,281 @@
+---
+description: ALWAYS use when writing or reviewing TypeScript code to ensure consistent quality and maintainability
+globs: "**/*.{ts,tsx}"
+---
+
+# TypeScript and Code Quality Standards
+
+<version>1.1.0</version>
+
+## Context
+
+- Applied to all TypeScript and TSX files
+- Ensures consistent code quality across the project
+- Promotes maintainable and readable code
+- Supports team collaboration and code review
+- Enforces ESLint rules and TypeScript best practices
+
+## Requirements
+
+- [ ] Use TypeScript for all new development
+- [ ] Enable strict mode in TypeScript configuration
+- [ ] Write clear, descriptive function and variable names
+- [ ] Add meaningful comments for complex logic
+- [ ] Implement proper type definitions
+- [ ] Follow consistent code formatting
+- [ ] Maintain single responsibility principle
+- [ ] Document public APIs and interfaces
+- [ ] Follow ESLint rules configuration
+- [ ] Use proper import/export syntax
+
+## ESLint Configuration
+
+### TypeScript Rules
+
+- Use `type` over `interface` for type definitions
+- Enforce consistent type exports and imports
+- Allow explicit `any` when necessary
+- Ignore unused variables starting with underscore
+- Require explicit return types for API endpoints
+- Allow flexible promise handling in specific cases
+
+<example>
+// Correct type imports and exports
+import type { User } from './types';
+export type { User };
+
+// Proper type definition
+type UserProfile = {
+  id: string;
+  name: string;
+};
+
+// Allowed underscore prefix for unused
+function transform(_context: Context, data: Data): Result {
+  return processData(data);
+}
+</example>
+
+<example type="invalid">
+// Incorrect type usage
+interface UserProfile {
+  id: string;
+  name: string;
+}
+
+// Missing type imports
+import { User } from './types';
+
+// Poor variable naming
+function x(ctx: any): any {
+  return ctx.data;
+}
+</example>
+
+### Import/Export Rules
+
+- Sort imports and exports
+- No duplicate imports
+- Enforce newline after imports
+- Imports must come first
+- Use inline type imports
+
+<example>
+// Correct import ordering and style
+import type { User } from './types';
+import { useState } from 'react';
+import { api } from './api';
+
+export type { User };
+export const UserComponent = () => {
+  // Implementation
+};
+</example>
+
+<example type="invalid">
+// Poor import structure
+import {api} from './api'
+import type {User} from './types'
+export type {User}
+import {useState} from 'react'
+</example>
+
+## Examples
+
+### Function and Variable Naming
+
+<example>
+// Clear, descriptive naming
+function calculateTotalPrice(items: CartItem[]): number {
+  const itemPrices = items.map(item => item.price);
+  const totalPrice = itemPrices.reduce((sum, price) => sum + price, 0);
+  return totalPrice;
+}
+
+// Type definitions with meaningful names
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
+</example>
+
+<example type="invalid">
+// Unclear naming and poor types
+function calc(i: any[]): number {
+  const x = i.map(y => y.p);
+  const t = x.reduce((s, p) => s + p, 0);
+  return t;
+}
+
+type Item = {
+  a: string;
+  b: string;
+  c: number;
+  d: number;
+};
+</example>
+
+### Comments and Documentation
+
+<example>
+/**
+ * Processes a payment transaction with retry logic.
+ * Attempts up to 3 times with exponential backoff.
+ *
+ * @param amount - Transaction amount in cents
+ * @param currency - ISO currency code
+ * @returns Promise resolving to transaction ID
+ * @throws PaymentError if all retries fail
+ */
+async function processPayment(
+  amount: number,
+  currency: string
+): Promise<string> {
+  // Implementation...
+}
+</example>
+
+<example type="invalid">
+// process payment
+async function pay(a: number, c: string): Promise<string> {
+  // do stuff
+  // retry if fails
+  return id;
+}
+</example>
+
+### Type Usage
+
+<example>
+// Proper type definitions and usage
+interface UserProfile {
+  id: string;
+  email: string;
+  preferences: {
+    theme: 'light' | 'dark';
+    notifications: boolean;
+  };
+}
+
+function updateUserPreferences(
+  userId: string,
+  preferences: Pick<UserProfile, 'preferences'>
+): Promise<void> {
+  // Implementation...
+}
+</example>
+
+<example type="invalid">
+// Poor type usage
+interface User {
+  data: any;
+}
+
+function updateUser(id: any, data: any): void {
+  // Implementation...
+}
+</example>
+
+### Code Organization
+
+<example>
+// Single responsibility principle
+class PaymentProcessor {
+  constructor(private readonly paymentGateway: PaymentGateway) {}
+
+  async processPayment(payment: Payment): Promise<PaymentResult> {
+    await this.validatePayment(payment);
+    return this.paymentGateway.process(payment);
+  }
+
+  private async validatePayment(payment: Payment): Promise<void> {
+    // Validation logic...
+  }
+}
+</example>
+
+<example type="invalid">
+// Mixed responsibilities
+class PaymentHandler {
+  processPayment(payment: any) {
+    // Validation
+    // Database operations
+    // Email notifications
+    // Logging
+    // Error handling
+    // All in one method
+  }
+}
+</example>
+
+<critical>
+- ALWAYS use TypeScript for new development
+- NEVER use `any` type unless absolutely necessary
+- Keep functions focused and single-purpose
+- Document complex logic and public APIs
+- Use proper type definitions
+- Follow ESLint configuration strictly
+</critical>
+
+## Best Practices
+
+### Type Safety
+
+- Enable `strict` mode in `tsconfig.json`
+- Avoid type assertions (`as`) when possible
+- Use proper generics instead of type assertions
+- Define explicit return types for public functions
+
+### Code Organization
+
+- One class/component per file
+- Group related functions and types
+- Keep files under 300 lines
+- Use meaningful file names
+
+### Naming Conventions
+
+- Use PascalCase for types, interfaces, and classes
+- Use camelCase for variables and functions
+- Use UPPER_CASE for constants
+- Prefix private members with underscore
+
+### Documentation
+
+- Document public APIs with JSDoc
+- Explain complex algorithms
+- Include examples for non-obvious usage
+- Document known limitations or edge cases
+
+### ESLint Specific Rules
+
+- Enforce explicit function return types in API endpoints
+- Allow flexible promise handling for specific cases
+- Use consistent type definitions (`type` over `interface`)
+- Sort object keys for better readability
+- Follow proper file naming conventions (camelCase, kebabCase, or pascalCase)
+- Use proper import sorting and organization
+- Enforce explicit module boundary types
+- Handle void returns appropriately in promises

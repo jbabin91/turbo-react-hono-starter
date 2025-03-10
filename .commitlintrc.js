@@ -21,6 +21,7 @@ const scopeOptions = [
   'config', // Build, tool, and environment configurations
   'ci', // CI/CD pipeline and workflows
   'docs', // Documentation updates and improvements
+  'cursor-rules', // Cursor rules updates and improvements
   'changesets', // Changeset related operations
 ];
 

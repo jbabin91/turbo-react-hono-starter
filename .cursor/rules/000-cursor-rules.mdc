@@ -39,6 +39,38 @@ const badExample = false;
 
 ## Core Structure
 
+### Required Fields
+
+#### Frontmatter
+
+Only these fields are allowed:
+
+- `description`: Must follow ACTION TRIGGER OUTCOME format
+- `globs`: Pattern for matching relevant files and folders
+
+<example>
+---
+description: ACTION when TRIGGER to OUTCOME
+globs: path/to/*.{ext}
+---
+</example>
+
+<example type="invalid">
+---
+description: Some description
+globs: *.{js,ts}
+alwaysApply: false  # Invalid: no other fields allowed
+customField: value  # Invalid: no other fields allowed
+---
+</example>
+
+#### Body
+
+- `<version>X.Y.Z</version>`: Semantic version number
+- `context`: Clear usage conditions and prerequisites
+- `requirements`: Actionable, testable items
+- `examples`: At least one valid and one invalid example
+
 ### Required Sections
 
 1. Frontmatter (description + globs)
