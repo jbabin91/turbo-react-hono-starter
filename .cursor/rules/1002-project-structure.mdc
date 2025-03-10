@@ -1,0 +1,127 @@
+---
+description: ENFORCE project structure when creating or modifying packages to ensure consistent organization
+globs: ["**/src/**/*", "packages/**/*", "apps/**/*"]
+alwaysApply: false
+---
+
+# Project Structure
+
+<version>1.0.0</version>
+
+## Context
+
+- Defines the organization of our monorepo
+- Specifies package structure and responsibilities
+- Ensures consistent file organization across packages
+- Makes navigation and development intuitive
+
+## Requirements
+
+### Monorepo Structure
+
+- [ ] Use `packages/` for shared libraries
+- [ ] Use `apps/` for applications
+- [ ] Keep configuration at appropriate levels
+- [ ] Follow package-specific conventions
+
+### Package Organization
+
+#### API Package (`packages/api/`)
+
+<example>
+  // bash
+  packages/api/
+  ├── src/
+  │   ├── auth/              # Feature directory
+  │   │   ├── login.api.ts
+  │   │   ├── auth.service.ts
+  │   │   ├── auth.schema.ts
+  │   │   └── auth.types.ts
+  │   ├── shared/           # Shared utilities and middleware
+  │   │   ├── middleware/
+  │   │   └── utils/
+  │   └── index.ts         # Public API exports
+  ├── tests/               # Test directory
+  ├── package.json
+  └── tsconfig.json
+</example>
+
+#### Frontend App (`apps/frontend/`)
+
+<example>
+  // bash
+  apps/frontend/
+  ├── src/
+  │   ├── components/      # Reusable components
+  │   ├── routes/         # TanStack Router routes
+  │   ├── styles/         # Global styles
+  │   └── index.tsx       # Entry point
+  ├── tests/
+  ├── package.json
+  └── tsconfig.json
+</example>
+
+#### Backend App (`apps/backend/`)
+
+<example>
+  // bash
+  apps/backend/
+  ├── src/
+  │   ├── config/         # App configuration
+  │   ├── server/         # Server setup
+  │   └── index.ts        # Entry point
+  ├── tests/
+  ├── package.json
+  └── tsconfig.json
+</example>
+
+### Directory Conventions
+
+#### Source Code
+
+- Place source code in `src/`
+- Group by feature or responsibility
+- Keep index files at root of directories
+- Use consistent subdirectory names
+
+#### Tests
+
+- Place tests in `tests/` at package root
+- Mirror source directory structure
+- Keep test utilities in `tests/utils/`
+- Place fixtures in `tests/fixtures/`
+
+#### Assets
+
+- Place static assets in `public/`
+- Group by type (images, fonts, etc.)
+- Use lowercase directory names
+
+<example>
+  // bash
+  # Valid package structure
+  packages/
+    ├── api/              # Shared API package
+    ├── ui/               # Shared UI components
+    └── config/           # Shared configuration
+
+  apps/
+    ├── frontend/         # Frontend application
+    └── backend/          # Backend application
+</example>
+
+<example type="invalid">
+  // bash
+  # Invalid structure
+  root/
+    ├── api-package/     # Wrong: Should be in packages/
+    ├── src/            # Wrong: Source should be in package
+    └── frontend/       # Wrong: Should be in apps/
+</example>
+
+<critical>
+- ALWAYS follow the defined package structure
+- NEVER mix application and library code
+- Keep configuration at appropriate levels
+- Maintain consistent directory naming
+</critical>
