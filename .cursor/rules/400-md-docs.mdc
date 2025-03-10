@@ -1,0 +1,271 @@
+---
+description: ALWAYS use when writing or updating Markdown files to ensure consistent formatting and readability
+globs: **/*.md
+---
+
+# Markdown Documentation Standards
+
+<version>1.1.0</version>
+
+## Context
+
+- Applied to all Markdown files in the project
+- Ensures consistent documentation style
+- Promotes accessibility and maintainability
+- Supports both technical and non-technical content
+
+## Requirements
+
+- [ ] Follow official Markdown Guide syntax
+- [ ] Use proper heading hierarchy
+- [ ] Include descriptive alt text for images
+- [ ] Maintain consistent link structure
+- [ ] Add appropriate metadata
+- [ ] Use semantic formatting
+- [ ] Include proper spacing
+- [ ] Implement accessible content structure
+
+## References
+
+### Markdown Guides
+
+- [Basic Syntax Guide](https://www.markdownguide.org/basic-syntax)
+- [Extended Syntax Guide](https://www.markdownguide.org/extended-syntax)
+- [GitHub Flavored Markdown](https://github.github.com/gfm/)
+
+### Tools & Documentation
+
+- [markdownlint Rules](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md)
+- [Mermaid Diagram Syntax](https://mermaid.js.org/intro/)
+- [ARIA Accessibility Guidelines](https://www.w3.org/WAI/ARIA/apg/)
+
+## Quick Reference
+
+Common patterns and their correct usage:
+
+```markdown
+# Document Title
+## Section Heading
+
+Regular paragraph with **bold** and *italic* text.
+
+- List item (2 space indent)
+  - Nested item
+  - Another nested item
+
+1. Ordered list
+2. Second item
+
+[Descriptive Link](./relative/path.md "Optional Title")
+
+![Alt text for image](./path/to/image.png "Image Title")
+
+> 💡 **Tip:** Callout block
+
+| Column 1 | Column 2 |
+|:---------|:---------|
+| Content  | Content  |
+
+```typescript
+// Code block with language
+function example(): void {
+  // With comments
+}
+```
+
+## Markdown Rules
+
+### Disabled Rules
+
+The following markdownlint rules are explicitly disabled:
+
+- [`MD001`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md001): Heading levels should only increment by one level at a time
+- [`MD012`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md012): Multiple consecutive blank lines
+- [`MD024`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md024): Multiple headings with the same content
+- [`MD025`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md025): Multiple top-level headings in the same document
+- [`MD026`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md026): Trailing punctuation in heading
+- [`MD029`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md029): Ordered list item prefix
+- [`MD033`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md033): Inline HTML (allowed for our XML tags)
+- [`MD036`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md036): Emphasis used instead of a heading
+- [`MD037`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md037): Spaces inside emphasis markers
+- [`MD041`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md041): First line in a file should be a top-level heading
+
+### Heading Rules
+
+- [`MD002`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md002): First heading should be a top-level heading
+- [`MD003`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md003): Heading style must be ATX with space after hash: `# Heading`
+- [`MD015`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md015): No space after hash on atx style heading
+- [`MD016`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md016): No trailing punctuation in plain text headings
+- [`MD017`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md017): No space after hash on closed atx style heading
+- [`MD018`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md018): No space after hash on atx style heading
+- [`MD019`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md019): Multiple spaces after hash on atx style heading
+- [`MD020`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md020): No space inside hashes on closed atx style heading
+- [`MD021`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md021): Multiple spaces inside hashes on closed atx style heading
+- [`MD022`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md022): Headings should be surrounded by blank lines
+- [`MD023`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md023): Headings must start at the beginning of the line
+- [`MD043`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md043): Required heading structure
+- Maximum depth: 4 levels
+
+<example>
+# Main Title
+## Section
+### Subsection
+</example>
+
+<example type="invalid">
+#No Space
+## Section
+#### Skipped Level
+</example>
+
+### List and Indentation Rules
+
+- [`MD004`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md004): Unordered list style must be consistent
+- [`MD005`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md005): List indentation must be consistent
+- [`MD006`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md006): Start bulleted lists at the beginning of the line
+- [`MD007`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md007): Unordered list indentation (2 spaces)
+- [`MD008`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md008): No trailing spaces in lists
+- [`MD030`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md030): Spaces after list markers
+- [`MD032`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md032): Lists should be surrounded by blank lines
+
+### Link and Reference Rules
+
+- [`MD011`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md011): No reversed link syntax
+- [`MD034`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md034): No bare URLs
+- [`MD039`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md039): No spaces inside link text
+- [`MD042`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md042): No empty links
+- [`MD051`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md051): Link fragments should be valid
+- [`MD052`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md052): Reference links and images should use a label that is defined
+- [`MD053`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md053): Link and image reference definitions should be needed
+- Use descriptive link text
+- Prefer relative paths for internal links
+- Include title attributes for external links
+
+<example>
+[Installation Guide](./docs/install.md)
+[TypeScript Docs](https://www.typescriptlang.org/ "TypeScript Documentation")
+</example>
+
+<example type="invalid">
+[Click Here](./file.md)
+[https://example.com](https://example.com)
+</example>
+
+### Code Block Rules
+
+- [`MD031`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md031): Fenced code blocks should be surrounded by blank lines
+- [`MD038`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md038): No spaces inside code span elements
+- [`MD040`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md040): Fenced code blocks must have a language specified
+- [`MD046`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md046): Code block style must be consistent
+- [`MD048`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md048): Code fence style must be consistent
+- Include code comments when needed
+
+<example>
+```typescript
+function greet(name: string): void {
+  // Log greeting to console
+  console.log(`Hello, ${name}!`);
+}
+```
+
+Reference the `greet()` function.
+</example>
+
+### Image and Accessibility Rules
+
+- [`MD045`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md045): Images must have alternate text
+- Use descriptive filenames
+- Add title attributes for tooltips
+- Consider color contrast in diagrams
+
+<example>
+![User profile avatar showing account status](./assets/profile-avatar.png "User Profile")
+</example>
+
+<example type="invalid">
+![](./img.png)
+![image](./image1.jpg)
+</example>
+
+### General Formatting Rules
+
+- [`MD009`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md009): No trailing spaces
+- [`MD010`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md010): No hard tabs
+- [`MD013`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md013): Line length limits (max 100 characters)
+- [`MD014`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md014): Dollar signs used before commands without showing output
+- [`MD027`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md027): No multiple spaces after blockquote symbol
+- [`MD028`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md028): No blank line inside blockquote
+- [`MD035`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md035): Consistent horizontal rule style (use `---`)
+- [`MD044`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md044): Proper names should have correct capitalization
+- [`MD047`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md047): Files should end with a single newline character
+- [`MD049`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md049): Emphasis style should be consistent (use `*`)
+- [`MD050`](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md#md050): Strong style should be consistent (use `**`)
+
+### Tables
+
+- Use alignment indicators (`:---`, `:---:`, `---:`)
+- Include header separators
+- Keep content concise
+- Add spacing around tables
+- Maintain consistent column alignment
+
+<example>
+| Name     | Type   | Required | Description     |
+|:---------|:------:|:---------|:----------------|
+| id       | number | Yes      | Primary key     |
+| name     | string | Yes      | Display name    |
+| metadata | object | No       | Extra data      |
+</example>
+
+<example type="invalid">
+|Name|Type|Required|
+|-|-|-|
+|id|number|yes|
+</example>
+
+### Callouts
+
+Use emoji-based blockquotes for different message types:
+
+<example>
+> 🚨 **Warning:** Critical information.
+> 💡 **Tip:** Helpful suggestion.
+> ℹ️ **Note:** Additional context.
+> ♿ **Accessibility:** Important a11y information.
+</example>
+
+### Mermaid Diagrams
+
+- Include clear titles
+- Use descriptive labels
+- Add comments for complex flows
+- Maintain consistent direction
+
+<example>
+```mermaid
+---
+title: User Authentication Flow
+---
+graph TD
+    A[Start] --> B{Logged In?}
+    B -->|Yes| C[Dashboard]
+    B -->|No| D[Login Form]
+    D --> E[Validate]
+    E -->|Success| C
+    E -->|Fail| D
+```
+</example>
+
+<critical>
+- ALWAYS include alt text for images
+- NEVER skip heading levels
+- Keep content clear and concise
+- Maintain consistent formatting
+</critical>
+
+## Versioning
+
+- Update frontmatter when content changes
+- Document breaking changes
+- Keep a changelog for significant updates
+- Follow semver for versioning

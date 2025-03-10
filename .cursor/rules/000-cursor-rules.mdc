@@ -1,0 +1,143 @@
+---
+description: Use ALWAYS when creating, updating, or learning rules to ensure consistent rule format
+globs: .cursor/rules/*.mdc
+---
+
+# Cursor Rules Format
+
+<version>1.1.0</version>
+
+## Quick Start Template
+
+```mdc
+---
+description: ACTION when TRIGGER to OUTCOME
+globs: path/to/*.{ext}
+---
+
+# Rule Title
+
+## Context
+- When this rule applies
+- Required conditions
+
+## Requirements
+- [ ] Requirement 1
+- [ ] Requirement 2
+
+## Examples
+<example>
+// Good example
+const goodExample = true;
+</example>
+
+<example type="invalid">
+// Bad example
+const badExample = false;
+</example>
+```
+
+## Core Structure
+
+### Required Sections
+
+1. Frontmatter (description + globs)
+2. Title (H1)
+3. Version tag
+4. Context
+5. Requirements
+6. Examples (at least one valid, one invalid)
+
+### XML Tag Validation
+
+- Tags must be properly nested
+- Content must be indented 2 spaces
+- Closing tags at parent indentation
+- Allowed attributes:
+  - `type`: Only on `<example>` ("invalid" | "valid")
+  - `version`: Only on `<version>` (semver format)
+
+<example>
+<rule>
+  <example type="valid">
+    Good content
+  </example>
+</rule>
+</example>
+
+<example type="invalid">
+<rule>
+<example>
+Bad indentation
+</example>
+</rule>
+</example>
+
+## File Organization
+
+### Location & Naming
+
+- Path: `.cursor/rules/`
+- Format: `PREFIX-name.mdc`
+- Prefixes:
+  - `0XX`: Core standards
+  - `1XX`: Tool configs
+  - `3XX`: Testing standards
+  - `1XXX`: Language rules
+  - `2XXX`: Framework rules
+  - `8XX`: Workflows
+  - `9XX`: Templates
+  - `_name`: Private rules
+
+### Common Glob Patterns
+
+- Core: `.cursor/rules/*.mdc`
+- Language: `src/**/*.{js,ts}`
+- Tests: `**/*.test.{js,ts,tsx}`
+- React: `src/**/components/**/*.tsx`
+- Docs: `docs/**/*.md`
+- Config: `*.config.{js,ts,json}`
+- Build: `dist/**/*`
+
+## Formatting Guidelines
+
+### XML Tags
+
+- Allowed tags:
+
+  ```xml
+  <example>    // Code examples
+  <danger>     // Critical warnings
+  <required>   // Must-have items
+  <rules>      // Rule collections
+  <rule>       // Single rule
+  <critical>   // Breaking changes
+  <version>    // Rule version
+  ```
+
+### AI Optimization
+
+1. Keep descriptions under 120 chars
+2. Use ACTION TRIGGER OUTCOME format
+3. Minimize token usage
+4. Remove redundancy
+5. Use standard glob patterns
+
+<critical>
+- NEVER include verbose explanations
+- Keep files concise but impactful
+- Frontmatter: ONLY description and globs
+- Always include validation examples
+</critical>
+
+## Rule Creation Checklist
+
+- [ ] Descriptive title
+- [ ] Clear ACTION TRIGGER OUTCOME
+- [ ] Appropriate glob pattern
+- [ ] Version tag
+- [ ] Context section
+- [ ] Testable requirements
+- [ ] Valid/invalid examples
+- [ ] Proper indentation
+- [ ] No redundant information
