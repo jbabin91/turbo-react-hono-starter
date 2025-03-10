@@ -1,0 +1,174 @@
+---
+description: ENFORCE naming conventions when creating or modifying files to ensure consistent codebase structure
+globs: ["**/*.{ts,tsx,css,scss}", "src/routes/**/*"]
+alwaysApply: false
+---
+
+# Naming Conventions
+
+<version>1.0.0</version>
+
+## Context
+
+- Applied to all files and folders in the codebase
+- Special handling for TanStack Router route files
+- Ensures consistent and predictable file organization
+- Makes codebase navigation intuitive
+
+## Requirements
+
+### General Naming Rules
+
+- [ ] Use kebab-case for all file and folder names
+- [ ] Use lowercase letters only
+- [ ] Separate words with hyphens
+- [ ] Keep names concise but descriptive
+- [ ] Avoid abbreviations unless widely known (e.g., 'utils', 'api')
+
+### TanStack Router Exceptions
+
+- [ ] Use TanStack Router's file-based routing conventions for route files
+- [ ] Route files can use special characters as per TanStack Router's syntax
+- [ ] Route parameters use `$` prefix
+- [ ] Route groups use `_` prefix
+- [ ] Use `route.tsx` for route layouts
+- [ ] Use single `file.tsx` for simple routes without nested content
+- [ ] Use directory with `index.tsx` for complex routes with nested content or multiple components
+
+## Examples
+
+### General Files (kebab-case)
+
+<example>
+// Components
+components/
+  ├── user-profile/
+  │   ├── avatar-upload.tsx
+  │   └── profile-settings.tsx
+  └── shared/
+      ├── loading-spinner.tsx
+      └── error-boundary.tsx
+
+// Utilities
+utils/
+  ├── date-formatter.ts
+  └── string-helpers.ts
+</example>
+
+### TanStack Router Files
+
+<example>
+// Route files
+src/routes/
+  ├── _auth/
+  │   ├── route.tsx        # Auth layout
+  │   ├── login.tsx        # Simple login page
+  │   └── register.tsx     # Simple register page
+  ├── dashboard/
+  │   ├── route.tsx        # Dashboard layout
+  │   ├── index.tsx        # Dashboard main content
+  │   └── $projectId/      # Complex route with nested content
+  │       ├── route.tsx    # Project layout
+  │       ├── index.tsx    # Project main content
+  │       ├── settings.tsx # Simple project settings page
+  │       └── members/     # Complex members section
+  │           ├── route.tsx
+  │           └── index.tsx
+  └── settings/
+      ├── route.tsx        # Settings layout
+      ├── profile.tsx      # Simple profile page
+      └── billing/         # Complex billing section
+          ├── route.tsx    # Billing layout
+          └── index.tsx    # Billing content
+</example>
+
+<example type="invalid">
+// Invalid route naming
+src/routes/
+  ├── auth/               # Wrong: Missing group prefix
+  ├── dashboard/
+  │   ├── layout.tsx      # Wrong: Should be route.tsx
+  │   └── simple-page/    # Wrong: Simple page should be single file
+  │       └── index.tsx
+  └── settings/
+      └── profile/        # Wrong: Simple profile should be single file
+          └── page.tsx    # Wrong: Should be profile.tsx in parent
+</example>
+
+## File Type Specific Rules
+
+### React Components
+
+- Use kebab-case for file names
+- Add `.tsx` extension
+- Match component folder name to feature/module
+
+<example>
+components/
+  ├── auth/
+  │   ├── login-form.tsx
+  │   └── auth-provider.tsx
+  └── dashboard/
+      └── activity-feed.tsx
+</example>
+
+### Styles
+
+- Match component name with `.css` or `.scss` suffix
+- Use module suffix for CSS modules
+
+<example>
+styles/
+  ├── components/
+  │   ├── button.module.css
+  │   └── card.module.css
+  └── layouts/
+      └── main-layout.css
+</example>
+
+### Utils and Helpers
+
+- Use descriptive, action-oriented names
+- Add type suffix for type definitions
+
+<example>
+utils/
+  ├── format-currency.ts
+  └── types/
+      └── api-response.types.ts
+</example>
+
+### Hono.js Backend Files
+
+- Use kebab-case for route files
+- Add `.api.ts` suffix for API route handlers
+- Add `.middleware.ts` suffix for middleware
+- Add `.service.ts` suffix for service files
+- Add `.repository.ts` suffix for database/storage interaction
+- Add `.schema.ts` suffix for Zod schemas
+- Add `.types.ts` suffix for type definitions
+
+<example>
+// Valid Hono.js file names
+auth.api.ts
+jwt.middleware.ts
+user.service.ts
+project.repository.ts
+schema.types.ts
+validation.schema.ts
+</example>
+
+<example type="invalid">
+// Invalid Hono.js file names
+authAPI.ts          # Wrong: Should use .api.ts suffix and kebab-case
+UserService.ts      # Wrong: Should use .service.ts suffix and kebab-case
+projectsRepo.ts     # Wrong: Should use .repository.ts suffix
+RateLimit.ts        # Wrong: Should use .middleware.ts suffix
+</example>
+
+<critical>
+- ALWAYS use kebab-case for general files/folders
+- NEVER mix naming conventions in the same directory
+- Follow TanStack Router conventions strictly for route files
+- Keep file names concise but meaningful
+</critical>
