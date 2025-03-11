@@ -1,6 +1,7 @@
 ---
-description: ENFORCE OpenAPI standards when creating or modifying Hono API endpoints
+description: ENFORCE OpenAPI standards when CREATING or MODIFYING Hono endpoints to ENSURE consistent API documentation
 globs: ["packages/api/**/*.ts", "apps/**/routes/**/*.ts"]
+alwaysApply: false
 ---
 
 # Hono OpenAPI Standards

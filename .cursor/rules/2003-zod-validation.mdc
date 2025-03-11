@@ -1,6 +1,7 @@
 ---
-description: ENFORCE Zod validation patterns when creating or modifying data schemas
+description: ENFORCE Zod validation patterns when CREATING or MODIFYING schemas to ENSURE consistent validation
 globs: ["packages/**/*.schema.ts", "apps/**/schemas/**/*.ts", "apps/**/validations/**/*.ts"]
+alwaysApply: false
 ---
 
 # Zod Validation Standards

@@ -1,6 +1,7 @@
 ---
 description: ENFORCE better-auth standards when implementing authentication in API endpoints
 globs: ["packages/api/**/*.ts", "apps/**/routes/**/*.ts", "packages/auth/**/*.ts"]
+alwaysApply: true
 ---
 
 # Better Auth Standards
@@ -9,188 +10,113 @@ globs: ["packages/api/**/*.ts", "apps/**/routes/**/*.ts", "packages/auth/**/*.ts
 
 ## Related Standards
 
-- **Database**: See `drizzle-standards` for database schema patterns and optimization
-- **API Integration**: See `hono-standards` for API middleware and endpoint patterns
-- **Validation**: See `zod-validation` for input validation patterns
-- **OpenAPI**: See `hono-openapi` for API documentation standards
+- `drizzle-standards`: Database schema patterns
+- `hono-standards`: API middleware patterns
+- `zod-validation`: Input validation patterns
+- `hono-openapi`: API documentation standards
 
 ## Context
 
-- Defines standards for authentication using better-auth
-- Ensures secure authentication implementation
-- Promotes best practices for session management
-- Maintains type safety with better-auth
-- Implements proper error handling for auth flows
+- Defines standards for better-auth implementation
+- Ensures secure authentication and session management
+- Maintains type safety and proper error handling
 
-## Requirements
+> 🚨 **Warning:** Authentication is critical for security. Follow these standards strictly.
 
-### Authentication Setup
+## Critical Rules
 
-- [ ] Configure better-auth with proper settings
-- [ ] Implement secure session management
-- [ ] Use appropriate auth strategies
-- [ ] Handle auth errors consistently
-- [ ] Implement proper CSRF protection
-- [ ] Use secure cookie settings
-- [ ] Implement rate limiting for auth endpoints
+<critical>
+### Security
+- NEVER store sensitive data in JWT tokens or client state
+- ALWAYS use environment variables for sensitive configuration
+- ALWAYS use secure cookie settings in production
+- NEVER expose detailed error messages to clients
+- ALWAYS implement rate limiting for auth endpoints
+- NEVER skip CSRF protection for mutation endpoints
+- ALWAYS validate auth tokens before processing requests
+- NEVER store plain text passwords
 
-### Middleware Integration
+### Database
 
-- [ ] Create type-safe auth middleware
-- [ ] Apply auth middleware in correct order
-- [ ] Handle auth state properly
-- [ ] Implement role-based access control
-- [ ] Handle token refresh properly
+- ALWAYS use Better Auth's table structure
+- ALWAYS keep auth tables separate from app tables
+- ALWAYS implement proper indexes and relations
+- ALWAYS use transactions for critical operations
+- ALWAYS use proper cleanup routines
+- NEVER skip database migrations
 
-## Standards
+### Performance
+
+- ALWAYS enable cookie caching for session data
+- ALWAYS use React Query for client-side caching
+- ALWAYS configure proper connection pooling
+- ALWAYS implement proper invalidation strategies
+- NEVER disable performance optimizations
+
+### Implementation
+
+- ALWAYS use type-safe middleware
+- ALWAYS implement proper error boundaries
+- ALWAYS validate input data
+- ALWAYS use proper logging with redaction
+- NEVER skip access control checks
+</critical>
+
+## Core Examples
 
 ### Basic Setup
 
 <example>
     // typescript
-    import { Hono } from 'hono'
-    import { BetterAuth } from 'better-auth'
-    import { jwt } from 'better-auth/jwt'
-    import { rateLimit } from '../middleware/rate-limit'
-
-    // Configure better-auth with secure defaults
     const auth = new BetterAuth({
       jwt: {
         secret: process.env.JWT_SECRET,
         expiresIn: '15m',
-        refreshIn: '7d',
         cookie: {
           secure: process.env.NODE_ENV === 'production',
           httpOnly: true,
           sameSite: 'lax'
         }
       },
-      passwordHash: {
-        algorithm: 'argon2id',
-        memoryCost: 65536,
-        timeCost: 3
-      }
-    })
-
-    const app = new Hono()
-
-    // Apply rate limiting to auth endpoints
-    app.use('/auth/*', rateLimit({
-      max: 5,
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      message: 'Too many login attempts, please try again later'
-    }))
-
-    // Auth routes with proper validation
-    app.post('/auth/login', async (c) => {
-      const { email, password } = c.req.valid('json')
-
-      try {
-        const session = await auth.login({ email, password })
-        return auth.setAuthCookies(c, session)
-      } catch (error) {
-        if (error instanceof auth.AuthError) {
-          throw new HTTPException(401, { message: error.message })
-        }
-        throw error
+      security: {
+        rateLimiting: { enabled: true, max: 5 },
+        passwordHashing: { algorithm: 'argon2id' }
       }
     })
 </example>
 
-### Middleware Implementation
+### Database Schema
 
 <example>
     // typescript
-    import { MiddlewareHandler } from 'hono'
-    import { BetterAuth } from 'better-auth'
+    export const authUsers = pgTable('auth_users', {
+      ...baseColumns,
+      email: text('email').notNull().unique(),
+      password: text('password').notNull(),
+      role: text('role').notNull().default('user'),
+      metadata: jsonb('metadata').$type<Record<string, unknown>>()
+    }, (table) => ({
+      emailIdx: index('auth_users_email_idx').on(table.email)
+    }))
+</example>
 
-    // Type-safe auth middleware
+### Middleware
+
+<example>
+    // typescript
     export const requireAuth = (
       auth: BetterAuth,
       options?: { roles?: string[] }
     ): MiddlewareHandler => {
       return async (c, next) => {
-        try {
-          const session = await auth.validateRequest(c)
-
-          if (options?.roles && !options.roles.includes(session.user.role)) {
-            throw new HTTPException(403, { message: 'Insufficient permissions' })
-          }
-
-          // Add typed session to context
-          c.set('session', session)
-          await next()
-        } catch (error) {
-          if (error instanceof auth.AuthError) {
-            // Try to refresh the token if possible
-            try {
-              const newSession = await auth.refresh(c)
-              c.set('session', newSession)
-              await next()
-              return
-            } catch {
-              throw new HTTPException(401, { message: 'Unauthorized' })
-            }
-          }
-          throw error
+        const session = await auth.validateRequest(c)
+        if (options?.roles?.includes(session.user.role)) {
+          throw new HTTPException(403)
         }
+        c.set('session', session)
+        await next()
       }
     }
-
-    // Usage in routes
-    app.get('/protected',
-      requireAuth(auth),
-      (c) => c.json({ user: c.get('session').user })
-    )
-
-    app.get('/admin',
-      requireAuth(auth, { roles: ['admin'] }),
-      (c) => c.json({ message: 'Admin access granted' })
-    )
-</example>
-
-### Session Management
-
-<example>
-    // typescript
-    // Secure session handling
-    app.post('/auth/refresh', async (c) => {
-      try {
-        const session = await auth.refresh(c)
-        return auth.setAuthCookies(c, session)
-      } catch (error) {
-        if (error instanceof auth.AuthError) {
-          // Clear invalid session cookies
-          auth.clearAuthCookies(c)
-          throw new HTTPException(401, { message: 'Invalid session' })
-        }
-        throw error
-      }
-    })
-
-    app.post('/auth/logout', async (c) => {
-      try {
-        await auth.logout(c)
-        auth.clearAuthCookies(c)
-        return c.json({ message: 'Logged out successfully' })
-      } catch (error) {
-        throw new HTTPException(500, { message: 'Failed to logout' })
-      }
-    })
-
-    // Password reset flow
-    app.post('/auth/forgot-password', async (c) => {
-      const { email } = c.req.valid('json')
-
-      try {
-        const token = await auth.createPasswordResetToken(email)
-        await sendPasswordResetEmail(email, token)
-        return c.json({ message: 'Password reset email sent' })
-      } catch (error) {
-        // Don't reveal if email exists
-        return c.json({ message: 'If the email exists, a reset link will be sent' })
-      }
-    })
 </example>
 
 ### Error Handling
@@ -198,682 +124,66 @@ globs: ["packages/api/**/*.ts", "apps/**/routes/**/*.ts", "packages/auth/**/*.ts
 <example>
     // typescript
     app.onError((err, c) => {
-      const log = c.get('log')
-
       if (err instanceof auth.AuthError) {
-        log.warn({
-          error: err,
-          path: c.req.path,
-          type: 'auth_error'
-        }, 'Authentication error')
-
-        return c.json({
-          code: 401,
-          message: err.message
-        }, 401)
-      }
-
-      // Handle other errors...
-    })
-</example>
-
-<example type="invalid">
-    // typescript
-    // Don't store sensitive data in JWT
-    const session = await auth.login({
-      user: {
-        id: user.id,
-        password: user.password  // Wrong: Never include sensitive data
-      }
-    })
-
-    // Don't skip rate limiting
-    app.post('/auth/login', async (c) => {  // Wrong: Missing rate limiting
-      const { email, password } = c.req.valid('json')
-      return auth.login({ email, password })
-    })
-
-    // Don't use insecure cookie settings
-    const auth = new BetterAuth({
-      cookie: {
-        secure: false,  // Wrong: Always use secure in production
-        httpOnly: false  // Wrong: Always use httpOnly
-      }
-    })
-
-    // Don't expose sensitive error details
-    app.post('/auth/login', async (c) => {
-      try {
-        return await auth.login(c.req.valid('json'))
-      } catch (error) {
-        return c.json({  // Wrong: Don't expose error details
-          error: error.message,
-          stack: error.stack
-        })
-      }
-    })
-
-    // Don't skip CSRF protection
-    app.post('/auth/login', async (c) => {  // Wrong: Missing CSRF check
-      const session = await auth.login(c.req.valid('json'))
-      return auth.setAuthCookies(c, session)
-    })
-</example>
-
-<critical>
-- ALWAYS use HTTPS in production
-- NEVER store sensitive data in JWTs
-- ALWAYS use secure and httpOnly cookies
-- Implement proper rate limiting for auth endpoints
-- Use CSRF protection for auth routes
-- Implement proper password hashing
-- Use secure session management
-- Handle token refresh properly
-- Implement proper error handling
-- Use role-based access control when needed
-- Clear sessions on logout
-- Validate auth state in middleware
-- Use proper logging for auth events
-- Implement proper password reset flow
-- Use environment-specific security settings
-- Never expose sensitive error details
-- Use proper token expiration times
-- Implement proper session revocation
-- Use secure defaults for all auth settings
-</critical>
-
-### Database Integration
-
-<example>
-    // typescript
-    import { betterAuth } from 'better-auth'
-    import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-    import { db } from '@/packages/db'
-    import { authUsers, authSessions } from '@/packages/db/schema'
-
-    // Create Better Auth instance with Drizzle adapter
-    export const auth = betterAuth({
-      secret: process.env.BETTER_AUTH_SECRET,
-      database: drizzleAdapter(db, {
-        provider: 'pg',
-        // Use plural form for all tables
-        usePlural: true,
-        // Use drizzle-kit migrations
-        migrations: {
-          prefix: 'timestamp',
-          table: '__drizzle_migrations__',
-          schema: 'public'
-        }
-      }),
-      // ... rest of auth config
-    })
-</example>
-
-### Schema Definition
-
-<example>
-    // typescript
-    // In @/packages/db/schema/auth.ts
-    import { pgTable, text, timestamp, uuid, jsonb } from 'drizzle-orm/pg-core'
-    import { relations } from 'drizzle-orm'
-    import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-    import { z } from 'zod'
-
-    // Use base columns pattern from drizzle-standards
-    const baseColumns = {
-      id: uuid('id').primaryKey().defaultRandom(),
-      createdAt: timestamp('created_at').defaultNow().notNull(),
-      updatedAt: timestamp('updated_at').defaultNow().notNull()
-    }
-
-    // Better Auth specific tables
-    export const authUsers = pgTable('auth_users', {
-      ...baseColumns,
-      email: text('email').notNull().unique(),
-      password: text('password').notNull(),
-      role: text('role').notNull().default('user'),
-      metadata: jsonb('metadata').default({}).$type<Record<string, unknown>>()
-    })
-
-    export const authSessions = pgTable('auth_sessions', {
-      ...baseColumns,
-      userId: uuid('user_id')
-        .notNull()
-        .references(() => authUsers.id, { onDelete: 'cascade' }),
-      token: text('token').notNull().unique(),
-      expiresAt: timestamp('expires_at').notNull(),
-      metadata: jsonb('metadata').default({}).$type<Record<string, unknown>>()
-    }, (table) => ({
-      // Add indexes for better performance
-      userIdIdx: index('auth_sessions_user_id_idx').on(table.userId),
-      tokenIdx: index('auth_sessions_token_idx').on(table.token),
-      expiresAtIdx: index('auth_sessions_expires_at_idx').on(table.expiresAt)
-    }))
-
-    // Relations
-    export const authUsersRelations = relations(authUsers, ({ many }) => ({
-      sessions: many(authSessions)
-    }))
-
-    // Generate base schemas
-    export const selectAuthUserSchema = createSelectSchema(authUsers)
-    export const insertAuthUserSchema = createInsertSchema(authUsers)
-
-    // Add custom validation
-    export const validateAuthUserInsert = insertAuthUserSchema.extend({
-      email: z.string().email(),
-      password: z.string().min(8),
-      role: z.enum(['user', 'admin'])
-    })
-
-    // Create update schema using partial pattern
-    export const validateAuthUserUpdate = validateAuthUserInsert.partial().extend({
-      // Prevent updating protected fields
-      id: z.never().optional(),
-      createdAt: z.never().optional()
-    })
-
-    // Use drizzle-standards type inference pattern
-    export type AuthUser = typeof authUsers.$inferSelect
-    export type NewAuthUser = typeof authUsers.$inferInsert
-    export type AuthSession = typeof authSessions.$inferSelect
-    export type NewAuthSession = typeof authSessions.$inferInsert
-</example>
-
-<example type="invalid">
-    // typescript
-    // Don't mix auth tables with other tables
-    export const products = pgTable('products', {  // Wrong: Keep auth tables separate
-      userId: uuid('user_id').references(() => authUsers.id)
-    })
-
-    // Don't skip base columns
-    export const authUsers = pgTable('auth_users', {  // Wrong: Missing baseColumns
-      email: text('email'),
-      password: text('password')
-    })
-
-    // Don't use type inference from Zod schemas
-    type AuthUser = z.infer<typeof selectAuthUserSchema>  // Wrong: Use Drizzle's type inference
-
-    // Don't skip indexes on foreign keys
-    export const authSessions = pgTable('auth_sessions', {
-      userId: uuid('user_id')  // Wrong: Missing index on foreign key
-    })
-</example>
-
-### Session Cleanup
-
-<example>
-    // typescript
-    import { eq, lt } from 'drizzle-orm'
-    import { db } from '@/packages/db'
-    import { authSessions } from '@/packages/db/schema'
-
-    // Cleanup expired sessions
-    export async function cleanupExpiredSessions() {
-      const now = new Date()
-      await db.delete(authSessions)
-        .where(lt(authSessions.expiresAt, now))
-    }
-
-    // Revoke all sessions for a user
-    export async function revokeUserSessions(userId: string) {
-      await db.delete(authSessions)
-        .where(eq(authSessions.userId, userId))
-    }
-</example>
-
-<critical>
-- Use Better Auth's table structure
-- Implement proper validation for auth fields
-- Keep auth tables separate from app tables
-- Use Better Auth's session management
-- Implement proper cleanup routines
-- Use proper table naming conventions
-- Implement proper relations
-- Use Zod validation for auth schemas
-- Keep auth metadata flexible
-- Use proper cascade deletes
-- Implement proper indexes
-- Use proper timestamps
-- Keep schema up to date
-- Follow Better Auth's conventions
-</critical>
-
-### Performance Optimization
-
-<example>
-    // typescript
-    import { betterAuth } from 'better-auth'
-    import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-    import { db } from '@/packages/db'
-
-    // Enable cookie caching for better performance
-    export const auth = betterAuth({
-      session: {
-        cookieCache: {
-          enabled: true,
-          maxAge: 5 * 60, // Cache session data for 5 minutes
-        }
-      },
-      // ... other config
-    })
-
-    // React Query integration for client-side caching
-    // In @/packages/auth/hooks/useAuth.ts
-    import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-    import { authClient } from '../client'
-
-    export function useSession() {
-      return useQuery({
-        queryKey: ['session'],
-        queryFn: () => authClient.getSession(),
-        staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-        cacheTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-      })
-    }
-
-    export function useSignIn() {
-      const queryClient = useQueryClient()
-
-      return useMutation({
-        mutationFn: (credentials) => authClient.signIn(credentials),
-        onSuccess: (session) => {
-          queryClient.setQueryData(['session'], session)
-        }
-      })
-    }
-
-    export function useSignOut() {
-      const queryClient = useQueryClient()
-
-      return useMutation({
-        mutationFn: () => authClient.signOut(),
-        onSuccess: () => {
-          queryClient.setQueryData(['session'], null)
-        }
-      })
-    }
-</example>
-
-### Database Performance
-
-<example>
-    // typescript
-    // In @/packages/db/schema/auth.ts
-    import { pgTable, index } from 'drizzle-orm/pg-core'
-
-    // Recommended indexes for auth tables
-    export const authUsers = pgTable('auth_users', {
-      // ... columns
-    }, (table) => ({
-      emailIdx: index('auth_users_email_idx').on(table.email)
-    }))
-
-    export const authSessions = pgTable('auth_sessions', {
-      // ... columns
-    }, (table) => ({
-      userIdIdx: index('auth_sessions_user_id_idx').on(table.userId),
-      tokenIdx: index('auth_sessions_token_idx').on(table.token),
-      expiresAtIdx: index('auth_sessions_expires_at_idx').on(table.expiresAt)
-    }))
-
-    // Efficient batch operations with transactions
-    async function revokeAllSessions(userId: string) {
-      await db.transaction(async (tx) => {
-        await tx.delete(authSessions)
-          .where(eq(authSessions.userId, userId))
-      })
-    }
-
-    // Regular cleanup of expired sessions
-    async function cleanupExpiredSessions() {
-      const now = new Date()
-      await db.delete(authSessions)
-        .where(lt(authSessions.expiresAt, now))
-    }
-</example>
-
-<example type="invalid">
-    // typescript
-    // Don't disable cookie caching without good reason
-    const auth = betterAuth({
-      session: {
-        cookieCache: {
-          enabled: false  // Wrong: Cookie caching improves performance
-        }
-      }
-    })
-
-    // Don't fetch session on every render
-    function useSession() {
-      const [session, setSession] = useState(null)
-
-      useEffect(() => {
-        // Wrong: No caching, fetches on every mount
-        authClient.getSession().then(setSession)
-      }, [])
-    }
-
-    // Don't skip staleTime in React Query
-    function useSession() {
-      return useQuery({
-        queryKey: ['session'],
-        queryFn: () => authClient.getSession()
-        // Wrong: Missing staleTime, will refetch too often
-      })
-    }
-
-    // Don't skip database indexes
-    export const authSessions = pgTable('auth_sessions', {
-      // ... columns
-      // Wrong: Missing indexes on frequently queried columns
-    })
-</example>
-
-<critical>
-- Enable cookie caching for session data
-- Configure appropriate cache durations
-- Use React Query for client-side caching
-- Set appropriate staleTime and cacheTime
-- Implement proper database indexes
-- Use transactions for batch operations
-- Clean up expired sessions regularly
-- Configure proper connection pooling
-- Use prepared statements for queries
-- Implement efficient error handling
-- Cache frequently accessed data
-- Use optimistic updates when appropriate
-- Monitor query performance
-- Implement proper invalidation strategies
-- Use proper loading states
-</critical>
-
-### Better Auth Setup
-
-<example>
-    // typescript
-    import { betterAuth } from 'better-auth'
-    import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-    import { toHonoHandler } from 'better-auth/hono'
-    import { authUsers, authSessions } from '../db/schema'
-    import { drizzle } from 'drizzle-orm/node-postgres'
-    import { Pool } from 'pg'
-
-    // Initialize database connection
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      max: 20,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 2000,
-    })
-
-    const db = drizzle(pool, { casing: 'snake_case' })
-
-    // Create Better Auth instance
-    export const auth = betterAuth({
-      // Required: Secret key for encryption and hashing
-      secret: process.env.BETTER_AUTH_SECRET,
-
-      // Optional: Base URL for auth endpoints
-      baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
-
-      // Database configuration using Drizzle adapter
-      database: drizzleAdapter(db, {
-        tables: {
-          users: authUsers,
-          sessions: authSessions
-        }
-      }),
-
-      // Authentication methods
-      emailAndPassword: {
-        enabled: true,
-        // Custom validation
-        validate: {
-          password: (password) => {
-            if (password.length < 8) {
-              throw new Error('Password must be at least 8 characters')
-            }
-          }
-        }
-      },
-
-      // Optional: Social providers
-      socialProviders: {
-        github: {
-          clientId: process.env.GITHUB_CLIENT_ID,
-          clientSecret: process.env.GITHUB_CLIENT_SECRET
-        }
-      },
-
-      // Session configuration
-      session: {
-        // Use JWT for sessions
-        strategy: 'jwt',
-        // JWT settings
-        jwt: {
-          expiresIn: '15m',
-          refreshIn: '7d'
-        },
-        // Cookie settings
-        cookie: {
-          name: 'auth_session',
-          secure: process.env.NODE_ENV === 'production',
-          httpOnly: true,
-          sameSite: 'lax',
-          path: '/'
-        }
-      },
-
-      // Advanced security settings
-      security: {
-        rateLimiting: {
-          enabled: true,
-          max: 5,
-          windowMs: 15 * 60 * 1000 // 15 minutes
-        },
-        passwordHashing: {
-          algorithm: 'argon2id',
-          memoryCost: 65536,
-          timeCost: 3
-        }
-      }
-    })
-</example>
-
-### Hono Integration
-
-<example>
-    // typescript
-    import { Hono } from 'hono'
-    import { auth } from '../lib/auth'
-    import { toHonoHandler } from 'better-auth/hono'
-    import { cors } from 'hono/cors'
-
-    const app = new Hono()
-
-    // Apply CORS middleware for auth routes
-    app.use('/api/auth/*', cors({
-      origin: process.env.FRONTEND_URL,
-      credentials: true
-    }))
-
-    // Mount Better Auth handler
-    app.route('/api/auth', toHonoHandler(auth))
-
-    // Protected route example
-    app.get('/api/protected', auth.middleware(), async (c) => {
-      const session = c.get('session')
-      return c.json({
-        user: session.user
-      })
-    })
-
-    // Role-based protection example
-    app.get('/api/admin',
-      auth.middleware({
-        roles: ['admin'],
-        onError: (c) => c.json({ error: 'Unauthorized' }, 403)
-      }),
-      async (c) => {
-        const session = c.get('session')
-        return c.json({
-          adminData: 'sensitive data'
-        })
-      }
-    )
-
-    // Custom auth error handling
-    app.onError((err, c) => {
-      if (err.name === 'AuthError') {
-        return c.json({
-          error: 'Authentication failed',
-          code: err.code
-        }, 401)
+        log.warn({ error: err, type: 'auth_error' })
+        return c.json({ code: 401, message: 'Authentication failed' }, 401)
       }
       throw err
     })
 </example>
 
-### Client Integration
-
-<example>
-    // typescript
-    import { createAuthClient } from 'better-auth/react'
-
-    // Create auth client instance
-    export const authClient = createAuthClient({
-      baseURL: process.env.API_URL,
-      // Optional: Custom fetch configuration
-      fetchOptions: {
-        credentials: 'include'
-      }
-    })
-
-    // Export commonly used hooks and methods
-    export const {
-      useSession,
-      useSignIn,
-      useSignUp,
-      useSignOut
-    } = authClient
-</example>
+### Common Anti-patterns
 
 <example type="invalid">
     // typescript
-    // Don't skip error handling in auth routes
-    app.post('/api/auth/login', async (c) => {
-      return auth.handleLogin(c)  // Wrong: Missing error handling
-    })
-
-    // Don't use raw session token validation
-    app.get('/api/protected', async (c) => {
-      const token = c.req.header('Authorization')  // Wrong: Use auth.middleware()
-      // ... manual token validation
-    })
-
-    // Don't store sensitive data in session
-    auth.createSession({
-      user: {
-        password: 'hash',  // Wrong: Never store sensitive data
-        privateKey: 'key'
-      }
+    // Don't store sensitive data
+    const session = await auth.login({
+      user: { password: user.password }  // Wrong
     })
 
     // Don't skip rate limiting
-    const auth = betterAuth({
-      security: {
-        rateLimiting: {
-          enabled: false  // Wrong: Always enable rate limiting
-        }
-      }
+    app.post('/login', async (c) => {  // Wrong
+      return auth.login(c.req.valid('json'))
     })
+
+    // Don't use insecure settings
+    const auth = new BetterAuth({
+      cookie: { secure: false }  // Wrong
+    })
+
+    // Don't expose errors
+    catch (error) {
+      return c.json({ stack: error.stack })  // Wrong
+    }
 </example>
 
-### Database Hooks
+## Implementation Checklist
 
-<example>
-    // typescript
-    import { betterAuth } from 'better-auth'
-    import { APIError } from 'better-auth/api'
+### Setup
 
-    export const auth = betterAuth({
-      databaseHooks: {
-        user: {
-          create: {
-            // Validate and transform user data before creation
-            before: async (user, ctx) => {
-              if (!user.termsAccepted) {
-                throw new APIError('BAD_REQUEST', {
-                  message: 'Must accept terms and conditions'
-                })
-              }
+- [ ] Configure secure JWT settings
+- [ ] Implement rate limiting
+- [ ] Set secure cookie options
+- [ ] Configure CSRF protection
+- [ ] Set up proper logging
 
-              return {
-                data: {
-                  ...user,
-                  role: 'user',
-                  metadata: {
-                    lastLogin: new Date()
-                  }
-                }
-              }
-            },
-            // Perform additional actions after user creation
-            after: async (user, ctx) => {
-              await sendWelcomeEmail(user.email)
-            }
-          },
-          update: {
-            before: async (user, ctx) => {
-              // Prevent role changes except by admins
-              if (user.role && ctx.session?.user.role !== 'admin') {
-                throw new APIError('FORBIDDEN', {
-                  message: 'Cannot modify role'
-                })
-              }
-              return { data: user }
-            }
-          }
-        },
-        session: {
-          create: {
-            before: async (session, ctx) => {
-              // Add additional session metadata
-              return {
-                data: {
-                  ...session,
-                  metadata: {
-                    ipAddress: ctx.req.headers['x-forwarded-for'],
-                    userAgent: ctx.req.headers['user-agent']
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    })
-</example>
+### Database
 
-<critical>
-// ... existing critical items ...
-- Use environment variables for sensitive configuration
-- Configure proper session settings
-- Implement custom database hooks for validation
-- Use proper error handling with APIError
-- Enable and configure rate limiting
-- Set up secure cookie options
-- Use proper CORS configuration for auth routes
-- Implement role-based access control
-- Use auth.middleware() for protected routes
-- Configure proper social provider settings
-- Use proper client-side auth configuration
-- Handle auth errors consistently
-- Implement proper session cleanup
-- Use proper password validation
-- Configure proper JWT settings
-- Use proper database adapter configuration
-</critical>
+- [ ] Use proper schema structure
+- [ ] Implement indexes
+- [ ] Set up cleanup routines
+- [ ] Configure connection pooling
+
+### Security
+
+- [ ] Validate all inputs
+- [ ] Implement access control
+- [ ] Handle errors securely
+- [ ] Monitor auth failures
+
+### Testing
+
+- [ ] Test auth flows
+- [ ] Test error handling
+- [ ] Test rate limiting
+- [ ] Test security configs

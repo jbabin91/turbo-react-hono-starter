@@ -1,0 +1,153 @@
+---
+description: ENFORCE Drizzle query standards when CREATING or MODIFYING database queries to ENSURE optimal performance
+globs: ["packages/**/*.db.ts", "apps/**/db/**/*.ts", "apps/**/queries/**/*.ts"]
+alwaysApply: false
+---
+
+# Drizzle Query Standards
+
+<version>1.0.0</version>
+
+## Related Standards
+
+- **Schema Design**: See `drizzle-schema` for schema patterns
+- **Migrations**: See `drizzle-migration` for migration management
+- **API Integration**: See `hono-standards` for API endpoint integration
+
+## Context
+
+- Defines standards for Drizzle query patterns
+- Ensures optimal query performance
+- Maintains type safety in queries
+- Implements proper error handling
+
+<critical>
+- ALWAYS use prepared statements
+- NEVER use raw SQL queries
+- ALWAYS implement proper error handling
+- NEVER skip transaction boundaries
+- ALWAYS use appropriate query builders
+- NEVER expose database errors
+- ALWAYS implement proper pagination
+- NEVER skip query optimization
+- ALWAYS use type-safe relations
+- NEVER mix query concerns
+</critical>
+
+## Requirements
+
+### Query Organization
+
+- [ ] Use domain-driven query files
+- [ ] Implement proper error handling
+- [ ] Use transaction boundaries
+- [ ] Optimize complex queries
+- [ ] Handle relations properly
+
+### Performance
+
+- [ ] Use appropriate indexes
+- [ ] Implement pagination
+- [ ] Optimize joins
+- [ ] Cache query results
+- [ ] Monitor query performance
+
+### Type Safety
+
+- [ ] Use query builders
+- [ ] Implement proper types
+- [ ] Handle nullability
+- [ ] Type relation queries
+- [ ] Validate inputs
+
+## Examples
+
+### Basic Query Pattern
+
+<example>
+    // typescript
+    import { eq } from 'drizzle-orm'
+    import { db } from '../db'
+    import { users, type User } from '../schema'
+
+    export async function getUserById(id: string): Promise<User | null> {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, id))
+        .limit(1)
+
+      return user ?? null
+    }
+
+    export async function createUser(data: NewUser) {
+      return await db.transaction(async (tx) => {
+        const [user] = await tx
+          .insert(users)
+          .values(data)
+          .returning()
+
+        return user
+      })
+    }
+</example>
+
+### Relations Query Pattern
+
+<example>
+    // typescript
+    import { and, eq, sql } from 'drizzle-orm'
+    import { posts, users, comments } from '../schema'
+
+    export async function getPostWithComments(postId: string) {
+      const results = await db
+        .select({
+          post: posts,
+          author: users,
+          comments: comments
+        })
+        .from(posts)
+        .leftJoin(users, eq(posts.userId, users.id))
+        .leftJoin(comments, eq(comments.postId, posts.id))
+        .where(eq(posts.id, postId))
+
+      // Transform results
+      return groupQueryResults(results)
+    }
+
+    export async function searchPosts(query: string, page: number) {
+      const limit = 20
+      const offset = (page - 1) * limit
+
+      return await db
+        .select()
+        .from(posts)
+        .where(sql`to_tsvector('english', ${posts.title} || ' ' || ${posts.content}) @@ plainto_tsquery('english', ${query})`)
+        .limit(limit)
+        .offset(offset)
+    }
+</example>
+
+<example type="invalid">
+    // typescript
+    // Don't use raw SQL
+    const users = await db.execute(
+      sql`SELECT * FROM users WHERE email = ${email}`  // Wrong: Use query builder
+    )
+
+    // Don't skip transactions
+    await db.insert(users).values(userData)  // Wrong: Missing transaction
+    await db.insert(profiles).values(profileData)
+
+    // Don't expose DB errors
+    try {
+      await db.insert(users).values(data)
+    } catch (e) {
+      throw e  // Wrong: Exposing DB error
+    }
+
+    // Don't skip pagination
+    const allUsers = await db
+      .select()
+      .from(users)  // Wrong: Missing limit/offset
+</example>

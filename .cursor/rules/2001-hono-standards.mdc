@@ -1,631 +1,329 @@
 ---
-description: ENFORCE Hono.js best practices when creating or modifying API endpoints
+description: ENFORCE Hono.js standards when CREATING or MODIFYING endpoints to ENSURE consistent API implementation
 globs: ["packages/api/**/*.ts", "apps/**/routes/**/*.ts"]
+alwaysApply: true
 ---
 
 # Hono.js Standards
 
 <version>1.0.0</version>
 
+## Table of Contents
+
+- [Context](mdc:#context)
+- [Requirements](mdc:#requirements)
+  - [Route Organization](mdc:#route-organization)
+  - [Middleware & Error Handling](mdc:#middleware--error-handling)
+  - [Type Safety & Context](mdc:#type-safety--context)
+  - [Response Patterns](mdc:#response-patterns)
+  - [Performance](mdc:#performance)
+- [Examples](mdc:#examples)
+
 ## Context
 
 - Defines standards for Hono.js application development
 - Ensures consistent API implementation
 - Promotes best practices for middleware and handlers
-- Leverages Hono.js features effectively
 - Maintains performance and type safety
+
+<critical>
+### Security & Error Handling
+- ALWAYS validate request input before processing
+- NEVER expose internal errors to clients
+- ALWAYS use HTTPException for error handling
+- NEVER skip authentication/authorization checks
+- ALWAYS implement proper rate limiting
+- NEVER log sensitive information
+
+### Type Safety & Context
+
+- ALWAYS use type-safe middleware handlers
+- NEVER use 'any' type in route handlers
+- ALWAYS define proper context variables
+- NEVER skip parameter validation
+- ALWAYS use zod for request validation
+- NEVER use raw type assertions
+
+### Performance & Patterns
+
+- ALWAYS set proper cache headers
+- NEVER skip response status codes
+- ALWAYS use proper content types
+- NEVER mix response formats
+- ALWAYS implement proper error boundaries
+- NEVER skip performance optimizations
+
+### Implementation
+
+- ALWAYS follow RESTful patterns
+- NEVER use raw Response objects
+- ALWAYS group related routes
+- NEVER skip middleware composition
+- ALWAYS document API endpoints
+- NEVER duplicate route handlers
+</critical>
 
 ## Requirements
 
 ### Route Organization
 
 - [ ] Use feature-based directory structure
-- [ ] Follow file naming conventions
+- [ ] Group related endpoints under feature routers
 - [ ] Implement proper middleware composition
 - [ ] Use appropriate HTTP methods
 - [ ] Handle errors consistently
-- [ ] Implement proper request validation
-- [ ] Use correct response types
 
-### Middleware Usage
+### Middleware & Error Handling
 
-- [ ] Create reusable middleware
 - [ ] Apply middleware in correct order
-- [ ] Use built-in middleware appropriately
-- [ ] Implement custom middleware when needed
+- [ ] Implement proper error boundaries
+- [ ] Use type-safe middleware
 - [ ] Handle async operations properly
-- [ ] Maintain middleware type safety
+- [ ] Set up global error handlers
 
-## Standards
+### Type Safety & Context
 
-### Route Structure
+- [ ] Define proper context variables
+- [ ] Use type-safe request validation
+- [ ] Implement proper type guards
+- [ ] Maintain consistent error types
+- [ ] Use proper type inference
+
+### Response Patterns
+
+- [ ] Use consistent response formats
+- [ ] Set proper status codes
+- [ ] Include appropriate headers
+- [ ] Handle streaming properly
+- [ ] Implement proper caching
+
+### Performance
+
+- [ ] Enable compression for large responses
+- [ ] Implement proper caching strategies
+- [ ] Handle connection cleanup
+- [ ] Use streaming for large data
+- [ ] Monitor response times
+
+## Examples
+
+### Core Route Pattern
 
 <example>
-    // typescript
-    import { Hono } from 'hono'
-    import { logger } from '../middleware/logger'
-    import { auth } from '../middleware/auth'
+  // typescript
+  import { Hono } from 'hono'
+  import { logger } from '../middleware/logger'
+  import { auth } from '../middleware/auth'
+  import { z } from 'zod'
 
-    // Create feature-specific router
-    const posts = new Hono()
-      // Apply middleware
-      .use('*', logger())
-      .use('*', auth())
+  // Feature router with middleware
+  const posts = new Hono()
+    .use('*', logger())
+    .use('*', auth())
+    .get('/', (c) => c.json({ message: 'List posts' }, 200))
+    .post('/', async (c) => {
+      const body = await c.req.valid('json')
+      return c.json({ id: 'created' }, 201)
+    })
 
-      // Group related routes
-      .get('/', (c) => c.json({ message: 'List posts' }, 200))
-      .post('/', (c) => c.json({ message: 'Create post' }, 201))
-      .get('/:id', (c) => {
-        const id = c.req.param('id')
-        return c.json({ message: `Get post ${id}` }, 200)
-      })
-
-    // Export for app composition
-    export default posts
+  export default posts
 </example>
 
-### Middleware Pattern
+### Type-Safe Middleware
 
 <example>
-    // typescript
-    import { MiddlewareHandler } from 'hono'
-    import { HTTPException } from 'hono/http-exception'
+  // typescript
+  import { MiddlewareHandler } from 'hono'
+  import { HTTPException } from 'hono/http-exception'
 
-    // Type-safe middleware
-    export const auth: MiddlewareHandler = async (c, next) => {
+  type Variables = {
+    user: { id: string; role: string }
+  }
+
+  export const auth: MiddlewareHandler<{ Variables: Variables }> =
+    async (c, next) => {
       const token = c.req.header('Authorization')
-
-      if (!token) {
-        throw new HTTPException(401, { message: 'Unauthorized' })
-      }
-
-      // Add typed variables to context
-      c.set('user', { id: '1', role: 'admin' })
-
+      if (!token) throw new HTTPException(401)
+      c.set('user', await validateToken(token))
       await next()
     }
-
-    // Usage with type inference
-    app.get('/protected', auth, (c) => {
-      const user = c.get('user')
-      return c.json({ user })
-    })
 </example>
 
-### Error Handling
+### Error Handling Pattern
 
 <example>
-    // typescript
-    import { Hono } from 'hono'
-    import { HTTPException } from 'hono/http-exception'
-
-    const app = new Hono()
-
-    // Global error handler
-    app.onError((err, c) => {
-      if (err instanceof HTTPException) {
-        return c.json({
-          code: err.status,
-          message: err.message
-        }, err.status)
-      }
-
-      console.error(err)
+  // typescript
+  app.onError((err, c) => {
+    if (err instanceof HTTPException) {
       return c.json({
-        code: 500,
-        message: 'Internal Server Error'
-      }, 500)
-    })
-
-    // Route with error handling
-    app.get('/posts/:id', async (c) => {
-      const id = c.req.param('id')
-      const post = await findPost(id)
-
-      if (!post) {
-        throw new HTTPException(404, {
-          message: `Post ${id} not found`
-        })
-      }
-
-      return c.json(post, 200)
-    })
-</example>
-
-### Context Usage
-
-<example>
-    // typescript
-    import { Context } from 'hono'
-
-    // Type-safe context variables
-    type Variables = {
-      user: { id: string; role: string }
-      requestId: string
+        code: err.status,
+        message: err.message
+      }, err.status)
     }
 
-    // Extend context with custom properties
-    type CustomContext = Context<{ Variables: Variables }>
-
-    // Use in middleware
-    const addRequestId: MiddlewareHandler<{ Variables: Variables }> =
-      async (c, next) => {
-        c.set('requestId', crypto.randomUUID())
-        await next()
-      }
-
-    // Use in handler
-    app.get('/me', async (c: CustomContext) => {
-      const user = c.get('user')
-      const requestId = c.get('requestId')
-      return c.json({ user, requestId })
-    })
+    console.error('Internal error:', err)
+    return c.json({
+      code: 500,
+      message: 'Internal Server Error'
+    }, 500)
+  })
 </example>
 
 ### Response Patterns
 
 <example>
-    // typescript
-    // JSON Response
-    app.get('/api/data', (c) => {
-      return c.json({ data: 'value' }, 200)
-    })
+  // typescript
+  // JSON with proper status
+  app.get('/data', (c) => c.json({ data: 'value' }, 200))
 
-    // HTML Response
-    app.get('/', (c) => {
-      return c.html('<h1>Hello Hono</h1>')
+  // Streaming with cleanup
+  app.get('/stream', (c) => {
+    return c.stream(async (stream) => {
+      try {
+        await streamData(stream)
+      } catch (e) {
+        if (e.name === 'AbortError') return
+        throw e
+      }
     })
+  })
 
-    // Stream Response
-    app.get('/stream', (c) => {
-      return c.stream(async (stream) => {
-        await stream.write('chunk1')
-        await stream.write('chunk2')
-      })
+  // File with proper headers
+  app.get('/file', (c) => {
+    return c.body(file, 200, {
+      'Content-Type': 'application/pdf',
+      'Cache-Control': 'public, max-age=3600'
     })
-
-    // File Response
-    app.get('/file', (c) => {
-      return c.body(
-        file,
-        200,
-        {
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': 'attachment; filename="doc.pdf"'
-        }
-      )
-    })
+  })
 </example>
 
 <example type="invalid">
-    // typescript
-    // Don't use raw Response
-    app.get('/api/bad', (c) => {
-      return new Response('data')  // Wrong: Use Hono context methods
+  // typescript
+  // Don't use raw Response
+  return new Response('data')  // Wrong: Use Hono context methods
+
+  // Don't mix response types
+  if (condition) {
+    return c.json(data)
+  }
+  return c.text(data)  // Wrong: Inconsistent response type
+
+  // Don't skip error handling
+  throw new Error('Failed')  // Wrong: Use HTTPException
+
+  // Don't skip status codes
+  return c.json({ data })  // Wrong: Missing status code
+</example>
+
+### Performance
+
+<example>
+  // typescript
+  import { compress } from 'hono/compress'
+  import { cache } from 'hono/cache'
+  import { timing } from 'hono/timing'
+
+  // Enable compression
+  app.use('*', compress())
+
+  // Implement caching
+  app.get('/api/data', cache({
+    cacheName: 'api-cache',
+    cacheControl: 'max-age=3600',
+    wait: true
+  }), (c) => c.json(data))
+
+  // Handle streaming with cleanup
+  app.get('/api/stream', async (c) => {
+    const controller = new AbortController()
+
+    // Cleanup on client disconnect
+    c.req.raw.signal.addEventListener('abort', () => {
+      controller.abort()
     })
 
-    // Don't mix response types
-    app.get('/api/mixed', (c) => {
-      if (condition) {
-        return c.json({ data: 'value' })
+    return c.stream(async (stream) => {
+      try {
+        await streamData(stream, controller.signal)
+      } catch (e) {
+        if (e.name === 'AbortError') return
+        throw e
       }
-      return c.text('value')  // Wrong: Inconsistent response type
     })
+  })
 
-    // Don't throw generic errors
-    app.get('/api/error', (c) => {
-      throw new Error('Something went wrong')  // Wrong: Use HTTPException
-    })
+  // Monitor performance
+  app.use('*', timing())
+  app.use('*', async (c, next) => {
+    const start = performance.now()
+    await next()
+    const duration = performance.now() - start
 
-    // Don't skip status codes
-    app.post('/api/create', (c) => {
-      return c.json({ created: true })  // Wrong: Missing status code
-    })
-</example>
-
-### Performance Optimization
-
-<example>
-    // typescript
-    // Use proper caching headers
-    app.get('/api/cached', cache(), (c) => {
-      return c.json(
-        { data: 'cached' },
-        200,
-        {
-          'Cache-Control': 'public, max-age=3600',
-          'ETag': generateETag(data)
-        }
-      )
-    })
-
-    // Use compression for large responses
-    app.use('*', compress())
-
-    // Implement proper connection handling
-    app.get('/api/stream', async (c) => {
-      const abortController = new AbortController()
-      c.req.raw.signal.addEventListener('abort', () => {
-        abortController.abort()
-      })
-
-      return c.stream(async (stream) => {
-        try {
-          await streamData(stream, abortController.signal)
-        } catch (e) {
-          if (e.name === 'AbortError') return
-          throw e
-        }
-      })
-    })
-</example>
-
-### Testing Standards
-
-<example>
-    // typescript
-    import { describe, it, expect } from 'vitest'
-    import { Hono } from 'hono'
-    import { testClient } from 'hono/testing'
-
-    describe('Posts API', () => {
-      const app = new Hono()
-      app.route('/posts', posts)
-
-      const client = testClient(app)
-
-      it('should list posts', async () => {
-        const res = await client.posts.$get()
-        expect(res.status).toBe(200)
-        expect(await res.json()).toEqual({
-          message: 'List posts'
-        })
-      })
-
-      it('should handle not found', async () => {
-        const res = await client.posts['123'].$get()
-        expect(res.status).toBe(404)
-        expect(await res.json()).toMatchObject({
-          code: 404,
-          message: expect.stringContaining('not found')
-        })
-      })
-
-      it('should validate request body', async () => {
-        const res = await client.posts.$post({
-          json: { invalid: 'data' }
-        })
-        expect(res.status).toBe(400)
-      })
-    })
+    if (duration > 1000) {
+      console.warn(`Slow response: ${c.req.path} took ${duration}ms`)
+    }
+  })
 </example>
 
 <example type="invalid">
-    // typescript
-    // Don't test implementation details
-    it('should call database', async () => {
-      const spy = vi.spyOn(db, 'query')  // Wrong: Testing internals
-      await client.posts.$get()
-      expect(spy).toHaveBeenCalled()
-    })
+  // typescript
+  // Don't skip compression for large responses
+  app.get('/api/large-data', (c) => {
+    return c.json(largeData)  // Wrong: Missing compression
+  })
 
-    // Don't use real external services
-    it('should send email', async () => {
-      const res = await client.notify.$post()  // Wrong: Use mocks instead
-      expect(res.status).toBe(200)
+  // Don't ignore connection state
+  app.get('/api/stream', (c) => {
+    return c.stream(async (stream) => {
+      // Wrong: No cleanup or error handling
+      while (true) {
+        await stream.write(data)
+      }
     })
+  })
 
-    // Don't skip error cases
-    it('should create post', async () => {
-      const res = await client.posts.$post({  // Wrong: Missing validation tests
-        json: { title: 'Test' }
-      })
-      expect(res.status).toBe(201)
-    })
+  // Don't use blocking operations
+  app.get('/api/slow', async (c) => {
+    const result = await heavyOperation()  // Wrong: Blocks event loop
+    return c.json(result)
+  })
+
+  // Don't skip cache headers
+  app.get('/api/static', (c) => {
+    return c.json(data)  // Wrong: Missing cache headers
+  })
 </example>
 
-### API Best Practices
+### Implementation Checklist
 
-<example>
-    // typescript
-    import { Hono } from 'hono'
-    import { logger } from '../middleware/logger'
-    import { validator } from '../middleware/validator'
-    import { z } from 'zod'
+#### Setup
 
-    // Input validation before processing
-    const createPostSchema = z.object({
-      title: z.string().min(1),
-      content: z.string().min(1)
-    })
+- [ ] Configure error handlers
+- [ ] Set up middleware pipeline
+- [ ] Configure request validation
+- [ ] Set up proper logging
+- [ ] Configure performance options
 
-    const app = new Hono()
-      // Global error logging
-      .onError((err, c) => {
-        if (process.env.NODE_ENV === 'production') {
-          // Production: Log error ID and general message
-          const errorId = crypto.randomUUID()
-          console.error(`Error ID: ${errorId}`, { error: err })
-          return c.json({ message: 'Internal server error', errorId }, 500)
-        } else {
-          // Development: Full error details
-          console.error(err)
-          return c.json({ message: err.message, stack: err.stack }, 500)
-        }
-      })
+#### Routes
 
-    app.post('/posts', validator('json', createPostSchema), async (c) => {
-      // Data is already validated
-      const data = c.req.valid('json')
+- [ ] Group by feature
+- [ ] Implement proper validation
+- [ ] Add proper error handling
+- [ ] Set correct status codes
+- [ ] Add proper caching
 
-      try {
-        const post = await createPost(data)
-        return c.json(post, 201)
-      } catch (error) {
-        // Log specific error but return generic message
-        console.error('Failed to create post:', error)
-        throw new HTTPException(500, { message: 'Failed to create post' })
-      }
-    })
+#### Security
 
-    // RESTful endpoint structure
-    app.route('/posts')
-      .get('/', async (c) => {/* List posts */})
-      .post('/', async (c) => {/* Create post */})
-      .get('/:id', async (c) => {/* Get post */})
-      .put('/:id', async (c) => {/* Update post */})
-      .delete('/:id', async (c) => {/* Delete post */})
-</example>
+- [ ] Validate all inputs
+- [ ] Implement rate limiting
+- [ ] Set secure headers
+- [ ] Handle auth properly
+- [ ] Sanitize responses
 
-<example type="invalid">
-    // typescript
-    // Don't skip input validation
-    app.post('/posts', (c) => {
-      const data = c.req.json()  // Wrong: Validate first
-      return createPost(data)
-    })
+#### Testing
 
-    // Don't use callbacks
-    app.get('/posts', (c, next) => {
-      getPosts((err, posts) => {  // Wrong: Use async/await
-        if (err) next(err)
-        else c.json(posts)
-      })
-    })
-
-    // Don't mix REST conventions
-    app.post('/getPosts', (c) => {})  // Wrong: Use GET /posts
-    app.get('/deletePost/:id', (c) => {})  // Wrong: Use DELETE /posts/:id
-
-    // Don't log sensitive data
-    console.log('User data:', userData)  // Wrong: May contain sensitive info
-
-    // Don't use console.log in production
-    console.log('Debug info')  // Wrong: Use proper logging levels
-</example>
-
-### Logging Standards
-
-<example>
-    // typescript
-    import { Hono } from 'hono'
-    import { pino } from 'pino'
-    import { type MiddlewareHandler } from 'hono'
-
-    // Configure Pino logger
-    const logger = pino({
-      level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-      transport: process.env.NODE_ENV === 'development'
-        ? { target: 'pino-pretty' }
-        : undefined,
-      redact: {
-        paths: ['req.headers.authorization', 'req.body.password'],
-        remove: true
-      }
-    })
-
-    // Create logging middleware
-    export const loggerMiddleware: MiddlewareHandler = async (c, next) => {
-      const start = performance.now()
-      const requestId = crypto.randomUUID()
-
-      // Attach logger to context
-      c.set('log', logger.child({
-        requestId,
-        path: c.req.path,
-        method: c.req.method
-      }))
-
-      try {
-        await next()
-      } catch (error) {
-        c.get('log').error({ error }, 'Request failed')
-        throw error
-      }
-
-      const duration = performance.now() - start
-
-      c.get('log').info({
-        status: c.res.status,
-        duration: `${duration.toFixed(2)}ms`
-      }, 'Request completed')
-    }
-
-    // Usage in app
-    const app = new Hono()
-
-    // Apply logging middleware
-    app.use('*', loggerMiddleware)
-
-    // Use in routes
-    app.post('/posts', async (c) => {
-      const log = c.get('log')
-
-      try {
-        log.debug({ body: c.req.valid('json') }, 'Creating post')
-        const post = await createPost(c.req.valid('json'))
-
-        log.info({ postId: post.id }, 'Post created')
-        return c.json(post, 201)
-      } catch (error) {
-        log.error({ error }, 'Failed to create post')
-        throw error
-      }
-    })
-
-    // Error handler with logging
-    app.onError((err, c) => {
-      const log = c.get('log')
-
-      if (err instanceof HTTPException) {
-        log.warn({ status: err.status, message: err.message }, 'HTTP exception')
-        return c.json({
-          code: err.status,
-          message: err.message
-        }, err.status)
-      }
-
-      const errorId = crypto.randomUUID()
-      log.error(
-        {
-          error: err,
-          errorId,
-          stack: err.stack
-        },
-        'Unhandled error'
-      )
-
-      if (process.env.NODE_ENV === 'production') {
-        return c.json({
-          code: 500,
-          message: 'Internal Server Error',
-          errorId
-        }, 500)
-      }
-
-      return c.json({
-        code: 500,
-        message: err.message,
-        stack: err.stack,
-        errorId
-      }, 500)
-    })
-</example>
-
-<example type="invalid">
-    // typescript
-    // Don't use console.log
-    app.use('*', async (c, next) => {
-      console.log('Request:', c.req.path)  // Wrong: Use Pino logger
-      await next()
-    })
-
-    // Don't log sensitive data
-    app.post('/login', async (c) => {
-      const { email, password } = c.req.valid('json')
-      c.get('log').info({ email, password }, 'Login attempt')  // Wrong: Contains sensitive data
-    })
-
-    // Don't skip error logging
-    app.get('/posts/:id', async (c) => {
-      try {
-        return c.json(await getPost(c.req.param('id')))
-      } catch (error) {
-        return c.json({ error: 'Not found' }, 404)  // Wrong: Error not logged
-      }
-    })
-
-    // Don't mix logging levels incorrectly
-    app.get('/health', (c) => {
-      c.get('log').error('Health check')  // Wrong: Should be debug or info
-      return c.json({ status: 'ok' })
-    })
-
-    // Don't create new logger instances per request
-    app.get('/posts', (c) => {
-      const log = pino()  // Wrong: Use shared logger instance
-    })
-</example>
-
-### Logging Best Practices
-
-<example>
-    // typescript
-    // Configure log levels by environment
-    const logConfig = {
-      development: {
-        level: 'debug',
-        transport: { target: 'pino-pretty' }
-      },
-      test: {
-        level: 'error',
-        transport: { target: 'pino-pretty' }
-      },
-      production: {
-        level: 'info',
-        formatters: {
-          level: (label) => ({ level: label })
-        }
-      }
-    }
-
-    // Structured logging
-    log.info({
-      user: { id: userId },
-      action: 'post_created',
-      metadata: {
-        postId,
-        category,
-        tags
-      }
-    }, 'User created a new post')
-
-    // Error logging with context
-    try {
-      await someOperation()
-    } catch (error) {
-      log.error({
-        error,
-        context: {
-          operation: 'someOperation',
-          inputs: { /* sanitized inputs */ }
-        }
-      }, 'Operation failed')
-    }
-
-    // Performance logging
-    const withTiming = async (operation: string, fn: () => Promise<any>) => {
-      const start = performance.now()
-      try {
-        return await fn()
-      } finally {
-        const duration = performance.now() - start
-        log.debug({ operation, duration: `${duration.toFixed(2)}ms` }, 'Operation completed')
-      }
-    }
-</example>
-
-<critical>
-- ALWAYS use Hono context methods for responses
-- NEVER use raw Response objects
-- Keep response types consistent within routes
-- Use proper error handling with HTTPException
-- Always specify status codes
-- Implement proper request validation
-- Use type-safe middleware patterns
-- Write comprehensive tests for all endpoints
-- Use Hono's test client for HTTP testing
-- Mock external dependencies
-- Test both success and error cases
-- Validate response structures
-- ALWAYS validate inputs before processing
-- Use async/await consistently
-- Follow RESTful conventions
-- Use structured logging with Pino
-- Configure log levels by environment
-- Redact sensitive information
-- Include request ID in logs
-- Use child loggers for context
-- Log request duration and status
-- Log errors with proper context
-</critical>
+- [ ] Test happy paths
+- [ ] Test error cases
+- [ ] Test middleware
+- [ ] Test performance
+- [ ] Test security

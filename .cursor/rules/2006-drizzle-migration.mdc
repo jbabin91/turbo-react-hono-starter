@@ -1,0 +1,159 @@
+---
+description: ENFORCE Drizzle migration standards when CREATING or MODIFYING database migrations to ENSURE safe schema evolution
+globs: ["packages/**/migrations/**/*.ts", "apps/**/migrations/**/*.ts"]
+alwaysApply: false
+---
+
+# Drizzle Migration Standards
+
+<version>1.0.0</version>
+
+## Related Standards
+
+- **Schema Design**: See `drizzle-schema` for schema patterns
+- **Query Patterns**: See `drizzle-query` for query optimization
+- **Project Structure**: See `project-structure` for file organization
+
+## Context
+
+- Defines standards for database migrations
+- Ensures safe schema evolution
+- Maintains data integrity
+- Implements proper versioning
+
+<critical>
+- ALWAYS test migrations before deployment
+- NEVER modify committed migrations
+- ALWAYS include rollback logic
+- NEVER lose data in migrations
+- ALWAYS version migrations properly
+- NEVER skip migration testing
+- ALWAYS backup before migrating
+- NEVER mix schema versions
+- ALWAYS document breaking changes
+- NEVER skip dependency order
+</critical>
+
+## Requirements
+
+### Migration Organization
+
+- [ ] Use timestamped migration files
+- [ ] Implement proper rollbacks
+- [ ] Test migrations thoroughly
+- [ ] Document changes clearly
+- [ ] Handle dependencies properly
+
+### Data Safety
+
+- [ ] Backup before migrations
+- [ ] Validate data integrity
+- [ ] Handle large tables safely
+- [ ] Implement proper locks
+- [ ] Monitor migration progress
+
+### Version Control
+
+- [ ] Use semantic versioning
+- [ ] Track migration history
+- [ ] Handle conflicts properly
+- [ ] Document breaking changes
+- [ ] Maintain backwards compatibility
+
+## Examples
+
+### Basic Migration Pattern
+
+<example>
+    // typescript
+    import { sql } from 'drizzle-orm'
+    import { migrate } from 'drizzle-orm/node-postgres'
+    import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core'
+
+    // Migration up
+    export async function up() {
+      await migrate(db, sql`
+        CREATE TABLE users (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          email TEXT NOT NULL UNIQUE,
+          created_at TIMESTAMP NOT NULL DEFAULT NOW()
+        );
+
+        CREATE INDEX users_email_idx ON users (email);
+      `)
+    }
+
+    // Migration down
+    export async function down() {
+      await migrate(db, sql`
+        DROP TABLE users;
+      `)
+    }
+</example>
+
+### Safe Migration Pattern
+
+<example>
+    // typescript
+    export async function up() {
+      // 1. Add new column as nullable
+      await db.execute(sql`
+        ALTER TABLE users
+        ADD COLUMN display_name TEXT;
+      `)
+
+      // 2. Populate data
+      await db.execute(sql`
+        UPDATE users
+        SET display_name = username
+        WHERE display_name IS NULL;
+      `)
+
+      // 3. Make column required
+      await db.execute(sql`
+        ALTER TABLE users
+        ALTER COLUMN display_name SET NOT NULL;
+      `)
+    }
+
+    export async function down() {
+      await db.execute(sql`
+        ALTER TABLE users
+        DROP COLUMN display_name;
+      `)
+    }
+</example>
+
+<example type="invalid">
+    // typescript
+    // Don't modify existing migrations
+    export async function up() {
+      // Wrong: Changing committed migration
+      await db.execute(sql`
+        ALTER TABLE users ADD COLUMN new_field TEXT;
+      `)
+    }
+
+    // Don't skip rollback
+    export async function up() {
+      await db.execute(sql`
+        CREATE TABLE data (id UUID PRIMARY KEY);
+      `)
+      // Wrong: Missing down migration
+    }
+
+    // Don't lose data
+    export async function up() {
+      await db.execute(sql`
+        DROP TABLE users;  -- Wrong: Losing data
+        CREATE TABLE new_users (...);
+      `)
+    }
+
+    // Don't skip locks
+    export async function up() {
+      await db.execute(sql`
+        ALTER TABLE users ADD COLUMN status TEXT;
+      `)  // Wrong: Missing lock timeout
+    }
+</example>
