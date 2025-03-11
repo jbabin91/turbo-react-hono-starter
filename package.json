@@ -1,5 +1,6 @@
 {
   "name": "turbo-react-hono-starter",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,11 +19,11 @@
     "lint:ws": "sherif",
     "prepare": "husky",
     "preview": "turbo run preview",
-    "release": "release-it",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
     "test:watch": "turbo run test:watch",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "version-packages": "changeset version"
   },
   "config": {
     "commitizen": {
@@ -31,9 +32,8 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
+    "@changesets/cli": "^2.28.1",
     "@commitlint/config-conventional": "^19.8.0",
-    "@release-it/bumper": "^7.0.1",
-    "@release-it/conventional-changelog": "^10.0.0",
     "@types/node": "^22.13.10",
     "commitlint": "^19.8.0",
     "cz-git": "^1.11.1",
@@ -44,7 +44,6 @@
     "prettier-plugin-packagejson": "^2.5.10",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "publint": "^0.3.9",
-    "release-it": "^18.1.2",
     "sherif": "^1.4.0",
     "turbo": "^2.4.4",
     "typescript": "5.7.3"
