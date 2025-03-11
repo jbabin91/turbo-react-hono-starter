@@ -1,0 +1,59 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to prepare (major, minor, patch)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  prepare:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/setup
+
+      - name: Configure Git
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Create Release PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create release branch
+          BRANCH="release/$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $BRANCH
+
+          # Get next version
+          NEXT_VERSION=$(pnpm release ${{ github.event.inputs.version }} --dry-run --ci | grep "New version" | cut -d " " -f 3)
+          echo "Next version will be: $NEXT_VERSION"
+
+          # Create empty commit to trigger release
+          git commit --allow-empty -m "chore(repo): 🔨 release v$NEXT_VERSION"
+          git push origin $BRANCH
+
+          # Create PR
+          gh pr create \
+            --title "chore(repo): 🔨 release v$NEXT_VERSION" \
+            --body "This PR will trigger release v$NEXT_VERSION when merged." \
+            --label "release" \
+            --base main \
+            --head $BRANCH

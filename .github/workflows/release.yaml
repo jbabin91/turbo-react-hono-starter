@@ -2,10 +2,20 @@ name: Release
 
 on:
   pull_request:
-  push:
+    types: [closed]
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (major, minor, patch)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,11 +24,18 @@ concurrency:
 jobs:
   release:
     name: Release
+    # Only run if triggered manually or if a release PR was merged
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install dependencies
         uses: ./.github/actions/setup
@@ -26,12 +43,26 @@ jobs:
       - name: Build All
         uses: ./.github/actions/build-all
 
-      - name: Create Release Pull Request or Publish to npm
-        # https://github.com/changesets/action
-        uses: changesets/action@v1
-        with:
-          # this expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: pnpm release
-          version: pnpm version-packages
+      - name: Configure Git
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            pnpm release --ci ${{ github.event.inputs.version }}
+          else
+            # Extract version type from PR title
+            PR_TITLE="${{ github.event.pull_request.title }}"
+            if [[ "$PR_TITLE" =~ major ]]; then
+              VERSION_TYPE="major"
+            elif [[ "$PR_TITLE" =~ minor ]]; then
+              VERSION_TYPE="minor"
+            else
+              VERSION_TYPE="patch"
+            fi
+            pnpm release --ci $VERSION_TYPE
+          fi

@@ -11,20 +11,18 @@
     "dev:storybook": "turbo run dev:storybook",
     "format": "prettier -uwl --cache .",
     "format:check": "prettier -uc --cache .",
-    "generate:changesets": "pnpm changeset-conventional && prettier -uw --cache ./.changeset",
     "postinstall": "pnpm lint:ws",
     "lint": "turbo run lint --continue -- --max-warnings 0 --cache --cache-location node_modules/.cache/eslint/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/eslint/.eslintcache",
-    "lint:package": "turbo run lint:package",
+    "lint:packages": "turbo run lint:package",
     "lint:ws": "sherif",
     "prepare": "husky",
     "preview": "turbo run preview",
-    "release": "pnpm build && changeset publish",
+    "release": "release-it",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
     "test:watch": "turbo run test:watch",
-    "typecheck": "turbo run typecheck",
-    "version-packages": "changeset version && pnpm format"
+    "typecheck": "turbo run typecheck"
   },
   "config": {
     "commitizen": {
@@ -33,11 +31,10 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
-    "@changesets/changelog-github": "^0.5.1",
-    "@changesets/cli": "^2.28.1",
     "@commitlint/config-conventional": "^19.8.0",
+    "@release-it/bumper": "^7.0.1",
+    "@release-it/conventional-changelog": "^10.0.0",
     "@types/node": "^22.13.10",
-    "changeset-conventional-commits": "^0.2.5",
     "commitlint": "^19.8.0",
     "cz-git": "^1.11.1",
     "eslint": "^9.22.0",
@@ -47,6 +44,7 @@
     "prettier-plugin-packagejson": "^2.5.10",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "publint": "^0.3.9",
+    "release-it": "^18.1.2",
     "sherif": "^1.4.0",
     "turbo": "^2.4.4",
     "typescript": "5.7.3"

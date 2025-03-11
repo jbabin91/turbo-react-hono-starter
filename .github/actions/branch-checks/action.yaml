@@ -18,7 +18,7 @@ runs:
 
     - name: Package Lint
       shell: bash
-      run: pnpm lint:package
+      run: pnpm lint:packages
 
     - name: Test Coverage
       shell: bash

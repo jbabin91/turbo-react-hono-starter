@@ -3,39 +3,60 @@ import { defineConfig } from 'cz-git';
 /**
  * Commit scope options for the monorepo
  * Format: type(scope): subject
- * Example: feat(frontend): add new dashboard
+ * Examples:
+ * - feat(frontend): add new dashboard
+ * - ci(workflow): add release action
+ * - docs(cursor): add typescript standards
+ * - docs(readme): update installation steps
+ * - chore(deps): bump dependencies
  */
 const scopeOptions = [
-  // Main applications
+  // Apps
   'frontend', // React web application
   'backend', // Hono API server
 
-  // Shared packages
-  'ui', // Component library and design system
-  'eslint-config', // Shared ESLint configuration
-  'typescript-config', // Shared TypeScript configuration
+  // Packages
+  'ui', // Component library
+  'eslint', // ESLint configuration
+  'tsconfig', // TypeScript configuration
 
-  // Global scopes
-  'repo', // Repository-wide changes (e.g., root configuration)
-  'dependencies', // Dependency updates and management
-  'config', // Build, tool, and environment configurations
-  'ci', // CI/CD pipeline and workflows
-  'docs', // Documentation updates and improvements
-  'cursor-rules', // Cursor rules updates and improvements
-  'changesets', // Changeset related operations
+  // Root
+  'repo', // Repository configuration
+  'deps', // Dependencies
+  'workflow', // GitHub Actions
+  'readme', // Documentation
+  'cursor', // Cursor AI rules
 ];
 
 export default defineConfig({
   extends: ['@commitlint/config-conventional'],
   prompt: {
     alias: {
-      b: 'chore(dependencies): bump dependencies',
-      c: 'chore(changesets): add changesets',
-      r: 'chore(repo): update repository configuration',
-      d: 'docs(docs): update documentation',
-      t: 'test(frontend): add unit tests',
-      f: 'fix(frontend): quick fix',
+      // Dependencies
+      b: 'chore(deps): bump dependencies',
+      u: 'chore(deps): update lockfile',
+
+      // Documentation
+      d: 'docs(readme): update documentation',
+      c: 'docs(cursor): update AI rules',
+
+      // Testing
+      tf: 'test(frontend): add tests',
+      tu: 'test(ui): add tests',
+      tb: 'test(backend): add tests',
+
+      // Quick fixes
+      ff: 'fix(frontend): quick fix',
+      fb: 'fix(backend): quick fix',
+      fu: 'fix(ui): quick fix',
+
+      // Styles
       s: 'style(ui): update styles',
+      sf: 'style(frontend): update styles',
+
+      // Configuration
+      r: 'chore(repo): update configuration',
+      w: 'ci(workflow): update github actions',
     },
     messages: {
       type: "Select the type of change you're committing:",
@@ -105,33 +126,15 @@ export default defineConfig({
     upperCaseSubject: false,
   },
   rules: {
+    // Only include rules that differ from @commitlint/config-conventional defaults
     'scope-enum': [2, 'always', scopeOptions],
-    'subject-empty': [2, 'never'],
-    'subject-min-length': [2, 'always', 2],
-    'type-enum': [
-      2,
-      'always',
-      [
-        'feat',
-        'fix',
-        'docs',
-        'style',
-        'refactor',
-        'perf',
-        'test',
-        'build',
-        'ci',
-        'chore',
-        'revert',
-      ],
-    ],
-    'body-leading-blank': [1, 'always'],
-    'footer-leading-blank': [1, 'always'],
-    'header-max-length': [2, 'always', 100],
+    'scope-empty': [2, 'never'],
     'subject-case': [
       2,
       'never',
       ['sentence-case', 'start-case', 'pascal-case', 'upper-case'],
     ],
   },
+  helpUrl:
+    'https://github.com/conventional-changelog/commitlint/#what-is-commitlint',
 });

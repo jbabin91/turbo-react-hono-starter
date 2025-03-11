@@ -1,0 +1,59 @@
+{
+  "$schema": "https://unpkg.com/release-it@18.1.2/schema/release-it.json",
+  "git": {
+    "commitMessage": "chore(repo): 🔨 release v${version}",
+    "tagName": "v${version}",
+    "push": true,
+    "requireCleanWorkingDir": true
+  },
+  "github": {
+    "release": true,
+    "web": true,
+    "autoGenerate": true,
+    "releaseName": "v${version}"
+  },
+  "npm": {
+    "publish": false
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          { "type": "feat", "section": "✨ Features" },
+          { "type": "fix", "section": "🐛 Bug Fixes" },
+          { "type": "docs", "section": "📚 Documentation" },
+          { "type": "style", "section": "💎 Styles" },
+          { "type": "refactor", "section": "♻️ Code Refactoring" },
+          { "type": "perf", "section": "⚡️ Performance Improvements" },
+          { "type": "test", "section": "✅ Tests" },
+          { "type": "build", "section": "📦 Build System" },
+          { "type": "ci", "section": "🎡 Continuous Integration" },
+          { "type": "chore", "section": "🔨 Chores" },
+          { "type": "revert", "section": "⏪ Reverts" }
+        ]
+      },
+      "infile": "CHANGELOG.md"
+    },
+    "@release-it/bumper": {
+      "in": {
+        "packages/**/package.json": ["version"],
+        "apps/**/package.json": ["version"]
+      },
+      "out": {
+        "packages/**/package.json": [
+          "version",
+          "dependencies",
+          "devDependencies"
+        ],
+        "apps/**/package.json": ["version", "dependencies", "devDependencies"]
+      }
+    }
+  },
+  "hooks": {
+    "before:init": ["pnpm build", "pnpm test"],
+    "after:bump": "pnpm install",
+    "after:git:release": "echo Successfully created git release v${version}",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  }
+}
