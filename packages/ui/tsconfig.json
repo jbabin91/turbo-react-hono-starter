@@ -14,7 +14,6 @@
     "rslib.config.*"
   ],
   "compilerOptions": {
-    "outDir": "dist",
     "rootDir": "src"
   }
 }

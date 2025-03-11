@@ -9,7 +9,11 @@ export default [
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.json', './tsconfig.lint.json'],
+        project: [
+          './tsconfig.json',
+          './tsconfig.lint.json',
+          './tsconfig.test.json',
+        ],
         tsconfigRootDir: import.meta.dirname,
       },
     },
