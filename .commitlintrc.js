@@ -26,6 +26,7 @@ const scopeOptions = [
   'workflow', // GitHub Actions
   'readme', // Documentation
   'cursor', // Cursor AI rules
+  'release', // Release management
 ];
 
 export default defineConfig({

@@ -36,22 +36,15 @@
       "infile": "CHANGELOG.md"
     },
     "@release-it/bumper": {
-      "in": {
-        "packages/**/package.json": ["version"],
-        "apps/**/package.json": ["version"]
-      },
+      "in": ["packages/**/package.json", "apps/**/package.json"],
       "out": {
-        "packages/**/package.json": [
-          "version",
-          "dependencies",
-          "devDependencies"
-        ],
-        "apps/**/package.json": ["version", "dependencies", "devDependencies"]
+        "file": ["packages/**/package.json", "apps/**/package.json"],
+        "path": ["version", "dependencies.*", "devDependencies.*"]
       }
     }
   },
   "hooks": {
-    "before:init": ["pnpm build", "pnpm test"],
+    "before:init": ["pnpm build", "pnpm lint:packages"],
     "after:bump": "pnpm install",
     "after:git:release": "echo Successfully created git release v${version}",
     "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."

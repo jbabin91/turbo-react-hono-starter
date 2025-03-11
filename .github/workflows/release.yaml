@@ -7,15 +7,16 @@ on:
       - main
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to release (major, minor, patch)'
-        required: true
-        default: 'patch'
+      force_version:
+        description: 'Version bump strategy (auto uses conventional commits)'
+        required: false
         type: choice
         options:
+          - auto
           - major
           - minor
           - patch
+        default: 'auto'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -52,17 +53,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            pnpm release --ci ${{ github.event.inputs.version }}
+          if [[ "${{ github.event.inputs.force_version }}" != "auto" ]]; then
+            # Use forced version if specified
+            pnpm release --ci ${{ github.event.inputs.force_version }}
           else
-            # Extract version type from PR title
-            PR_TITLE="${{ github.event.pull_request.title }}"
-            if [[ "$PR_TITLE" =~ major ]]; then
-              VERSION_TYPE="major"
-            elif [[ "$PR_TITLE" =~ minor ]]; then
-              VERSION_TYPE="minor"
-            else
-              VERSION_TYPE="patch"
-            fi
-            pnpm release --ci $VERSION_TYPE
-          fi
+            # Let conventional commits determine the version
+            pnpm release --ci

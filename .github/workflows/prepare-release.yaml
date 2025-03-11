@@ -3,15 +3,16 @@ name: Prepare Release
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to prepare (major, minor, patch)'
-        required: true
-        default: 'patch'
+      force_version:
+        description: 'Version bump strategy (auto uses conventional commits)'
+        required: false
         type: choice
         options:
+          - auto
           - major
           - minor
           - patch
+        default: 'auto'
 
 jobs:
   prepare:
@@ -42,18 +43,30 @@ jobs:
           BRANCH="release/$(date +%Y%m%d-%H%M%S)"
           git checkout -b $BRANCH
 
-          # Get next version
-          NEXT_VERSION=$(pnpm release ${{ github.event.inputs.version }} --dry-run --ci | grep "New version" | cut -d " " -f 3)
-          echo "Next version will be: $NEXT_VERSION"
-
           # Create empty commit to trigger release
-          git commit --allow-empty -m "chore(repo): 🔨 release v$NEXT_VERSION"
+          git commit --allow-empty -m "chore(release): 🔨 prepare for next version"
           git push origin $BRANCH
+
+          # Get recommended version type from conventional commits
+          VERSION_TYPE="${{ github.event.inputs.force_version }}"
+          if [[ "$VERSION_TYPE" == "auto" ]]; then
+            # Use --dry-run to see what version would be released
+            VERSION_TYPE=$(pnpm release --ci --dry-run | grep -o "patch\|minor\|major" || echo "patch")
+          fi
 
           # Create PR
           gh pr create \
-            --title "chore(repo): 🔨 release v$NEXT_VERSION" \
-            --body "This PR will trigger release v$NEXT_VERSION when merged." \
+            --title "chore(release): 🔨 prepare $VERSION_TYPE release" \
+            --body "This PR will trigger a release when merged.
+
+            ## Type of Release
+            - $VERSION_TYPE ($(if [[ "${{ github.event.inputs.force_version }}" == "auto" ]]; then echo "determined from commits"; else echo "manually selected"; fi))
+
+            ## Checklist
+            - [ ] All tests pass
+            - [ ] Documentation is up to date
+            - [ ] Breaking changes are documented
+            - [ ] Release notes are complete" \
             --label "release" \
             --base main \
             --head $BRANCH
