@@ -123,6 +123,7 @@ function example() {
   - `0XX`: Core standards
   - `1XX`: Tool configs
   - `3XX`: Testing standards
+  - `4XX`: Documentation standards
   - `1XXX`: Language rules
   - `2XXX`: Framework rules
   - `8XX`: Workflows

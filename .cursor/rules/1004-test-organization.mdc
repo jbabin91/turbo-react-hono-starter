@@ -1,5 +1,5 @@
 ---
-description: ENFORCE test organization standards when creating or updating tests
+description: ENFORCE test organization standards when CREATING or MODIFYING tests to ENSURE consistent test structure
 globs: ["**/tests/**/*.{ts,tsx}", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"]
 alwaysApply: false
 ---

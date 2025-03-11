@@ -10,15 +10,15 @@ alwaysApply: true
 
 ## Table of Contents
 
-- [Context](#context)
-- [Requirements](#requirements)
-  - [Route Organization](#route-organization)
-  - [Route Definition](#route-definition)
-  - [Type Safety](#type-safety)
-  - [Data Integration](#data-integration)
-  - [Authentication & Authorization](#authentication--authorization)
-  - [Performance](#performance)
-- [Examples](#examples)
+- [Context](mdc:#context)
+- [Requirements](mdc:#requirements)
+  - [Route Organization](mdc:#route-organization)
+  - [Route Definition](mdc:#route-definition)
+  - [Type Safety](mdc:#type-safety)
+  - [Data Integration](mdc:#data-integration)
+  - [Authentication & Authorization](mdc:#authentication--authorization)
+  - [Performance](mdc:#performance)
+- [Examples](mdc:#examples)
 
 ## Context
 

@@ -1,0 +1,136 @@
+---
+description: ENFORCE Drizzle schema standards when CREATING or MODIFYING database schemas to ENSURE consistent modeling
+globs: ["packages/**/*.db.ts", "apps/**/db/**/*.ts", "apps/**/schema/**/*.ts"]
+alwaysApply: false
+---
+
+# Drizzle Schema Standards
+
+<version>1.0.0</version>
+
+## Related Standards
+
+- **Query Patterns**: See `drizzle-query` for query optimization and patterns
+- **Migrations**: See `drizzle-migration` for migration management
+- **Validation**: See `zod-validation` for schema validation patterns
+- **Auth**: See `better-auth-standards` for auth-specific schemas
+
+## Context
+
+- Defines standards for Drizzle schema design
+- Ensures consistent database modeling
+- Maintains type safety with TypeScript
+- Enforces proper constraints and relations
+
+<critical>
+- ALWAYS use domain-driven schema organization
+- NEVER use raw SQL for schema definitions
+- ALWAYS define proper indexes for queries
+- NEVER skip foreign key constraints
+- ALWAYS use appropriate column types
+- NEVER store sensitive data without encryption
+- ALWAYS document complex relations
+- NEVER use ambiguous naming
+- ALWAYS version your schemas
+- NEVER mix concerns in schema files
+</critical>
+
+## Requirements
+
+### Schema Organization
+
+- [ ] Use domain-driven schema files
+- [ ] Group related tables together
+- [ ] Implement proper indexes
+- [ ] Document relations clearly
+- [ ] Include type exports
+- [ ] Define constraints properly
+
+### Type Safety
+
+- [ ] Use strict TypeScript settings
+- [ ] Define proper column types
+- [ ] Implement relation types
+- [ ] Export table types
+- [ ] Use enum types appropriately
+
+### Relations & Constraints
+
+- [ ] Define foreign key constraints
+- [ ] Implement proper indexes
+- [ ] Use appropriate relation types
+- [ ] Document complex relations
+- [ ] Handle circular dependencies
+
+## Examples
+
+### Basic Schema Pattern
+
+<example>
+    // typescript
+    import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+    import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+    import { type InferModel } from 'drizzle-orm'
+
+    export const users = pgTable('users', {
+      id: uuid('id').primaryKey().defaultRandom(),
+      email: text('email').notNull().unique(),
+      name: text('name').notNull(),
+      createdAt: timestamp('created_at').notNull().defaultNow(),
+      updatedAt: timestamp('updated_at').notNull().defaultNow()
+    })
+
+    // Export types
+    export type User = InferModel<typeof users>
+    export type NewUser = InferModel<typeof users, 'insert'>
+
+    // Export schemas
+    export const insertUserSchema = createInsertSchema(users)
+    export const selectUserSchema = createSelectSchema(users)
+</example>
+
+### Relations Pattern
+
+<example>
+    // typescript
+    export const posts = pgTable('posts', {
+      id: uuid('id').primaryKey().defaultRandom(),
+      title: text('title').notNull(),
+      userId: uuid('user_id')
+        .notNull()
+        .references(() => users.id, { onDelete: 'cascade' }),
+      createdAt: timestamp('created_at').notNull().defaultNow()
+    }, (table) => ({
+      userIdIdx: index('posts_user_id_idx').on(table.userId)
+    }))
+
+    // Define relation helper
+    export const postsRelations = relations(posts, ({ one }) => ({
+      user: one(users, {
+        fields: [posts.userId],
+        references: [users.id]
+      })
+    }))
+</example>
+
+<example type="invalid">
+    // typescript
+    // Don't skip constraints
+    export const comments = pgTable('comments', {
+      userId: uuid('user_id'),  // Wrong: Missing foreign key
+      content: text('content')   // Wrong: Missing not null
+    })
+
+    // Don't use ambiguous names
+    export const data = pgTable('data', {  // Wrong: Non-descriptive name
+      val: text('val')  // Wrong: Ambiguous column name
+    })
+
+    // Don't mix concerns
+    export const products = pgTable('products', {
+      // Wrong: Business logic in schema
+      price: numeric('price').notNull().check('price > 0'),
+      // Wrong: Validation logic in schema
+      email: text('email').notNull().check('email ~* \'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$\'')
+    })
+</example>
