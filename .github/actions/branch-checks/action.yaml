@@ -24,5 +24,23 @@ runs:
       shell: bash
       run: pnpm test:coverage
 
+    - name: Upload Coverage Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-reports
+        path: |
+          **/coverage/
+          packages/*/coverage/
+        retention-days: 30
+
+    - name: Coverage Report
+      uses: davelosert/vitest-coverage-report-action@v2
+      if: github.event_name == 'pull_request'
+      with:
+        working-directory: packages/ui
+        vite-config-path: vitest.config.ts
+        github-token: ${{ inputs.github-token }}
+
     # Add additional branch checks here.
     # i.e. Tests, Translations, security, and any other additional check

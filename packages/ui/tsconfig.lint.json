@@ -1,4 +1,9 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "include": ["eslint.config.js", "vitest.config.ts", "rslib.config.ts"]
+  "include": [
+    "eslint.config.js",
+    "vitest.config.ts",
+    "rslib.config.ts",
+    "tests/jest-extended.d.ts"
+  ]
 }

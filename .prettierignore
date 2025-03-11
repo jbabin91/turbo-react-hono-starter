@@ -9,3 +9,9 @@ dist/
 
 # Ignore all files in the node_modules directory
 node_modules/
+
+# Ignore all files in the coverage directory
+coverage/
+
+# Ignore all files in the storybook-static directory
+storybook-static/

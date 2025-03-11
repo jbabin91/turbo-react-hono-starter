@@ -1,3 +1,11 @@
 {
-  "extends": "@repo/typescript-config/react-application.json"
+  "extends": "@repo/typescript-config/react-application.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests/**",
+    "**/*.test.{ts,tsx}",
+    "**/*.config.*"
+  ]
 }
