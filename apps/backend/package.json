@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "rm -rf dist",
     "build": "rslib build",
+    "clean": "rm -rf .turbo dist node_modules",
     "dev": "rslib build --watch",
     "lint": "eslint .",
     "preview": "node dist/index.js",

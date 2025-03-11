@@ -1,0 +1,9 @@
+name: Build All Storybook
+description: Action to build all storybook in the repository
+
+runs:
+  using: composite
+  steps:
+    - name: Build all storybook
+      shell: bash
+      run: pnpm build:storybook

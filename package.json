@@ -4,8 +4,11 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
+    "build:packages": "turbo run build --filter=\"./packages/*\"",
+    "build:storybook": "turbo run build:storybook",
     "clean": "turbo run clean && rm -rf .turbo node_modules",
     "dev": "turbo run dev",
+    "dev:storybook": "turbo run dev:storybook",
     "format": "prettier -uwl --cache .",
     "format:check": "prettier -uc --cache .",
     "generate:changesets": "pnpm changeset-conventional && prettier -uw --cache ./.changeset",

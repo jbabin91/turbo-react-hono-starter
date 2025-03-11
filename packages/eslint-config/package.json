@@ -11,7 +11,7 @@
     "./storybook.js": "./storybook.js"
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
+    "clean": "rm -rf .turbo dist node_modules storybook-static",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },

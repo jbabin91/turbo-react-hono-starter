@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "rm -rf dist",
     "build": "rsbuild build",
+    "clean": "rm -rf .turbo coverage dist node_modules",
     "dev": "rsbuild dev --open",
     "lint": "eslint .",
     "preview": "rsbuild preview",

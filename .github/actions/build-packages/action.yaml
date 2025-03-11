@@ -1,0 +1,9 @@
+name: Build All Packages
+description: Action to build all packages in the repository
+
+runs:
+  using: composite
+  steps:
+    - name: Build all packages
+      shell: bash
+      run: pnpm build:packages

@@ -7,6 +7,24 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
+    "build:storybook": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**/*.stories.{ts,tsx}",
+        "src/**/*.{ts,tsx}",
+        ".storybook/**/*"
+      ],
+      "outputs": ["storybook-static/**"]
+    },
+    "dev:storybook": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [
+        "src/**/*.stories.{ts,tsx}",
+        "src/**/*.{ts,tsx}",
+        ".storybook/**/*"
+      ]
+    },
     "clean": {
       "cache": false
     },
