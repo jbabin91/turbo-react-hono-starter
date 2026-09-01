@@ -16,30 +16,30 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.7",
-    "@eslint/js": "^9.22.0",
+    "@eslint/compat": "^1.4.1",
+    "@eslint/js": "^9.39.5",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:^",
-    "@rsbuild/core": "^1.2.18",
-    "@rsbuild/plugin-react": "^1.1.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@vitest/coverage-v8": "^3.0.8",
-    "eslint": "^9.22.0",
-    "eslint-plugin-react": "^7.37.4",
+    "@rsbuild/core": "^1.7.6",
+    "@rsbuild/plugin-react": "^1.4.6",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.6",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitest/coverage-v8": "^3.2.7",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "globals": "^16.0.0",
+    "globals": "^16.5.0",
     "jest-extended": "^4.0.2",
-    "jsdom": "^26.0.0",
-    "prettier": "^3.5.3",
-    "typescript": "5.8.2",
-    "vitest": "^3.0.8"
+    "jsdom": "^26.1.0",
+    "prettier": "^3.9.6",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.7"
   }
 }
