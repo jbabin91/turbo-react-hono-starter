@@ -14,15 +14,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^1.13.8",
+    "@hono/node-server": "^2.1.1",
     "hono": "^4.7.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rslib/core": "^0.5.4",
-    "@types/node": "^22.13.10",
-    "eslint": "^9.22.0",
-    "typescript": "5.8.2"
+    "@types/node": "^24.13.3",
+    "eslint": "^10.9.1",
+    "typescript": "7.0.2"
   }
 }
